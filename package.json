@@ -1,27 +1,28 @@
 {
-  "name": "cite-cjk",
+  "name": "cite-non-english",
   "type": "module",
   "version": "0.1.0",
-  "description": "Manage CJK (Chinese, Japanese, Korean) citation metadata with parallel titles, romanization, and translation support for Zotero",
+  "description": "CNE (Cite Non-English) - Manage non-English citation metadata with parallel titles, romanization, and translation support for Zotero. Supports CJK (Chinese, Japanese, Korean) and other non-English sources",
   "config": {
-    "addonName": "Cite CJK",
-    "addonID": "cite-cjk@boan-anbo.com",
-    "addonRef": "citecjk",
-    "addonInstance": "CiteCjk",
-    "prefsPrefix": "extensions.zotero.citecjk"
+    "addonName": "CNE (Cite Non-English)",
+    "addonID": "cite-non-english@boan-anbo.com",
+    "addonRef": "cne",
+    "addonInstance": "CiteNonEnglish",
+    "prefsPrefix": "extensions.zotero.cne"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/boan-anbo/cite-cjk.git"
+    "url": "git+https://github.com/boan-anbo/cite-non-english.git"
   },
   "author": "boan-anbo",
   "bugs": {
-    "url": "https://github.com/boan-anbo/cite-cjk/issues"
+    "url": "https://github.com/boan-anbo/cite-non-english/issues"
   },
-  "homepage": "https://github.com/boan-anbo/cite-cjk#readme",
+  "homepage": "https://github.com/boan-anbo/cite-non-english#readme",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "zotero-plugin serve",
+    "rebuild": "./scripts/rebuild.sh",
     "build": "zotero-plugin build && tsc --noEmit",
     "lint:check": "prettier --check . && eslint .",
     "lint:fix": "prettier --write . && eslint . --fix",

@@ -1,17 +1,17 @@
 /**
- * Main data model for CJK citation metadata
- * Acts as the single source of truth for all CJK field data
+ * Main data model for non-English citation metadata
+ * Acts as the single source of truth for all non-English field data
  */
 
-import type { CjkMetadataData, CjkFieldName, FieldVariant } from "../types";
+import type { CneMetadataData, CneFieldName, FieldVariant } from "../types";
 import { parseExtraField, serializeToExtra } from "./extraFieldParser";
 
 /**
- * CjkMetadata class
- * Manages CJK citation metadata for a Zotero item
+ * CneMetadata class
+ * Manages non-English citation metadata for a Zotero item
  * Provides loading, saving, and data binding support
  */
-export class CjkMetadata {
+export class CneMetadata {
   /**
    * The Zotero item this metadata belongs to
    */
@@ -21,10 +21,10 @@ export class CjkMetadata {
    * The metadata data object
    * This is the single source of truth that UI elements bind to
    */
-  public data: CjkMetadataData;
+  public data: CneMetadataData;
 
   /**
-   * Create a new CjkMetadata instance
+   * Create a new CneMetadata instance
    * @param item - The Zotero item to manage metadata for
    */
   constructor(item: Zotero.Item) {
@@ -33,22 +33,22 @@ export class CjkMetadata {
   }
 
   /**
-   * Load CJK metadata from the item's Extra field
+   * Load non-English metadata from the item's Extra field
    * @returns Parsed metadata data
    */
-  private load(): CjkMetadataData {
+  private load(): CneMetadataData {
     try {
       const extraContent = this.item.getField("extra") as string;
       return parseExtraField(extraContent || "");
     } catch (error) {
-      ztoolkit.log("Error loading CJK metadata:", error);
+      ztoolkit.log("Error loading non-English metadata:", error);
       return {};
     }
   }
 
   /**
-   * Save current CJK metadata back to the item's Extra field
-   * Preserves non-CJK content in the Extra field
+   * Save current non-English metadata back to the item's Extra field
+   * Preserves non-non-English content in the Extra field
    * @returns Promise that resolves when save is complete
    */
   public async save(): Promise<void> {
@@ -59,9 +59,9 @@ export class CjkMetadata {
       this.item.setField("extra", updatedExtra);
       await this.item.saveTx();
 
-      ztoolkit.log("CJK metadata saved successfully");
+      ztoolkit.log("non-English metadata saved successfully");
     } catch (error) {
-      ztoolkit.log("Error saving CJK metadata:", error);
+      ztoolkit.log("Error saving non-English metadata:", error);
       throw error;
     }
   }
@@ -75,8 +75,8 @@ export class CjkMetadata {
   }
 
   /**
-   * Check if this item has any CJK metadata
-   * @returns true if any CJK fields have values
+   * Check if this item has any non-English metadata
+   * @returns true if any non-English fields have values
    */
   public hasData(): boolean {
     // Check if original language is set
@@ -85,7 +85,7 @@ export class CjkMetadata {
     }
 
     // Check if any field has data
-    const fields: CjkFieldName[] = [
+    const fields: CneFieldName[] = [
       "title",
       "booktitle",
       "publisher",
@@ -110,7 +110,7 @@ export class CjkMetadata {
   }
 
   /**
-   * Clear all CJK metadata
+   * Clear all non-English metadata
    * Sets all fields to empty/undefined
    */
   public clear(): void {
@@ -134,7 +134,7 @@ export class CjkMetadata {
   /**
    * Export metadata as a plain object (for debugging/logging)
    */
-  public toJSON(): CjkMetadataData {
+  public toJSON(): CneMetadataData {
     return { ...this.data };
   }
 
@@ -145,7 +145,7 @@ export class CjkMetadata {
    * @returns The field value or undefined
    */
   public getFieldVariant(
-    field: CjkFieldName,
+    field: CneFieldName,
     variant: FieldVariant,
   ): string | undefined {
     const fieldData = this.data[field];
@@ -159,7 +159,7 @@ export class CjkMetadata {
    * @param value - Value to set (empty string clears it)
    */
   public setFieldVariant(
-    field: CjkFieldName,
+    field: CneFieldName,
     variant: FieldVariant,
     value: string,
   ): void {
@@ -174,7 +174,7 @@ export class CjkMetadata {
    * @param field - Field name to check
    * @returns true if the field has any variant with data
    */
-  public hasFieldData(field: CjkFieldName): boolean {
+  public hasFieldData(field: CneFieldName): boolean {
     const fieldData = this.data[field];
     if (!fieldData) return false;
 
@@ -190,7 +190,7 @@ export class CjkMetadata {
    * @returns Number of fields that have at least one variant filled
    */
   public getFilledFieldCount(): number {
-    const fields: CjkFieldName[] = [
+    const fields: CneFieldName[] = [
       "title",
       "booktitle",
       "publisher",

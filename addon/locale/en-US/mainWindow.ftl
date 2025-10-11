@@ -11,6 +11,6 @@ item-section-example2-button-tooltip =
 item-info-row-example-label = Example Row
 
 section-header =
-    .label = CJK Citation Fields
+    .label = Non-English Citation Fields
 section-sidenav-tooltip =
-    .tooltiptext = Manage original script, English translation, and romanization for CJK sources
+    .tooltiptext = Manage original script, English translation, and romanization for non-English sources

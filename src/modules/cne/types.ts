@@ -1,20 +1,20 @@
 /**
- * Type definitions for CJK Citation Manager
+ * Type definitions for CNE (Cite Non-English) Manager
  */
 
 /**
- * Field variant types for CJK fields
- * - original: Original script (汉字, 漢字, かな, 한글)
+ * Field variant types for non-English fields
+ * - original: Original script (汉字, 漢字, かな, 한글, Cyrillic, etc.)
  * - english: English translation
  * - romanized: Romanization (Pinyin, Romaji, etc.)
  */
 export type FieldVariant = "original" | "english" | "romanized";
 
 /**
- * Supported CJK field names
- * Based on common citation requirements for CJK sources
+ * Supported non-English field names
+ * Based on common citation requirements for non-English sources
  */
-export type CjkFieldName =
+export type CneFieldName =
   | "title"
   | "booktitle"
   | "publisher"
@@ -22,9 +22,9 @@ export type CjkFieldName =
   | "series";
 
 /**
- * Data structure for a single CJK field with its variants
+ * Data structure for a single non-English field with its variants
  */
-export interface CjkFieldData {
+export interface CneFieldData {
   /** Original script */
   original?: string;
   /** English translation */
@@ -34,30 +34,30 @@ export interface CjkFieldData {
 }
 
 /**
- * Complete CJK metadata structure
- * Represents all CJK fields stored for an item
+ * Complete non-English metadata structure
+ * Represents all non-English fields stored for an item
  */
-export interface CjkMetadataData {
+export interface CneMetadataData {
   /** Article or book title */
-  title?: CjkFieldData;
+  title?: CneFieldData;
   /** Container title (for chapters, articles) */
-  booktitle?: CjkFieldData;
+  booktitle?: CneFieldData;
   /** Publisher name */
-  publisher?: CjkFieldData;
+  publisher?: CneFieldData;
   /** Journal title */
-  journal?: CjkFieldData;
+  journal?: CneFieldData;
   /** Series title */
-  series?: CjkFieldData;
-  /** ISO language code (e.g., zh-CN, ja-JP, ko-KR) */
+  series?: CneFieldData;
+  /** ISO language code (e.g., zh-CN, ja-JP, ko-KR, ru-RU, ar-SA) */
   originalLanguage?: string;
 }
 
 /**
- * Configuration for a CJK field in the UI
+ * Configuration for a non-English field in the UI
  */
 export interface FieldConfig {
   /** Internal field name */
-  name: CjkFieldName;
+  name: CneFieldName;
   /** Display label in English */
   label: string;
   /** Localization key for Fluent */

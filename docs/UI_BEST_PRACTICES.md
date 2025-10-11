@@ -235,10 +235,10 @@ Use Fluent for all UI strings:
 
 ```typescript
 // In HTML
-<html:label data-l10n-id="citecjk-field-title-original">Title (Original)</html:label>
+<html:label data-l10n-id="cne-field-title-original">Title (Original)</html:label>
 
 // In .ftl file
-citecjk-field-title-original = Title (Original)
+cne-field-title-original = Title (Original)
 ```
 
 ## Namespace Best Practices
@@ -247,8 +247,8 @@ Always namespace your IDs and classes to avoid conflicts:
 
 ```typescript
 // Good
-id: "citecjk-title-input"
-class: "citecjk-field-container"
+id: "cne-title-input"
+class: "cne-field-container"
 
 // Bad
 id: "title-input"

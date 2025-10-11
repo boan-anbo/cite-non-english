@@ -1,6 +1,6 @@
 # Reference Materials
 
-This folder contains reference documentation and external resources that inform the design and implementation of the CJK Citation plugin.
+This folder contains reference documentation and external resources that inform the design and implementation of the CNE Citation plugin.
 
 ## Contents
 
@@ -13,8 +13,8 @@ This folder contains reference documentation and external resources that inform 
 The following reference materials should be added as we continue development:
 
 #### Better BibTeX
-- How Better BibTeX handles CJK citations
-- CSL JSON export format for CJK fields
+- How Better BibTeX handles CNE citations
+- CSL JSON export format for CNE fields
 - Extra field conventions and best practices
 
 #### CSS & Styling
@@ -23,11 +23,11 @@ The following reference materials should be added as we continue development:
 - Native component styling guidelines
 
 #### Citation Standards
-- Chicago Manual of Style guidelines for CJK citations
+- Chicago Manual of Style guidelines for CNE citations
 - APA style for non-English sources
 - MLA format for foreign language materials
 
-#### CJK-Specific
+#### CNE-Specific
 - Romanization systems (Pinyin, Wade-Giles, Romaji, etc.)
 - Language code standards (ISO 639-1, BCP 47)
 - Unicode handling best practices

@@ -1,8 +1,8 @@
-# CJK Citation Plugin - Architecture & Design Decisions
+# CNE (Cite Non-English) Citation Plugin - Architecture & Design Decisions
 
 ## Overview
 
-This document explains the core architecture and design decisions for the CJK Citation Plugin for Zotero. It covers how we solve the fundamental challenges of handling Chinese, Japanese, and Korean (CJK) citations in academic bibliographies.
+This document explains the core architecture and design decisions for the CNE (Cite Non-English) Citation Plugin for Zotero. It covers how we solve the fundamental challenges of handling non-English citations in academic bibliographies.
 
 ## The Problem
 
@@ -28,12 +28,12 @@ Academic citation styles (especially Chicago Manual of Style) require special ha
 **Store CJK metadata in Zotero's Extra field using a namespaced format:**
 
 ```
-cite-cjk.title-original: 日本仏教綜合研究
-cite-cjk.title-english: Japanese Buddhist Comprehensive Research
-cite-cjk.title-romanized: Nihon Bukkyō Sōgō Kenkyū
-cite-cjk.publisher-original: 平凡社
-cite-cjk.publisher-romanized: Heibonsha
-cite-cjk.original-language: ja-JP
+cne.title-original: 日本仏教綜合研究
+cne.title-english: Japanese Buddhist Comprehensive Research
+cne.title-romanized: Nihon Bukkyō Sōgō Kenkyū
+cne.publisher-original: 平凡社
+cne.publisher-romanized: Heibonsha
+cne.original-language: ja-JP
 ```
 
 **Advantages:**
@@ -61,9 +61,9 @@ IF item.language == "en" OR "en-US" OR "en-GB"
 
 ```
 IF item.language != English OR item.language == empty
-  → Check if cite-cjk.* fields exist in Extra
+  → Check if cne.* fields exist in Extra
   → IF CJK fields exist:
-      → Apply CJK citation formatting
+      → Apply non-English citation formatting
     ELSE:
       → Use standard citation formatting
 ```
@@ -91,7 +91,7 @@ The language code serves dual purposes:
 **Strategy:** Map our Extra field data to CSL-accessible variables
 
 **If Chicago CSL already supports CJK fields:**
-- We transform `cite-cjk.*` data into fields that Chicago CSL expects
+- We transform `cne.*` data into fields that Chicago CSL expects
 - Leverage existing Chicago formatting logic
 - Maximum compatibility with standard workflows
 
@@ -128,14 +128,14 @@ function prepareCslItem(item) {
 
 **Implementation:**
 ```xml
-<!-- Custom CSL that reads from cite-cjk namespace -->
+<!-- Custom CSL that reads from cne namespace -->
 <macro name="title-with-cjk">
   <choose>
-    <if variable="cite-cjk.title-original">
+    <if variable="cne.title-original">
       <group delimiter=" ">
-        <text variable="cite-cjk.title-original"/>
-        <text variable="cite-cjk.title-romanized" prefix="(" suffix=")"/>
-        <text variable="cite-cjk.title-english" prefix="[" suffix="]"/>
+        <text variable="cne.title-original"/>
+        <text variable="cne.title-romanized" prefix="(" suffix=")"/>
+        <text variable="cne.title-english" prefix="[" suffix="]"/>
       </group>
     </if>
     <else>
@@ -148,7 +148,7 @@ function prepareCslItem(item) {
 **Advantages:**
 - ✅ Complete control over formatting
 - ✅ Can directly reference our Extra field format
-- ✅ More flexibility for custom CJK citation requirements
+- ✅ More flexibility for custom non-English citation requirements
 - ✅ Can optimize for CJK-specific use cases
 
 **Challenges:**
@@ -236,7 +236,7 @@ Formatted Citation
    Language: [empty]
    ```
 
-2. **User opens CJK Citation Fields section:**
+2. **User opens CNE (Cite Non-English) Citation Fields section:**
    - Selects language: `ja-JP`
    - Enters original title: `日本仏教綜合研究`
    - Enters romanized title: `Nihon Bukkyō Sōgō Kenkyū`
@@ -244,10 +244,10 @@ Formatted Citation
 
 3. **Plugin saves to Extra field:**
    ```
-   cite-cjk.original-language: ja-JP
-   cite-cjk.title-original: 日本仏教綜合研究
-   cite-cjk.title-romanized: Nihon Bukkyō Sōgō Kenkyū
-   cite-cjk.title-english: Japanese Buddhist Comprehensive Research
+   cne.original-language: ja-JP
+   cne.title-original: 日本仏教綜合研究
+   cne.title-romanized: Nihon Bukkyō Sōgō Kenkyū
+   cne.title-english: Japanese Buddhist Comprehensive Research
    ```
 
 4. **Plugin updates Zotero language field:**
@@ -307,13 +307,13 @@ Formatted Citation
 - Better BibTeX already uses Extra field extensively
 - Human-readable for debugging
 
-### Why Namespace Pattern (cite-cjk.*)?
+### Why Namespace Pattern (cne.*)?
 
 **Considered:**
 - Plain keys: `title-original: 日本仏教綜合研究`
 - Different separators: `cite_cjk/title/original`
 
-**Decision:** `cite-cjk.field-variant` format
+**Decision:** `cne.field-variant` format
 
 **Reasoning:**
 - Prevents conflicts with other plugins

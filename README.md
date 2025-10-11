@@ -1,13 +1,13 @@
-# Cite CJK
+# Cite CNE (Cite Non-English)
 
 [![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
-A Zotero plugin for managing CJK (Chinese, Japanese, Korean) citation metadata with support for parallel titles, romanization, and translation.
+A Zotero plugin for managing CNE (Cite Non-English) (non-English) citation metadata with support for parallel titles, romanization, and translation.
 
 ## The Problem
 
-Citing CJK sources in academic work requires handling multiple parallel fields:
+Citing CNE (Cite Non-English) sources in academic work requires handling multiple parallel fields:
 
 - **Original script**: Native characters (汉字, 漢字, かな, 한글)
 - **Romanization**: Pinyin, Romaji, Revised Romanization
@@ -21,10 +21,10 @@ Previously, this required [Juris-M](https://juris-m.github.io/) (a modified Zote
 
 ## The Solution
 
-**Cite CJK** provides a unified approach that works with standard Zotero:
+**Cite CNE (Cite Non-English)** provides a unified approach that works with standard Zotero:
 
-1. **Internal data model**: Store all CJK metadata in a structured format using Zotero's Extra field
-2. **Custom UI panel**: User-friendly interface in the item pane for managing CJK fields
+1. **Internal data model**: Store all CNE (Cite Non-English) metadata in a structured format using Zotero's Extra field
+2. **Custom UI panel**: User-friendly interface in the item pane for managing CNE (Cite Non-English) fields
 3. **Output adaptation**: Transform stored data for different workflows:
    - **LaTeX users**: Export via Better BibTeX with proper `titleaddon`, `booktitleaddon` fields
    - **Word/LibreOffice users**: Compatible CSL styles with proper language handling
@@ -34,13 +34,13 @@ Previously, this required [Juris-M](https://juris-m.github.io/) (a modified Zote
 
 ### Internal Data Model
 
-Cite CJK maintains a canonical data model stored in Zotero's Extra field using the `cite-cjk.*` namespace:
+Cite CNE (Cite Non-English) maintains a canonical data model stored in Zotero's Extra field using the `cne.*` namespace:
 
 ```
-cite-cjk.title-original: 日本仏教綜合研究
-cite-cjk.title-english: Japanese Buddhist Comprehensive Research
-cite-cjk.title-romanized: Nihon Bukkyō Sōgō Kenkyū
-cite-cjk.original-language: ja-JP
+cne.title-original: 日本仏教綜合研究
+cne.title-english: Japanese Buddhist Comprehensive Research
+cne.title-romanized: Nihon Bukkyō Sōgō Kenkyū
+cne.original-language: ja-JP
 ```
 
 #### Field Naming Convention
@@ -57,7 +57,7 @@ Plus one metadata field:
 
 #### Supported Fields
 
-Based on APA, MLA, and Chicago style requirements for CJK citations:
+Based on APA, MLA, and Chicago style requirements for CNE (Cite Non-English) citations:
 
 - `title`: Article/book title
 - `booktitle`: Container title (for chapters, articles)
@@ -71,7 +71,7 @@ Based on APA, MLA, and Chicago style requirements for CJK citations:
 
 **Stability and reliability:**
 - Users often modify native fields while troubleshooting citations
-- WorldCat and other databases may provide English titles for CJK sources
+- WorldCat and other databases may provide English titles for CNE (Cite Non-English) sources
 - Preserves authoritative source data as a stable reference point
 
 ### Output Adaptation Layer
@@ -90,15 +90,15 @@ tex.titleaddon-romanized: Nihon Bukkyō Sōgō Kenkyū
 #### For Word/LibreOffice (CSL)
 
 - Sets Zotero's Language field (e.g., `ja-JP`) to prevent incorrect English casing
-- Provides or recommends CSL styles that support CJK citations
+- Provides or recommends CSL styles that support CNE (Cite Non-English) citations
 - May embed custom CSL styles if needed
 
 ## Features (Planned)
 
 ### Phase 1: Core Functionality
 - ✅ Project setup and infrastructure
-- [ ] Custom item pane section with UI for managing CJK fields
-- [ ] Parse/generate Extra field with `cite-cjk.*` namespace
+- [ ] Custom item pane section with UI for managing CNE (Cite Non-English) fields
+- [ ] Parse/generate Extra field with `cne.*` namespace
 - [ ] Support for title, booktitle, author fields
 
 ### Phase 2: Better BibTeX Integration
@@ -109,15 +109,15 @@ tex.titleaddon-romanized: Nihon Bukkyō Sōgō Kenkyū
 ### Phase 3: CSL Style Support
 - [ ] Language field auto-configuration
 - [ ] Test with Word/LibreOffice output
-- [ ] Recommended CSL styles for CJK sources
+- [ ] Recommended CSL styles for CNE (Cite Non-English) sources
 - [ ] Optional: Embed custom CSL styles
 
 ### Phase 4: Advanced Features
-- [ ] Batch operations (add CJK fields to multiple items)
-- [ ] Import helpers for CJK databases (CNKI, CiNii, RISS)
+- [ ] Batch operations (add CNE (Cite Non-English) fields to multiple items)
+- [ ] Import helpers for CNE (Cite Non-English) databases (CNKI, CiNii, RISS)
 - [ ] Romanization helpers (auto-generate pinyin/romaji)
 - [ ] Validation and completeness warnings
-- [ ] Multi-language UI (English, Chinese, Japanese, Korean)
+- [ ] Multi-language UI (English, non-English)
 
 ## Installation
 
@@ -128,7 +128,7 @@ tex.titleaddon-romanized: Nihon Bukkyō Sōgō Kenkyū
 
 ### Install from GitHub Releases
 
-1. Download the latest `.xpi` file from [Releases](https://github.com/boan-anbo/cite-cjk/releases)
+1. Download the latest `.xpi` file from [Releases](https://github.com/boan-anbo/cne/releases)
 2. In Zotero, go to Tools → Add-ons
 3. Click the gear icon, select "Install Add-on From File"
 4. Select the downloaded `.xpi` file
@@ -141,9 +141,9 @@ See [Development Setup](#development-setup) below.
 
 ### Basic Workflow
 
-1. **Add CJK metadata to your items:**
+1. **Add CNE (Cite Non-English) metadata to your items:**
    - Select an item in your Zotero library
-   - Open the "Cite CJK" panel in the right sidebar (alongside Info, Notes, Tags, etc.)
+   - Open the "Cite CNE (Cite Non-English)" panel in the right sidebar (alongside Info, Notes, Tags, etc.)
    - Enter original, romanized, and English variants of titles and authors
    - Select the original language from the dropdown
 
@@ -153,7 +153,7 @@ See [Development Setup](#development-setup) below.
    - Use with your preferred BibLaTeX styles
 
 3. **For Word/LibreOffice users:**
-   - Use recommended CJK-compatible CSL styles
+   - Use recommended CNE (Cite Non-English)-compatible CSL styles
    - The plugin automatically sets language fields to prevent incorrect casing
    - Insert citations normally through Zotero
 
@@ -171,8 +171,8 @@ _Coming soon: Screenshots and step-by-step examples_
 ### Clone and Build
 
 ```bash
-git clone https://github.com/boan-anbo/cite-cjk.git
-cd cite-cjk
+git clone https://github.com/boan-anbo/cne.git
+cd cne
 npm install
 ```
 
@@ -241,19 +241,19 @@ git cherry-pick <commit-hash>
 
 ### Remote Configuration
 
-- `origin`: Your fork at `https://github.com/boan-anbo/cite-cjk.git`
+- `origin`: Your fork at `https://github.com/boan-anbo/cne.git`
 - `upstream`: Template at `https://github.com/windingwind/zotero-plugin-template.git`
 - `upstream-template`: Local branch tracking `upstream/main`
 
 ## Contributing
 
-Contributions are welcome! This project aims to be a long-term maintained solution for CJK citations.
+Contributions are welcome! This project aims to be a long-term maintained solution for CNE (Cite Non-English) citations.
 
 ### Areas for Contribution
 
-- **Testing**: Test with real CJK sources across languages (Chinese, Japanese, Korean)
-- **CSL styles**: Help identify or create CJK-compatible citation styles
-- **Localization**: Translate UI strings to Chinese, Japanese, Korean
+- **Testing**: Test with real CNE (Cite Non-English) sources across languages (non-English)
+- **CSL styles**: Help identify or create CNE (Cite Non-English)-compatible citation styles
+- **Localization**: Translate UI strings to non-English
 - **Documentation**: Improve guides and examples for different workflows
 - **Feature requests**: Suggest fields or features based on your citation needs
 
@@ -267,9 +267,9 @@ Contributions are welcome! This project aims to be a long-term maintained soluti
 
 ## Resources
 
-### CJK Citation Guidelines
+### CNE (Cite Non-English) Citation Guidelines
 
-- [UBC Library: CJK Citation Guide](https://guides.library.ubc.ca/c.php?g=707463&p=5291936)
+- [UBC Library: CNE (Cite Non-English) Citation Guide](https://guides.library.ubc.ca/c.php?g=707463&p=5291936)
 - [Yale: Citation Style for Chinese, Japanese and Korean Sources](https://guides.library.yale.edu/c.php?g=296262)
 - [How to Easily Handle Non-English Citation Information in Zotero](https://jdavidstark.com/how-to-easily-handle-non-english-citation-information-in-zotero/)
 
@@ -315,11 +315,11 @@ This project is built on the [Zotero Plugin Template](https://github.com/winding
 
 ## Support
 
-- [Report issues](https://github.com/boan-anbo/cite-cjk/issues)
-- [Discussions](https://github.com/boan-anbo/cite-cjk/discussions)
+- [Report issues](https://github.com/boan-anbo/cne/issues)
+- [Discussions](https://github.com/boan-anbo/cne/discussions)
 
 ## Acknowledgments
 
 - [windingwind](https://github.com/windingwind) for the excellent Zotero Plugin Template
 - The Zotero team for creating an extensible research tool
-- The CJK research community for feedback and requirements
+- The CNE (Cite Non-English) research community for feedback and requirements

@@ -20,6 +20,8 @@ export type FluentMessageId =
   | 'prefs-table-detail'
   | 'prefs-table-title'
   | 'prefs-title'
+  | 'section-header'
+  | 'section-sidenav-tooltip'
   | 'startup-begin'
   | 'startup-finish'
   | 'tabpanel-lib-tab-label'

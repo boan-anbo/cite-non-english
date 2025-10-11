@@ -1,5 +1,5 @@
 /**
- * Reusable UI component builders for CJK Citation Manager
+ * Reusable UI component builders for non-English Citation Manager
  * Following Zotero 7 best practices and template patterns
  */
 
@@ -161,7 +161,7 @@ export function createFieldSection(title: string, children: any[]): any {
       {
         tag: "div",
         namespace: "html",
-        classList: ["citecjk-field-grid"],
+        classList: ["cne-field-grid"],
         styles: {
           display: "grid",
           gridTemplateColumns: "100px 1fr",
@@ -238,7 +238,7 @@ export function createSeparator(): any {
  * Create a live preview panel showing current data state
  * Useful for debugging and showing what will be saved
  *
- * @param metadata - CjkMetadata instance
+ * @param metadata - CneMetadata instance
  * @returns Element configuration object
  */
 export function createLivePreview(metadata: any): any {
@@ -289,7 +289,7 @@ export function createLivePreview(metadata: any): any {
 /**
  * Create a status indicator showing how many fields are filled
  *
- * @param metadata - CjkMetadata instance
+ * @param metadata - CneMetadata instance
  * @returns Element configuration object
  */
 export function createFieldCounter(metadata: any): any {

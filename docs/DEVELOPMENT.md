@@ -83,7 +83,7 @@ To add a new field (e.g., "author"):
    ```typescript
    export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
      // ... existing fields
-     { name: "author", label: "Author", l10nKey: "citecjk-field-author" },
+     { name: "author", label: "Author", l10nKey: "cne-field-author" },
    ];
    ```
 

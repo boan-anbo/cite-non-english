@@ -69,22 +69,22 @@ https://github.com/citation-style-language/locales/wiki
    - Citation style determines if title case should be applied
    - Automatic transformation may occur
 
-## Best Practices for CJK Citations
+## Best Practices for CNE Citations
 
-For our CJK citation plugin, this means:
+For our CNE citation plugin, this means:
 
 1. **Store the original language code**
-   - Use the `originalLanguage` field in our CJK metadata
+   - Use the `originalLanguage` field in our CNE metadata
    - Map to Zotero's standard `language` field
 
-2. **Common CJK language codes:**
+2. **Common CNE language codes:**
    - `zh-CN` - Simplified Chinese (Mainland China)
    - `zh-TW` - Traditional Chinese (Taiwan)
    - `ja-JP` - Japanese
    - `ko-KR` - Korean
 
 3. **Integration strategy:**
-   - When CJK fields are populated, automatically set or suggest the language field
+   - When CNE fields are populated, automatically set or suggest the language field
    - Provide UI hints to help users select the correct language code
    - Document the importance of language field for users
 
