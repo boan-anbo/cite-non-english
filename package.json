@@ -1,24 +1,24 @@
 {
-  "name": "zotero-plugin-template",
+  "name": "cite-cjk",
   "type": "module",
-  "version": "3.1.0",
-  "description": "Zotero Plugin Template",
+  "version": "0.1.0",
+  "description": "Manage CJK (Chinese, Japanese, Korean) citation metadata with parallel titles, romanization, and translation support for Zotero",
   "config": {
-    "addonName": "Zotero Plugin Template",
-    "addonID": "addontemplate@euclpts.com",
-    "addonRef": "addontemplate",
-    "addonInstance": "AddonTemplate",
-    "prefsPrefix": "extensions.zotero.addontemplate"
+    "addonName": "Cite CJK",
+    "addonID": "cite-cjk@boan-anbo.com",
+    "addonRef": "citecjk",
+    "addonInstance": "CiteCjk",
+    "prefsPrefix": "extensions.zotero.citecjk"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/windingwind/zotero-plugin-template.git"
+    "url": "git+https://github.com/boan-anbo/cite-cjk.git"
   },
-  "author": "windingwind",
+  "author": "boan-anbo",
   "bugs": {
-    "url": "https://github.com/windingwind/zotero-plugin-template/issues"
+    "url": "https://github.com/boan-anbo/cite-cjk/issues"
   },
-  "homepage": "https://github.com/windingwind/zotero-plugin-template#readme",
+  "homepage": "https://github.com/boan-anbo/cite-cjk#readme",
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "start": "zotero-plugin serve",
