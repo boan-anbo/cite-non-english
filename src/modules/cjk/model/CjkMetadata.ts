@@ -1,0 +1,202 @@
+/**
+ * Main data model for CJK citation metadata
+ * Acts as the single source of truth for all CJK field data
+ */
+
+import type { CjkMetadataData, CjkFieldName, FieldVariant } from "../types";
+import { parseExtraField, serializeToExtra } from "./extraFieldParser";
+
+/**
+ * CjkMetadata class
+ * Manages CJK citation metadata for a Zotero item
+ * Provides loading, saving, and data binding support
+ */
+export class CjkMetadata {
+  /**
+   * The Zotero item this metadata belongs to
+   */
+  private item: Zotero.Item;
+
+  /**
+   * The metadata data object
+   * This is the single source of truth that UI elements bind to
+   */
+  public data: CjkMetadataData;
+
+  /**
+   * Create a new CjkMetadata instance
+   * @param item - The Zotero item to manage metadata for
+   */
+  constructor(item: Zotero.Item) {
+    this.item = item;
+    this.data = this.load();
+  }
+
+  /**
+   * Load CJK metadata from the item's Extra field
+   * @returns Parsed metadata data
+   */
+  private load(): CjkMetadataData {
+    try {
+      const extraContent = this.item.getField("extra") as string;
+      return parseExtraField(extraContent || "");
+    } catch (error) {
+      ztoolkit.log("Error loading CJK metadata:", error);
+      return {};
+    }
+  }
+
+  /**
+   * Save current CJK metadata back to the item's Extra field
+   * Preserves non-CJK content in the Extra field
+   * @returns Promise that resolves when save is complete
+   */
+  public async save(): Promise<void> {
+    try {
+      const currentExtra = (this.item.getField("extra") as string) || "";
+      const updatedExtra = serializeToExtra(currentExtra, this.data);
+
+      this.item.setField("extra", updatedExtra);
+      await this.item.saveTx();
+
+      ztoolkit.log("CJK metadata saved successfully");
+    } catch (error) {
+      ztoolkit.log("Error saving CJK metadata:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Reload metadata from the item's Extra field
+   * Useful when the Extra field has been modified externally
+   */
+  public reload(): void {
+    this.data = this.load();
+  }
+
+  /**
+   * Check if this item has any CJK metadata
+   * @returns true if any CJK fields have values
+   */
+  public hasData(): boolean {
+    // Check if original language is set
+    if (this.data.originalLanguage) {
+      return true;
+    }
+
+    // Check if any field has data
+    const fields: CjkFieldName[] = [
+      "title",
+      "booktitle",
+      "publisher",
+      "journal",
+      "series",
+    ];
+    for (const fieldName of fields) {
+      const fieldData = this.data[fieldName];
+      if (fieldData) {
+        // Check if any variant has a value
+        if (
+          fieldData.original ||
+          fieldData.english ||
+          fieldData.romanized
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Clear all CJK metadata
+   * Sets all fields to empty/undefined
+   */
+  public clear(): void {
+    this.data = {
+      title: undefined,
+      booktitle: undefined,
+      publisher: undefined,
+      journal: undefined,
+      series: undefined,
+      originalLanguage: undefined,
+    };
+  }
+
+  /**
+   * Get the item this metadata belongs to
+   */
+  public getItem(): Zotero.Item {
+    return this.item;
+  }
+
+  /**
+   * Export metadata as a plain object (for debugging/logging)
+   */
+  public toJSON(): CjkMetadataData {
+    return { ...this.data };
+  }
+
+  /**
+   * Get a specific field variant value
+   * @param field - Field name (e.g., 'title')
+   * @param variant - Variant type ('original', 'english', 'romanized')
+   * @returns The field value or undefined
+   */
+  public getFieldVariant(
+    field: CjkFieldName,
+    variant: FieldVariant,
+  ): string | undefined {
+    const fieldData = this.data[field];
+    return fieldData?.[variant];
+  }
+
+  /**
+   * Set a specific field variant value
+   * @param field - Field name
+   * @param variant - Variant type
+   * @param value - Value to set (empty string clears it)
+   */
+  public setFieldVariant(
+    field: CjkFieldName,
+    variant: FieldVariant,
+    value: string,
+  ): void {
+    if (!this.data[field]) {
+      this.data[field] = {};
+    }
+    this.data[field]![variant] = value || undefined;
+  }
+
+  /**
+   * Check if a specific field has any data
+   * @param field - Field name to check
+   * @returns true if the field has any variant with data
+   */
+  public hasFieldData(field: CjkFieldName): boolean {
+    const fieldData = this.data[field];
+    if (!fieldData) return false;
+
+    return !!(
+      fieldData.original ||
+      fieldData.english ||
+      fieldData.romanized
+    );
+  }
+
+  /**
+   * Get count of fields with data
+   * @returns Number of fields that have at least one variant filled
+   */
+  public getFilledFieldCount(): number {
+    const fields: CjkFieldName[] = [
+      "title",
+      "booktitle",
+      "publisher",
+      "journal",
+      "series",
+    ];
+    return fields.filter((field) => this.hasFieldData(field)).length;
+  }
+}

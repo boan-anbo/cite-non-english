@@ -9,3 +9,8 @@ item-section-example2-sidenav-tooltip =
 item-section-example2-button-tooltip =
     .tooltiptext = Unregister this section
 item-info-row-example-label = Example Row
+
+section-header =
+    .label = CJK Citation Fields
+section-sidenav-tooltip =
+    .tooltiptext = Manage original script, English translation, and romanization for CJK sources
