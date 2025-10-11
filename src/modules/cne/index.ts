@@ -1,27 +1,27 @@
 /**
- * CJK Citation Manager
+ * non-English Citation Manager
  * Public API exports
  */
 
 // Section registration
-export { registerCjkSection } from "./section/register";
+export { registerCneSection } from "./section/register";
 
 // Data model
-export { CjkMetadata } from "./model/CjkMetadata";
+export { CneMetadata } from "./model/CneMetadata";
 
 // Parser utilities
 export {
   parseExtraField,
   serializeToExtra,
-  hasCjkMetadata,
+  hasCneMetadata,
 } from "./model/extraFieldParser";
 
 // Types
 export type {
   FieldVariant,
-  CjkFieldName,
-  CjkFieldData,
-  CjkMetadataData,
+  CneFieldName,
+  CneFieldData,
+  CneMetadataData,
   FieldConfig,
   VariantLabelConfig,
 } from "./types";

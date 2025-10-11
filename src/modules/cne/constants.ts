@@ -1,5 +1,5 @@
 /**
- * Constants for CJK Citation Manager
+ * Constants for Non-English Citation Manager
  */
 
 import type {
@@ -9,10 +9,10 @@ import type {
 } from "./types";
 
 /**
- * Namespace prefix for all CJK fields in Extra
- * Fields will be stored as: cite-cjk.title-original, cite-cjk.title-english, etc.
+ * Namespace prefix for all Non-English fields in Extra
+ * Fields will be stored as: cne.title-original, cne.title-english, etc.
  */
-export const NAMESPACE = "cite-cjk" as const;
+export const NAMESPACE = "cne" as const;
 
 /**
  * Field variants in order
@@ -24,7 +24,7 @@ export const FIELD_VARIANTS: readonly FieldVariant[] = [
 ] as const;
 
 /**
- * Configuration for all supported CJK fields
+ * Configuration for all supported Non-English fields
  * Defines the fields that will appear in the UI
  */
 export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
@@ -96,7 +96,7 @@ export const ORIGINAL_LANGUAGE_KEY = "original-language" as const;
 
 /**
  * Helper to create namespaced field key
- * @example getFieldKey('title', 'original') => 'cite-cjk.title-original'
+ * @example getFieldKey('title', 'original') => 'cne.title-original'
  */
 export function getFieldKey(
   fieldName: string,

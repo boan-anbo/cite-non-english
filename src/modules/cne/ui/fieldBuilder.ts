@@ -1,5 +1,5 @@
 /**
- * Field builder for CJK Citation Manager
+ * Field builder for non-English Citation Manager
  * Creates complete field input groups with original, English, and romanized variants
  */
 
@@ -39,7 +39,7 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
       {
         tag: "div",
         namespace: "html",
-        classList: ["citecjk-input-wrapper"],
+        classList: ["cne-input-wrapper"],
         children: [
           createTextInput(
             elementId,
@@ -50,7 +50,7 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
           {
             tag: "button",
             namespace: "html",
-            classList: ["citecjk-clear-button"],
+            classList: ["cne-clear-button"],
             attributes: {
               type: "button",
               title: "Clear",

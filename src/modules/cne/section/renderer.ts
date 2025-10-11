@@ -1,9 +1,9 @@
 /**
- * Section renderer for CJK Citation Manager
+ * Section renderer for non-English Citation Manager
  * Handles rendering the item pane section with real-time data binding
  */
 
-import { CjkMetadata } from "../model/CjkMetadata";
+import { CneMetadata } from "../model/CneMetadata";
 import { SUPPORTED_FIELDS } from "../constants";
 import { buildAllFieldGroups } from "../ui/fieldBuilder";
 import {
@@ -11,7 +11,7 @@ import {
   createLivePreview,
   createFieldCounter,
 } from "../ui/components";
-import type { CjkFieldName, FieldVariant } from "../types";
+import type { CneFieldName, FieldVariant } from "../types";
 
 /**
  * Debounce timer for auto-save
@@ -19,12 +19,12 @@ import type { CjkFieldName, FieldVariant } from "../types";
 let saveDebounceTimer: number | undefined;
 
 /**
- * Render the CJK citation section
+ * Render the non-English citation section
  * This is called by ItemPaneManager when the section needs to render
  *
  * @param renderProps - Properties provided by ItemPaneManager
  */
-export function renderCjkSection(renderProps: {
+export function renderCneSection(renderProps: {
   body: HTMLElement;
   item: Zotero.Item;
   editable: boolean;
@@ -37,10 +37,10 @@ export function renderCjkSection(renderProps: {
 
   try {
     // Create metadata instance (single source of truth)
-    const metadata = new CjkMetadata(item);
+    const metadata = new CneMetadata(item);
 
-    ztoolkit.log("Rendering CJK section for item:", item.id);
-    ztoolkit.log("CJK metadata:", metadata.toJSON());
+    ztoolkit.log("Rendering non-English section for item:", item.id);
+    ztoolkit.log("non-English metadata:", metadata.toJSON());
 
     // Build all field groups
     const fieldGroups = buildAllFieldGroups(SUPPORTED_FIELDS);
@@ -61,19 +61,19 @@ export function renderCjkSection(renderProps: {
           namespace: "html",
           properties: {
             innerHTML: `
-              .citecjk-field-grid input[type="text"]:hover {
+              .cne-field-grid input[type="text"]:hover {
                 border-color: #999 !important;
               }
-              .citecjk-field-grid input[type="text"]:focus {
+              .cne-field-grid input[type="text"]:focus {
                 border-color: #0066cc !important;
                 outline: none;
               }
-              .citecjk-input-wrapper {
+              .cne-input-wrapper {
                 display: flex;
                 align-items: center;
                 gap: 4px;
               }
-              .citecjk-clear-button {
+              .cne-clear-button {
                 background: transparent;
                 border: none;
                 color: #999;
@@ -84,10 +84,10 @@ export function renderCjkSection(renderProps: {
                 opacity: 0;
                 transition: opacity 0.2s;
               }
-              .citecjk-input-wrapper:hover .citecjk-clear-button {
+              .cne-input-wrapper:hover .cne-clear-button {
                 opacity: 1;
               }
-              .citecjk-clear-button:hover {
+              .cne-clear-button:hover {
                 color: #666;
               }
             `,
@@ -116,12 +116,12 @@ export function renderCjkSection(renderProps: {
     setupClearButtons(body, metadata);
 
   } catch (error) {
-    ztoolkit.log("Error rendering CJK section:", error);
+    ztoolkit.log("Error rendering non-English section:", error);
 
     // Show error message
     body.innerHTML = `
       <div style="padding: 20px; text-align: center; color: #d32f2f;">
-        <p>Error loading CJK citation fields.</p>
+        <p>Error loading non-English citation fields.</p>
         <p style="font-size: 12px; color: #666;">Check the console for details.</p>
       </div>
     `;
@@ -134,9 +134,9 @@ export function renderCjkSection(renderProps: {
  * Implements real-time auto-save with debouncing
  *
  * @param container - Container element with input elements
- * @param metadata - CjkMetadata instance to bind to
+ * @param metadata - CneMetadata instance to bind to
  */
-function setupDataBinding(container: HTMLElement, metadata: CjkMetadata): void {
+function setupDataBinding(container: HTMLElement, metadata: CneMetadata): void {
   // Find all elements with data-bind attribute
   const boundElements = container.querySelectorAll("[data-bind]");
 
@@ -154,7 +154,7 @@ function setupDataBinding(container: HTMLElement, metadata: CjkMetadata): void {
       return;
     }
 
-    const fieldName = keys[0] as CjkFieldName;
+    const fieldName = keys[0] as CneFieldName;
     const variant = keys[1] as FieldVariant;
 
     // Set initial value from metadata model
@@ -187,9 +187,9 @@ function setupDataBinding(container: HTMLElement, metadata: CjkMetadata): void {
  * Delays saving until user stops typing for 500ms
  * This prevents excessive saves while maintaining real-time feel
  *
- * @param metadata - CjkMetadata instance to save
+ * @param metadata - CneMetadata instance to save
  */
-function debouncedSave(metadata: CjkMetadata): void {
+function debouncedSave(metadata: CneMetadata): void {
   // Clear existing timer
   if (saveDebounceTimer !== undefined) {
     clearTimeout(saveDebounceTimer);
@@ -199,9 +199,9 @@ function debouncedSave(metadata: CjkMetadata): void {
   saveDebounceTimer = setTimeout(async () => {
     try {
       await metadata.save();
-      ztoolkit.log("CJK metadata auto-saved successfully");
+      ztoolkit.log("non-English metadata auto-saved successfully");
     } catch (error) {
-      ztoolkit.log("Error auto-saving CJK metadata:", error);
+      ztoolkit.log("Error auto-saving non-English metadata:", error);
     }
   }, 500) as unknown as number; // 500ms debounce delay
 }
@@ -210,9 +210,9 @@ function debouncedSave(metadata: CjkMetadata): void {
  * Update the live preview display with current metadata state
  *
  * @param container - Container element
- * @param metadata - CjkMetadata instance
+ * @param metadata - CneMetadata instance
  */
-function updateLivePreview(container: HTMLElement, metadata: CjkMetadata): void {
+function updateLivePreview(container: HTMLElement, metadata: CneMetadata): void {
   const previewElement = container.querySelector("#cjk-data-preview");
   if (previewElement) {
     previewElement.innerHTML = JSON.stringify(metadata.toJSON(), null, 2);
@@ -223,9 +223,9 @@ function updateLivePreview(container: HTMLElement, metadata: CjkMetadata): void 
  * Update the field counter display
  *
  * @param container - Container element
- * @param metadata - CjkMetadata instance
+ * @param metadata - CneMetadata instance
  */
-function updateFieldCounter(container: HTMLElement, metadata: CjkMetadata): void {
+function updateFieldCounter(container: HTMLElement, metadata: CneMetadata): void {
   const counterElement = container.querySelector("#cjk-field-counter");
   if (counterElement) {
     const count = metadata.getFilledFieldCount();
@@ -238,10 +238,10 @@ function updateFieldCounter(container: HTMLElement, metadata: CjkMetadata): void
  * Set up clear buttons for all input fields
  *
  * @param container - Container element
- * @param metadata - CjkMetadata instance
+ * @param metadata - CneMetadata instance
  */
-function setupClearButtons(container: HTMLElement, metadata: CjkMetadata): void {
-  const clearButtons = container.querySelectorAll(".citecjk-clear-button");
+function setupClearButtons(container: HTMLElement, metadata: CneMetadata): void {
+  const clearButtons = container.querySelectorAll(".cne-clear-button");
 
   clearButtons.forEach((button: Element) => {
     button.addEventListener("click", () => {
@@ -259,7 +259,7 @@ function setupClearButtons(container: HTMLElement, metadata: CjkMetadata): void 
       const keys = bindKey.split(".");
       if (keys.length !== 2) return;
 
-      const fieldName = keys[0] as import("../types").CjkFieldName;
+      const fieldName = keys[0] as import("../types").CneFieldName;
       const variant = keys[1] as import("../types").FieldVariant;
 
       // Clear the input value

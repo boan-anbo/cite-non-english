@@ -245,18 +245,23 @@ export class UIExampleFactory {
       pluginID: addon.data.config.addonID,
       header: {
         l10nID: getLocaleID("item-section-example1-head-text"),
-        icon: "chrome://zotero/skin/16/universal/book.svg",
+        icon: `chrome://${addon.data.config.addonRef}/content/icons/cite-cjk-16.svg`,
       },
       sidenav: {
         l10nID: getLocaleID("item-section-example1-sidenav-tooltip"),
-        icon: "chrome://zotero/skin/20/universal/save.svg",
+        icon: `chrome://${addon.data.config.addonRef}/content/icons/cite-cjk-20.svg`,
       },
       onRender: ({ body, item, editable, tabType }) => {
-        body.textContent = JSON.stringify({
-          id: item?.id,
-          editable,
-          tabType,
-        });
+        body.innerHTML = `
+          <div style="padding: 10px;">
+            <p><strong>CJK Citation Manager</strong></p>
+            <p>Item ID: ${item.id}</p>
+            <p>Editable: ${editable}</p>
+            <p>Tab: ${tabType}</p>
+            <hr style="margin: 10px 0;">
+            <p style="color: #666; font-size: 0.9em;">CJK fields will be managed here.</p>
+          </div>
+        `;
       },
     });
   }

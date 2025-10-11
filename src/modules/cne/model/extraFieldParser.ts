@@ -1,14 +1,14 @@
 /**
- * Parser and serializer for CJK metadata in Zotero's Extra field
+ * Parser and serializer for non-English metadata in Zotero's Extra field
  *
- * Format: cite-cjk.{field}-{variant}: {value}
+ * Format: cne.{field}-{variant}: {value}
  * Example:
- *   cite-cjk.title-original: 日本仏教綜合研究
- *   cite-cjk.title-english: Japanese Buddhist Comprehensive Research
- *   cite-cjk.title-romanized: Nihon Bukkyō Sōgō Kenkyū
+ *   cne.title-original: 日本仏教綜合研究
+ *   cne.title-english: Japanese Buddhist Comprehensive Research
+ *   cne.title-romanized: Nihon Bukkyō Sōgō Kenkyū
  */
 
-import type { CjkFieldData, CjkMetadataData, FieldVariant } from "../types";
+import type { CneFieldData, CneMetadataData, FieldVariant } from "../types";
 import {
   NAMESPACE,
   FIELD_VARIANTS,
@@ -16,17 +16,17 @@ import {
 } from "../constants";
 
 /**
- * Regular expression to match CJK metadata lines in Extra field
- * Format: cite-cjk.fieldname-variant: value
+ * Regular expression to match CNE metadata lines in Extra field
+ * Format: cne.fieldname-variant: value
  */
-const CJK_FIELD_REGEX = new RegExp(
+const CNE_FIELD_REGEX = new RegExp(
   `^${NAMESPACE}\\.([a-z]+)-(${FIELD_VARIANTS.join("|")}): (.+)$`,
   "i",
 );
 
 /**
  * Regular expression to match original language metadata
- * Format: cite-cjk.original-language: ISO-code
+ * Format: cne.original-language: ISO-code
  */
 const LANGUAGE_FIELD_REGEX = new RegExp(
   `^${NAMESPACE}\\.${ORIGINAL_LANGUAGE_KEY}: (.+)$`,
@@ -34,12 +34,12 @@ const LANGUAGE_FIELD_REGEX = new RegExp(
 );
 
 /**
- * Parse Extra field content and extract CJK metadata
+ * Parse Extra field content and extract non-English metadata
  * @param extraContent - Raw content from item.getField('extra')
- * @returns Parsed CJK metadata structure
+ * @returns Parsed non-English metadata structure
  */
-export function parseExtraField(extraContent: string): CjkMetadataData {
-  const metadata: CjkMetadataData = {};
+export function parseExtraField(extraContent: string): CneMetadataData {
+  const metadata: CneMetadataData = {};
 
   if (!extraContent || extraContent.trim() === "") {
     return metadata;
@@ -50,20 +50,20 @@ export function parseExtraField(extraContent: string): CjkMetadataData {
   for (const line of lines) {
     const trimmedLine = line.trim();
 
-    // Try to match CJK field line
-    const fieldMatch = trimmedLine.match(CJK_FIELD_REGEX);
+    // Try to match non-English field line
+    const fieldMatch = trimmedLine.match(CNE_FIELD_REGEX);
     if (fieldMatch) {
       const fieldName = fieldMatch[1];
       const variant = fieldMatch[2] as FieldVariant;
       const value = fieldMatch[3].trim();
 
       // Initialize field data if it doesn't exist
-      if (!metadata[fieldName as keyof CjkMetadataData]) {
+      if (!metadata[fieldName as keyof CneMetadataData]) {
         (metadata as any)[fieldName] = {};
       }
 
       // Set the variant value
-      const fieldData = (metadata as any)[fieldName] as CjkFieldData;
+      const fieldData = (metadata as any)[fieldName] as CneFieldData;
       fieldData[variant] = value;
       continue;
     }
@@ -79,26 +79,26 @@ export function parseExtraField(extraContent: string): CjkMetadataData {
 }
 
 /**
- * Serialize CJK metadata back to Extra field format
- * Preserves existing non-CJK content in the Extra field
+ * Serialize non-English metadata back to Extra field format
+ * Preserves existing non-non-English content in the Extra field
  * @param extraContent - Existing Extra field content
- * @param metadata - CJK metadata to serialize
+ * @param metadata - non-English metadata to serialize
  * @returns Updated Extra field content
  */
 export function serializeToExtra(
   extraContent: string,
-  metadata: CjkMetadataData,
+  metadata: CneMetadataData,
 ): string {
-  // First, preserve all non-CJK lines from existing Extra content
+  // First, preserve all non-non-English lines from existing Extra content
   const preservedLines: string[] = [];
 
   if (extraContent && extraContent.trim() !== "") {
     const lines = extraContent.split("\n");
     for (const line of lines) {
       const trimmedLine = line.trim();
-      // Keep lines that don't match our CJK format
+      // Keep lines that don't match our non-English format
       if (
-        !trimmedLine.match(CJK_FIELD_REGEX) &&
+        !trimmedLine.match(CNE_FIELD_REGEX) &&
         !trimmedLine.match(LANGUAGE_FIELD_REGEX)
       ) {
         preservedLines.push(line);
@@ -106,7 +106,7 @@ export function serializeToExtra(
     }
   }
 
-  // Build CJK metadata lines
+  // Build non-English metadata lines
   const cjkLines: string[] = [];
 
   // Add original language if present
@@ -138,7 +138,7 @@ export function serializeToExtra(
     }
   }
 
-  // Combine preserved lines and CJK lines
+  // Combine preserved lines and non-English lines
   const allLines = [...preservedLines, ...cjkLines];
 
   // Filter out empty lines and join
@@ -146,11 +146,11 @@ export function serializeToExtra(
 }
 
 /**
- * Check if Extra field contains any CJK metadata
+ * Check if Extra field contains any non-English metadata
  * @param extraContent - Extra field content to check
- * @returns true if CJK metadata is present
+ * @returns true if non-English metadata is present
  */
-export function hasCjkMetadata(extraContent: string): boolean {
+export function hasCneMetadata(extraContent: string): boolean {
   if (!extraContent || extraContent.trim() === "") {
     return false;
   }
@@ -159,7 +159,7 @@ export function hasCjkMetadata(extraContent: string): boolean {
   for (const line of lines) {
     const trimmedLine = line.trim();
     if (
-      trimmedLine.match(CJK_FIELD_REGEX) ||
+      trimmedLine.match(CNE_FIELD_REGEX) ||
       trimmedLine.match(LANGUAGE_FIELD_REGEX)
     ) {
       return true;
