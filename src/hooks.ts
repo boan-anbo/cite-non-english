@@ -8,6 +8,7 @@ import {
 import { getString, initLocale } from "./utils/locale";
 import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
+import { registerCjkSection } from "./modules/cjk";
 
 async function onStartup() {
   await Promise.all([
@@ -30,7 +31,8 @@ async function onStartup() {
 
   UIExampleFactory.registerItemPaneCustomInfoRow();
 
-  UIExampleFactory.registerItemPaneSection();
+  // Register CJK citation section (replaces example section)
+  registerCjkSection();
 
   UIExampleFactory.registerReaderItemPaneSection();
 
