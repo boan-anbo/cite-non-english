@@ -28,6 +28,7 @@
     "lint:fix": "prettier --write . && eslint . --fix",
     "release": "zotero-plugin release",
     "test": "zotero-plugin test",
+    "test:csl": "mocha --import=tsx test/csl-tests/*.test.ts",
     "update-deps": "npm update --save"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "eslint": "^9.32.0",
     "mocha": "^11.7.1",
     "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2",
     "zotero-plugin-scaffold": "^0.8.0",
     "zotero-types": "^4.1.0-beta.1"
