@@ -34,13 +34,13 @@ Previously, this required [Juris-M](https://juris-m.github.io/) (a modified Zote
 
 ### Internal Data Model
 
-Cite CNE (Cite Non-English) maintains a canonical data model stored in Zotero's Extra field using the `cne.*` namespace:
+Cite CNE (Cite Non-English) maintains a canonical data model stored in Zotero's Extra field using the `cne-*` namespace (hyphenated format required for CSL compatibility):
 
 ```
-cne.title-original: 日本仏教綜合研究
-cne.title-english: Japanese Buddhist Comprehensive Research
-cne.title-romanized: Nihon Bukkyō Sōgō Kenkyū
-cne.original-language: ja-JP
+cne-title-original: 日本仏教綜合研究
+cne-title-english: Japanese Buddhist Comprehensive Research
+cne-title-romanized: Nihon Bukkyō Sōgō Kenkyū
+cne-original-language: ja-JP
 ```
 
 #### Field Naming Convention
@@ -97,8 +97,9 @@ tex.titleaddon-romanized: Nihon Bukkyō Sōgō Kenkyū
 
 ### Phase 1: Core Functionality
 - ✅ Project setup and infrastructure
+- ✅ CSL testing infrastructure with automated tests
 - [ ] Custom item pane section with UI for managing CNE (Cite Non-English) fields
-- [ ] Parse/generate Extra field with `cne.*` namespace
+- [ ] Parse/generate Extra field with `cne-*` namespace
 - [ ] Support for title, booktitle, author fields
 
 ### Phase 2: Better BibTeX Integration
@@ -212,6 +213,28 @@ npm run build
 ```
 
 The XPI file will be in `.scaffold/build/`.
+
+### CSL Style Testing
+
+Test custom CSL styles programmatically using the included citeproc-js-server:
+
+1. **First time setup**:
+   ```bash
+   cd tools/citeproc-js-server
+   npm install
+   ```
+
+2. **Start citeproc server** (in one terminal):
+   ```bash
+   cd tools/citeproc-js-server && npm start
+   ```
+
+3. **Run CSL tests** (in another terminal):
+   ```bash
+   npm run test:csl
+   ```
+
+See `test/csl-tests/README.md` for detailed testing guide.
 
 ## Maintaining Template Updates
 

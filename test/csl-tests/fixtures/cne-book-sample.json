@@ -1,0 +1,37 @@
+[
+  {
+    "id": "item1",
+    "type": "book",
+    "title": "Comprehensive Studies in Japanese Buddhism",
+    "cne-title-original": "日本仏教綜合研究",
+    "cne-title-romanized": "Nihon bukkyō sōgō kenkyū",
+    "cne-title-english": "Comprehensive Studies in Japanese Buddhism",
+    "author": [
+      {
+        "family": "Suzuki",
+        "given": "Daisetz Teitaro"
+      }
+    ],
+    "publisher": "Tokyo University Press",
+    "publisher-place": "Tokyo",
+    "issued": {
+      "date-parts": [[1965]]
+    }
+  },
+  {
+    "id": "item2",
+    "type": "book",
+    "title": "Regular English Book",
+    "author": [
+      {
+        "family": "Smith",
+        "given": "John"
+      }
+    ],
+    "publisher": "Oxford University Press",
+    "publisher-place": "Oxford",
+    "issued": {
+      "date-parts": [[2020]]
+    }
+  }
+]

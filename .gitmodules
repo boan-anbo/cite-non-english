@@ -1,0 +1,3 @@
+[submodule "tools/citeproc-js-server"]
+	path = tools/citeproc-js-server
+	url = https://github.com/zotero/citeproc-js-server.git
