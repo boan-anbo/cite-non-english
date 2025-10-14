@@ -4,24 +4,35 @@ Automated testing for our custom Chicago style with CNE (Cite Non-English) field
 
 ## Setup
 
-The tests use Zotero's official `citeproc-js-server` to process citations programmatically.
+The tests use Zotero's official `citeproc-js-server` (included as git submodule) to process citations programmatically.
 
 ### First Time Setup
 
-1. **Server is already cloned** at `tools/citeproc-js-server/`
-2. **Dependencies already installed**
-3. **Our custom CSL style is already copied** to the server
+After cloning the repository, initialize the submodule and install dependencies:
+
+```bash
+# Initialize git submodules (including nested CSL styles & locales)
+git submodule update --init --recursive
+
+# Install citeproc-js-server dependencies
+cd tools/citeproc-js-server
+npm install
+
+# Copy our custom test style to the server
+cd ../..
+cp styles/modified/chicago-notes-bibliography-cne-test.csl tools/citeproc-js-server/csl/
+```
 
 ### Start the Server
 
-Before running tests, start the citeproc server:
+Before running tests, start the citeproc server in a separate terminal:
 
 ```bash
 cd tools/citeproc-js-server
 npm start
 ```
 
-The server runs at `http://127.0.0.1:8085`
+The server runs at `http://127.0.0.1:8085` and will automatically reload styles when files change.
 
 ## Running Tests
 
@@ -91,11 +102,21 @@ Example item with CNE fields:
 
 ## What We're Testing
 
-- ✅ `cne-title-original` field works in CSL
+- ✅ `cne-title-original` field works in CSL (hyphenated format)
 - ✅ Shows original script (日本仏教綜合研究)
 - ✅ Regular items without CNE fields work normally
 - ✅ Multiple item types (book, article) supported
 - ✅ Full bibliography generation
+
+### Important: Variable Name Format
+
+**CSL requires hyphenated variable names**, not dotted:
+- ✅ **Works**: `cne-title-original: 日本仏教綜合研究`
+- ❌ **Doesn't work**: `cne.title-original: 日本仏教綜合研究`
+
+This applies to both:
+- Extra field format in Zotero
+- Variable references in CSL styles (`<text variable="cne-title-original"/>`)
 
 ## Example Output
 
@@ -123,15 +144,27 @@ it("should test something new", async function () {
 
 ## Troubleshooting
 
+**`tools/citeproc-js-server` directory is empty?**
+- The submodule wasn't initialized. Run:
+  ```bash
+  git submodule update --init --recursive
+  cd tools/citeproc-js-server && npm install
+  ```
+
 **Server not responding?**
 - Check it's running: `curl http://127.0.0.1:8085`
 - Restart: Ctrl+C in server terminal, then `npm start`
+- Check if port 8085 is already in use: `lsof -i :8085`
 
 **Style changes not reflecting?**
 - Make sure you copied the updated CSL to `tools/citeproc-js-server/csl/`
-- Restart the server to reload styles
+- Restart the server to reload styles (Ctrl+C, then `npm start`)
 
 **Test failures?**
 - Check the console output - it shows actual citation format
 - Compare with what you expected
 - Adjust assertions or fix the CSL style
+
+**Git submodule issues?**
+- Update submodules: `git submodule update --remote`
+- Reset submodule: `git submodule deinit -f tools/citeproc-js-server && git submodule update --init --recursive`
