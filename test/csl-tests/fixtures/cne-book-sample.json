@@ -2,20 +2,21 @@
   {
     "id": "item1",
     "type": "book",
-    "title": "Comprehensive Studies in Japanese Buddhism",
-    "cne-title-original": "日本仏教綜合研究",
-    "cne-title-romanized": "Nihon bukkyō sōgō kenkyū",
-    "cne-title-english": "Comprehensive Studies in Japanese Buddhism",
+    "title": "黃金年代",
+    "cne-title-original": "黃金年代",
+    "cne-title-romanized": "Huangjin niandai",
+    "cne-title-romanized-short": "Huangjin",
+    "cne-title-english": "Golden Time",
     "author": [
       {
-        "family": "Suzuki",
-        "given": "Daisetz Teitaro"
+        "family": "王",
+        "given": "小波"
       }
     ],
-    "publisher": "Tokyo University Press",
-    "publisher-place": "Tokyo",
+    "edition": "Er ban",
+    "publisher": "聯經出版事業股份有限公司",
     "issued": {
-      "date-parts": [[1965]]
+      "date-parts": [[2023]]
     }
   },
   {

@@ -20,7 +20,7 @@ describe("CSL Style Tests - CNE Fields via Server", function () {
 
   async function getCitation(
     items: any[],
-    style: string = "chicago-notes-bibliography-cne-test",
+    style: string = "chicago-notes-bibliography-cne",
     format: string = "html",
   ): Promise<string> {
     const url = `${CITEPROC_SERVER_URL}?responseformat=${format}&style=${style}`;

@@ -21,6 +21,60 @@
       preference="input"
     ></html:input>
   </hbox>
+  <groupbox style="margin-top: 10px">
+    <label value="Quick Language Buttons" style="font-weight: bold" />
+    <html:textarea
+      id="zotero-prefpane-__addonRef__-quickLanguages"
+      preference="quickLanguages"
+      rows="2"
+      style="width: 100%; font-family: monospace; margin-top: 8px"
+      placeholder="zh-CN, zh-TW, ja-JP, ko-KR, ..."
+    ></html:textarea>
+    <description style="margin-top: 5px" data-l10n-id="pref-quick-languages-help">
+      Enter language codes separated by commas (e.g., zh-CN, zh-TW, ja-JP)
+    </description>
+  </groupbox>
+  <groupbox style="margin-top: 10px">
+    <label value="Hard-coded Title Enrichment (Experimental)" style="font-weight: bold" />
+    <checkbox
+      id="zotero-prefpane-__addonRef__-enableHardcodedTitles"
+      preference="enableHardcodedTitles"
+      label="Enable hard-coded title formatting"
+    />
+    <description style="margin-top: 5px; color: #d97706">
+      ⚠️ Only enable if NOT using CNE-enhanced CSL styles. May conflict with specialized styles.
+    </description>
+    <hbox style="margin-top: 8px; align-items: center">
+      <label value="Preset:" style="margin-right: 8px" />
+      <menulist
+        id="zotero-prefpane-__addonRef__-hardcodedTitleStyle"
+        preference="hardcodedTitleStyle"
+        style="min-width: 200px"
+      >
+        <menupopup id="zotero-prefpane-__addonRef__-hardcodedTitleStyle-popup">
+          <!-- Dynamically populated from preferences -->
+        </menupopup>
+      </menulist>
+      <button
+        id="zotero-prefpane-__addonRef__-addPreset"
+        label="Add..."
+        style="margin-left: 8px"
+      />
+      <button
+        id="zotero-prefpane-__addonRef__-editPreset"
+        label="Edit..."
+        style="margin-left: 4px"
+      />
+      <button
+        id="zotero-prefpane-__addonRef__-deletePreset"
+        label="Delete"
+        style="margin-left: 4px"
+      />
+    </hbox>
+    <description style="margin-top: 5px; font-size: 11px">
+      Configure custom title formatting presets. Default presets: Chicago, MLA, APA.
+    </description>
+  </groupbox>
   <hbox class="virtualized-table-container" flex="1" height="300px">
     <html:div id="__addonRef__-table-container" />
   </hbox>

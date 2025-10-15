@@ -8,7 +8,13 @@ import {
 import { getString, initLocale } from "./utils/locale";
 import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
-import { registerCneSection } from "./modules/cne";
+import {
+  registerCneSection,
+  registerCreatorColumn,
+  CneUIFactory,
+  CnePreviewFactory,
+  initializeCNEInterceptors,
+} from "./modules/cne";
 
 async function onStartup() {
   await Promise.all([
@@ -19,6 +25,9 @@ async function onStartup() {
 
   initLocale();
 
+  // Initialize CNE interceptors for itemToCSLJSON
+  initializeCNEInterceptors();
+
   BasicExampleFactory.registerPrefs();
 
   BasicExampleFactory.registerNotifier();
@@ -28,6 +37,9 @@ async function onStartup() {
   await UIExampleFactory.registerExtraColumn();
 
   await UIExampleFactory.registerExtraColumnWithCustomCell();
+
+  // Register Creator (CNE) column for locale-aware name display
+  await registerCreatorColumn();
 
   UIExampleFactory.registerItemPaneCustomInfoRow();
 
@@ -78,6 +90,10 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
 
   UIExampleFactory.registerWindowMenuWithSeparator();
 
+  // Register CNE UI features
+  CneUIFactory.registerCSLExportMenuItem();
+  CnePreviewFactory.registerPreviewMenuItem();
+
   PromptExampleFactory.registerNormalCommandExample();
 
   PromptExampleFactory.registerAnonymousCommandExample(win);
@@ -103,6 +119,17 @@ async function onMainWindowUnload(win: Window): Promise<void> {
 function onShutdown(): void {
   ztoolkit.unregisterAll();
   addon.data.dialog?.window?.close();
+
+  // Clean up CNE interceptors to prevent stacking on reload
+  const { ItemToCSLJSONInterceptor } = require("./modules/cne/interceptors");
+  const { removeBibLaTeXIntegration } = require("./modules/cne/biblatex-export");
+
+  ItemToCSLJSONInterceptor.remove();
+  ItemToCSLJSONInterceptor.clearCallbacks();
+  removeBibLaTeXIntegration();
+
+  ztoolkit.log("[CNE] All interceptors cleaned up");
+
   // Remove addon object
   addon.data.alive = false;
   // @ts-expect-error - Plugin instance is not typed
@@ -177,6 +204,12 @@ function onDialogEvents(type: string) {
       break;
     case "vtableExample":
       HelperExampleFactory.vtableExample();
+      break;
+    case "cslJsonExport":
+      CneUIFactory.cslJsonExportDialog();
+      break;
+    case "cnePreview":
+      CnePreviewFactory.showPreviewDialog();
       break;
     default:
       break;

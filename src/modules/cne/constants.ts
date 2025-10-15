@@ -10,7 +10,7 @@ import type {
 
 /**
  * Namespace prefix for all Non-English fields in Extra
- * Fields will be stored as: cne.title-original, cne.title-english, etc.
+ * Fields will be stored as: cne-title-original, cne-title-romanized, cne-title-romanized-short, cne-title-english
  */
 export const NAMESPACE = "cne" as const;
 
@@ -19,8 +19,9 @@ export const NAMESPACE = "cne" as const;
  */
 export const FIELD_VARIANTS: readonly FieldVariant[] = [
   "original",
-  "english",
   "romanized",
+  "romanizedShort",
+  "english",
 ] as const;
 
 /**
@@ -31,31 +32,31 @@ export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
   {
     name: "title",
     label: "Title",
-    l10nKey: "citecjk-field-title",
+    l10nKey: "cne-field-title",
     description: "Article or book title",
   },
   {
     name: "booktitle",
     label: "Book/Container Title",
-    l10nKey: "citecjk-field-booktitle",
+    l10nKey: "cne-field-booktitle",
     description: "Container title for chapters or articles",
   },
   {
     name: "publisher",
     label: "Publisher",
-    l10nKey: "citecjk-field-publisher",
+    l10nKey: "cne-field-publisher",
     description: "Publisher name",
   },
   {
     name: "journal",
     label: "Journal",
-    l10nKey: "citecjk-field-journal",
+    l10nKey: "cne-field-journal",
     description: "Journal title",
   },
   {
     name: "series",
     label: "Series",
-    l10nKey: "citecjk-field-series",
+    l10nKey: "cne-field-series",
     description: "Series title",
   },
 ] as const;
@@ -67,27 +68,33 @@ export const VARIANT_LABELS: readonly VariantLabelConfig[] = [
   {
     variant: "original",
     label: "Original",
-    l10nKey: "citecjk-variant-original",
+    l10nKey: "cne-variant-original",
     placeholder: "汉字, 漢字, かな, 한글",
-  },
-  {
-    variant: "english",
-    label: "English",
-    l10nKey: "citecjk-variant-english",
-    placeholder: "English translation",
   },
   {
     variant: "romanized",
     label: "Romanized",
-    l10nKey: "citecjk-variant-romanized",
+    l10nKey: "cne-variant-romanized",
     placeholder: "Pinyin, Romaji, etc.",
+  },
+  {
+    variant: "romanizedShort",
+    label: "Romanized (Short)",
+    l10nKey: "cne-variant-romanized-short",
+    placeholder: "Short form for subsequent citations",
+  },
+  {
+    variant: "english",
+    label: "English",
+    l10nKey: "cne-variant-english",
+    placeholder: "English translation",
   },
 ] as const;
 
 /**
  * UI element ID prefix to avoid conflicts
  */
-export const UI_ID_PREFIX = "citecjk" as const;
+export const UI_ID_PREFIX = "cne" as const;
 
 /**
  * Extra field metadata key for original language
@@ -96,21 +103,21 @@ export const ORIGINAL_LANGUAGE_KEY = "original-language" as const;
 
 /**
  * Helper to create namespaced field key
- * @example getFieldKey('title', 'original') => 'cne.title-original'
+ * @example getFieldKey('title', 'english') => 'cne-title-english'
  */
 export function getFieldKey(
   fieldName: string,
   variant?: FieldVariant,
 ): string {
   if (variant) {
-    return `${NAMESPACE}.${fieldName}-${variant}`;
+    return `${NAMESPACE}-${fieldName}-${variant}`;
   }
-  return `${NAMESPACE}.${fieldName}`;
+  return `${NAMESPACE}-${fieldName}`;
 }
 
 /**
  * Helper to create UI element ID
- * @example getElementId('title', 'original') => 'citecjk-title-original'
+ * @example getElementId('title', 'romanized') => 'cne-title-romanized'
  */
 export function getElementId(
   fieldName: string,
@@ -124,7 +131,7 @@ export function getElementId(
 
 /**
  * Helper to get localization key for a field variant
- * @example getL10nKey('title', 'original') => 'citecjk-field-title-original'
+ * @example getL10nKey('title', 'romanized') => 'cne-field-title-romanized'
  */
 export function getL10nKey(fieldName: string, variant?: FieldVariant): string {
   if (variant) {

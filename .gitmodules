@@ -1,3 +1,9 @@
 [submodule "tools/citeproc-js-server"]
 	path = tools/citeproc-js-server
 	url = https://github.com/zotero/citeproc-js-server.git
+[submodule "reference/zotero"]
+	path = reference/zotero
+	url = https://github.com/zotero/zotero.git
+[submodule "reference/better-bibtex"]
+	path = reference/better-bibtex
+	url = https://github.com/retorquere/zotero-better-bibtex.git

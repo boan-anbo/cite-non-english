@@ -65,10 +65,10 @@ export function createLabel(
     },
     styles: {
       color: "#666",
-      textAlign: "right",
-      paddingRight: "8px",
+      textAlign: "left",
       fontSize: "13px",
       lineHeight: "1",
+      marginBottom: "2px",
     },
   };
 
@@ -130,14 +130,36 @@ export function createContainer(children: any[], styles?: any): any {
 }
 
 /**
- * Create a field section container with a title and CSS Grid two-column layout
+ * Create a field section container with a title and CSS Grid layout
  * Matches Zotero's native Info panel styling
  *
  * @param title - Section title
  * @param children - Child elements (should be alternating label/input pairs)
+ * @param columns - Number of label/input pairs per row (default: 1)
  * @returns Element configuration object
  */
-export function createFieldSection(title: string, children: any[]): any {
+export function createFieldSection(
+  title: string,
+  children: any[],
+  columns: number = 1,
+): any {
+  // Calculate grid template columns based on number of columns
+  // Each column is a label+input pair: 100px (label) + 1fr (input)
+  let gridTemplateColumns: string;
+  if (columns === 1) {
+    gridTemplateColumns = "100px 1fr";
+  } else if (columns === 2) {
+    gridTemplateColumns = "100px 1fr 100px 1fr";
+  } else {
+    // Fallback for other numbers
+    const parts: string[] = [];
+    for (let i = 0; i < columns; i++) {
+      parts.push("100px");
+      parts.push("1fr");
+    }
+    gridTemplateColumns = parts.join(" ");
+  }
+
   return {
     tag: "div",
     namespace: "html",
@@ -164,13 +186,69 @@ export function createFieldSection(title: string, children: any[]): any {
         classList: ["cne-field-grid"],
         styles: {
           display: "grid",
-          gridTemplateColumns: "100px 1fr",
+          gridTemplateColumns,
           gap: "2px 6px",
           alignItems: "center",
         },
         children,
       },
     ],
+  };
+}
+
+/**
+ * Create a multi-line label for form fields
+ * Shows two lines with the second line bolded (useful for variants like Original/Romanized)
+ *
+ * @param line1 - First line of label (e.g., "Last" or "First")
+ * @param line2 - Second line of label (e.g., "(Original)" or "(Romanized)")
+ * @param htmlFor - ID of the input this label is for
+ * @returns Element configuration object
+ */
+export function createMultiLineLabel(
+  line1: string,
+  line2: string,
+  htmlFor: string,
+): any {
+  return {
+    tag: "label",
+    namespace: "html",
+    attributes: {
+      for: htmlFor,
+    },
+    styles: {
+      color: "#666",
+      fontSize: "13px",
+      lineHeight: "1.3",
+      textAlign: "right",
+      paddingRight: "8px",
+    },
+    properties: {
+      innerHTML: `${line1}<br/><strong>${line2}</strong>`,
+    },
+  };
+}
+
+/**
+ * Create a clear button for input fields
+ * Shows "×" symbol and appears on hover
+ *
+ * @param inputId - ID of the input field to clear
+ * @returns Element configuration object
+ */
+export function createClearButton(inputId: string): any {
+  return {
+    tag: "button",
+    namespace: "html",
+    classList: ["cne-clear-button"],
+    attributes: {
+      type: "button",
+      title: "Clear",
+      "data-clear-for": inputId,
+    },
+    properties: {
+      innerHTML: "×",
+    },
   };
 }
 

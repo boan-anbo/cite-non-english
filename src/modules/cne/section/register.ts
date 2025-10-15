@@ -24,6 +24,7 @@ export function registerCneSection(): void {
         icon: `chrome://${addon.data.config.addonRef}/content/icons/cne-20.svg`,
       },
       onRender: renderCneSection,
+      // TODO: Add onItemChange handler after testing
     });
 
     ztoolkit.log("non-English section registered successfully");

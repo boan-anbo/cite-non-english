@@ -6,17 +6,16 @@
 import { CneMetadata } from "../model/CneMetadata";
 import { SUPPORTED_FIELDS } from "../constants";
 import { buildAllFieldGroups } from "../ui/fieldBuilder";
+import { buildAllAuthorFieldGroups } from "../ui/authorFieldBuilder";
 import {
   createSeparator,
   createLivePreview,
   createFieldCounter,
 } from "../ui/components";
-import type { CneFieldName, FieldVariant } from "../types";
-
-/**
- * Debounce timer for auto-save
- */
-let saveDebounceTimer: number | undefined;
+import { createLanguageSelector, createQuickLanguageButtons } from "../ui/languageSelector";
+import { getCneStyles } from "./styles";
+import { setupDataBinding, setupLanguageBinding } from "./binding";
+import { setupClearButtons } from "./handlers";
 
 /**
  * Render the non-English citation section
@@ -45,6 +44,9 @@ export function renderCneSection(renderProps: {
     // Build all field groups
     const fieldGroups = buildAllFieldGroups(SUPPORTED_FIELDS);
 
+    // Build author field groups
+    const authorFieldGroups = buildAllAuthorFieldGroups(item, metadata.data.authors);
+
     // Create main container
     const doc = body.ownerDocument!;
     const container = ztoolkit.UI.createElement(doc, "div", {
@@ -55,48 +57,27 @@ export function renderCneSection(renderProps: {
         fontSize: "13px",
       },
       children: [
-        // Style tag for hover effects
+        // Style tag for hover effects and component styles
         {
           tag: "style",
           namespace: "html",
           properties: {
-            innerHTML: `
-              .cne-field-grid input[type="text"]:hover {
-                border-color: #999 !important;
-              }
-              .cne-field-grid input[type="text"]:focus {
-                border-color: #0066cc !important;
-                outline: none;
-              }
-              .cne-input-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 4px;
-              }
-              .cne-clear-button {
-                background: transparent;
-                border: none;
-                color: #999;
-                cursor: pointer;
-                padding: 4px;
-                font-size: 16px;
-                line-height: 1;
-                opacity: 0;
-                transition: opacity 0.2s;
-              }
-              .cne-input-wrapper:hover .cne-clear-button {
-                opacity: 1;
-              }
-              .cne-clear-button:hover {
-                color: #666;
-              }
-            `,
+            innerHTML: getCneStyles(),
           },
         },
         // Field counter
         createFieldCounter(metadata),
 
-        // All field groups
+        // Language selector
+        createLanguageSelector(item, metadata),
+
+        // Quick language buttons
+        createQuickLanguageButtons(item, metadata),
+
+        // Author field groups (dynamic)
+        ...authorFieldGroups,
+
+        // Title/Publisher/etc field groups (static)
         ...fieldGroups,
 
         // Live preview
@@ -107,175 +88,35 @@ export function renderCneSection(renderProps: {
     // Append to body
     body.appendChild(container);
 
-    // Set up data binding
-    // The ztoolkit Dialog helper has built-in data binding support
-    // We need to manually bind for ItemPaneManager sections
+    // Set up all bindings and handlers
     setupDataBinding(body, metadata);
-
-    // Set up clear buttons
     setupClearButtons(body, metadata);
+    setupLanguageBinding(body, item, metadata);
 
   } catch (error) {
-    ztoolkit.log("Error rendering non-English section:", error);
-
-    // Show error message
-    body.innerHTML = `
-      <div style="padding: 20px; text-align: center; color: #d32f2f;">
-        <p>Error loading non-English citation fields.</p>
-        <p style="font-size: 12px; color: #666;">Check the console for details.</p>
-      </div>
-    `;
+    ztoolkit.log("[CNE] Error rendering non-English section:", error);
+    renderError(body, error);
   }
 }
 
 /**
- * Set up two-way data binding between form inputs and metadata model
- * Uses model methods to ensure type safety and reusable logic
- * Implements real-time auto-save with debouncing
+ * Render error message in the section
  *
- * @param container - Container element with input elements
- * @param metadata - CneMetadata instance to bind to
+ * @param body - Container element
+ * @param error - Error object or message
  */
-function setupDataBinding(container: HTMLElement, metadata: CneMetadata): void {
-  // Find all elements with data-bind attribute
-  const boundElements = container.querySelectorAll("[data-bind]");
+function renderError(body: HTMLElement, error: unknown): void {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorStack = error instanceof Error ? error.stack : "";
 
-  boundElements.forEach((element: Element) => {
-    const bindKey = element.getAttribute("data-bind");
-    const prop = element.getAttribute("data-prop") || "value";
-
-    if (!bindKey) return;
-
-    // Parse the bind key (e.g., "title.original" => ["title", "original"])
-    const keys = bindKey.split(".");
-
-    if (keys.length !== 2) {
-      ztoolkit.log(`Invalid bind key format: ${bindKey}`);
-      return;
-    }
-
-    const fieldName = keys[0] as CneFieldName;
-    const variant = keys[1] as FieldVariant;
-
-    // Set initial value from metadata model
-    const initialValue = metadata.getFieldVariant(fieldName, variant) || "";
-    (element as any)[prop] = initialValue;
-
-    // Listen for changes and update metadata using model methods
-    element.addEventListener("input", () => {
-      const newValue = (element as any)[prop];
-
-      // Update model
-      metadata.setFieldVariant(fieldName, variant, newValue);
-
-      // Update UI
-      updateLivePreview(container, metadata);
-      updateFieldCounter(container, metadata);
-
-      // Auto-save with debouncing
-      debouncedSave(metadata);
-
-      ztoolkit.log(`Data binding updated: ${bindKey} = ${newValue}`);
-    });
-
-    ztoolkit.log(`Data binding set up for: ${bindKey}`);
-  });
-}
-
-/**
- * Debounced save function
- * Delays saving until user stops typing for 500ms
- * This prevents excessive saves while maintaining real-time feel
- *
- * @param metadata - CneMetadata instance to save
- */
-function debouncedSave(metadata: CneMetadata): void {
-  // Clear existing timer
-  if (saveDebounceTimer !== undefined) {
-    clearTimeout(saveDebounceTimer);
-  }
-
-  // Set new timer
-  saveDebounceTimer = setTimeout(async () => {
-    try {
-      await metadata.save();
-      ztoolkit.log("non-English metadata auto-saved successfully");
-    } catch (error) {
-      ztoolkit.log("Error auto-saving non-English metadata:", error);
-    }
-  }, 500) as unknown as number; // 500ms debounce delay
-}
-
-/**
- * Update the live preview display with current metadata state
- *
- * @param container - Container element
- * @param metadata - CneMetadata instance
- */
-function updateLivePreview(container: HTMLElement, metadata: CneMetadata): void {
-  const previewElement = container.querySelector("#cjk-data-preview");
-  if (previewElement) {
-    previewElement.innerHTML = JSON.stringify(metadata.toJSON(), null, 2);
-  }
-}
-
-/**
- * Update the field counter display
- *
- * @param container - Container element
- * @param metadata - CneMetadata instance
- */
-function updateFieldCounter(container: HTMLElement, metadata: CneMetadata): void {
-  const counterElement = container.querySelector("#cjk-field-counter");
-  if (counterElement) {
-    const count = metadata.getFilledFieldCount();
-    const total = 5; // Total supported fields
-    counterElement.innerHTML = `${count} of ${total} fields have data`;
-  }
-}
-
-/**
- * Set up clear buttons for all input fields
- *
- * @param container - Container element
- * @param metadata - CneMetadata instance
- */
-function setupClearButtons(container: HTMLElement, metadata: CneMetadata): void {
-  const clearButtons = container.querySelectorAll(".cne-clear-button");
-
-  clearButtons.forEach((button: Element) => {
-    button.addEventListener("click", () => {
-      const inputId = button.getAttribute("data-clear-for");
-      if (!inputId) return;
-
-      const input = container.querySelector(`#${inputId}`) as HTMLInputElement;
-      if (!input) return;
-
-      // Get the bind key from the input
-      const bindKey = input.getAttribute("data-bind");
-      if (!bindKey) return;
-
-      // Parse bind key to get field and variant
-      const keys = bindKey.split(".");
-      if (keys.length !== 2) return;
-
-      const fieldName = keys[0] as import("../types").CneFieldName;
-      const variant = keys[1] as import("../types").FieldVariant;
-
-      // Clear the input value
-      input.value = "";
-
-      // Directly update the model
-      metadata.setFieldVariant(fieldName, variant, "");
-
-      // Update UI
-      updateLivePreview(container, metadata);
-      updateFieldCounter(container, metadata);
-
-      // Trigger auto-save
-      debouncedSave(metadata);
-
-      ztoolkit.log(`Cleared field: ${bindKey}`);
-    });
-  });
+  body.innerHTML = `
+    <div style="padding: 20px; color: #d32f2f; font-family: monospace; font-size: 11px;">
+      <p style="font-weight: bold; font-size: 13px;">Error loading non-English citation fields</p>
+      <p style="margin-top: 8px; color: #666;">${errorMessage}</p>
+      <details style="margin-top: 8px; font-size: 10px;">
+        <summary style="cursor: pointer; color: #999;">Stack trace</summary>
+        <pre style="margin-top: 4px; overflow-x: auto; color: #999;">${errorStack}</pre>
+      </details>
+    </div>
+  `;
 }
