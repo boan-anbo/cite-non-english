@@ -5,10 +5,11 @@
 /**
  * Field variant types for non-English fields
  * - original: Original script (汉字, 漢字, かな, 한글, Cyrillic, etc.)
- * - english: English translation
  * - romanized: Romanization (Pinyin, Romaji, etc.)
+ * - romanizedShort: Optional short form for subsequent citations
+ * - english: English translation
  */
-export type FieldVariant = "original" | "english" | "romanized";
+export type FieldVariant = "original" | "romanized" | "romanizedShort" | "english";
 
 /**
  * Supported non-English field names
@@ -27,10 +28,32 @@ export type CneFieldName =
 export interface CneFieldData {
   /** Original script */
   original?: string;
-  /** English translation */
-  english?: string;
   /** Romanization */
   romanized?: string;
+  /** Optional short form for subsequent citations */
+  romanizedShort?: string;
+  /** English translation */
+  english?: string;
+}
+
+/**
+ * CNE data for a single author
+ * Stored with indexed fields in Extra (cne-author-0-*, cne-author-1-*, etc.)
+ *
+ * Philosophy: Allow users to store original script names in Zotero's native fields,
+ * while CNE manages both romanized and original forms for flexible citation handling.
+ */
+export interface CneAuthorData {
+  /** Family name in romanized form (Pinyin, Romaji, etc.) */
+  lastRomanized?: string;
+  /** Given name in romanized form */
+  firstRomanized?: string;
+  /** Family name in original script */
+  lastOriginal?: string;
+  /** Given name in original script */
+  firstOriginal?: string;
+  /** Add space between original names (for Japanese, etc.) */
+  optionsOriginalSpacing?: boolean;
 }
 
 /**
@@ -50,6 +73,8 @@ export interface CneMetadataData {
   series?: CneFieldData;
   /** ISO language code (e.g., zh-CN, ja-JP, ko-KR, ru-RU, ar-SA) */
   originalLanguage?: string;
+  /** Author names with CNE metadata (indexed by position) */
+  authors?: CneAuthorData[];
 }
 
 /**

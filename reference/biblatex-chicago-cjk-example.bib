@@ -1,0 +1,93 @@
+% BibLaTeX Chicago CJK Example
+% Source: biblatex-chicago documentation
+% Demonstrates how to format Chinese/Japanese/Korean entries
+
+@Article{hua:cms,
+  author     = {family=Hua, given=Linfu, cjk=\textzh{華林甫}},
+  title      = {Qingdai yilai Sanxia diqu shuihan zaihai de chubu
+               yanjiu},
+  titleaddon = {\textzh{清代以來三峽地區水旱災害的初步研究}},
+  options    = {ctitleaddon=space,ptitleaddon=space,nametemplates=cjk},
+  usere      = {A preliminary study of floods and droughts in the
+               Three Gorges region since the Qing dynasty},
+  journaltitle = {Zhongguo shehui kexue},
+  journaltitleaddon = {\textzh{中國社會科學}},
+  volume = 1,
+  date   = {1999},
+  pages  = {168--179},
+  annote =      {One of the Manual's examples of an entry containing
+                  non-Latin scripts as an aid for readers needing to
+                  follow the reference.  Here the Chinese characters
+                  from the original publication follow their romanized
+                  versions with no intervening punctuation.  The
+                  titleaddon field requires the two titleaddon options
+                  to eliminate that punctuation, while the new
+                  journaltitleaddon field uses the jtitleaddon option,
+                  which defaults to a space and is therefore
+                  unnecessary here.  The usere field, demonstrating
+                  one of its usual functions in biblatex-chicago,
+                  translates the title.  The author field shows how
+                  the new cmsnameparts option works, the addition of a
+                  "cjk" name part requiring that each part of the
+                  name, romanized or not, is identified as here.  The
+                  nametemplates option tells biblatex that it should
+                  present all names in the entry, including their
+                  romanized parts, in the conventional Chinese order
+                  rather than the usual western one.  The inclusion of
+                  the romanized version allows biblatex easily to
+                  alphabetize this entry among others that use only
+                  the Latin script.  (The \cmd{textzh} command here is
+                  just a convenience shorthand I've set up using babel
+                  commands in the preamble.  It tells babel to treat
+                  the text as Chinese, and means I don't need to load
+                  a more powerful and more complicated package just to
+                  typeset a few words.)}
+}
+
+% Field Mapping from CNE Metadata:
+%
+% CNE Extra Field                  → BibLaTeX Field
+% =====================================
+% cne-author-0-last-romanized      → author = {family=Hua
+% cne-author-0-first-romanized     →           given=Linfu
+% cne-author-0-last-original       →           cjk=\textzh{華
+% cne-author-0-first-original      →                      林甫}}
+%
+% cne-title-romanized              → title = {Qingdai yilai...}
+% cne-title-original               → titleaddon = {\textzh{清代以來...}}
+% cne-title-english                → usere = {A preliminary study...}
+%
+% cne-journal-romanized            → journaltitle = {Zhongguo shehui kexue}
+% cne-journal-original             → journaltitleaddon = {\textzh{中國社會科學}}
+%
+% Options:
+% - ctitleaddon=space              → No punctuation between title and titleaddon
+% - ptitleaddon=space              → Similar for parenthetical citations
+% - nametemplates=cjk              → Use Chinese name order
+
+% Additional Examples:
+
+@Book{hao:1998,
+  author     = {family=Hao, given=Chunwen, cjk=\textzh{郝春文}},
+  title      = {Tang houqi wudai Songchu Dunhuang sengni de shehui
+               shenghuo},
+  titleaddon = {\textzh{唐後期五代宋初敦煌僧尼的社會生活}},
+  options    = {ctitleaddon=space,nametemplates=cjk},
+  usere      = {The social existence of monks and nuns in Dunhuang
+               during the late Tang, Five Dynasties and early Song},
+  publisher  = {Zhongguo shehui kexue chubanshe},
+  location   = {Beijing},
+  date       = {1998},
+}
+
+@Book{abe:1983,
+  author     = {family=Abe, given=Yoshio, cjk=\textzh{阿部善雄} and
+                family=Kaneko, given=Hideo, cjk=\textzh{金子英生}},
+  title      = {Saigo no "Nihonjin" : Asakawa Kan'Ichi no shōgai},
+  titleaddon = {\textzh{最後の「日本人」: 朝河貫一の生涯}},
+  options    = {ctitleaddon=space,nametemplates=cjk},
+  usere      = {The last 'Japanese': Life of Kan'ichi Asakawa},
+  publisher  = {Iwanami Shoten},
+  location   = {Tōkyō},
+  date       = {1983},
+}

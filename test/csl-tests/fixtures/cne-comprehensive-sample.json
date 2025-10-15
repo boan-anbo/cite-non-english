@@ -1,0 +1,497 @@
+[
+  {
+    "id": "item1",
+    "type": "book",
+    "title": "Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo",
+    "publisher": "Zhongguo shehui kexue chubanshe",
+    "publisher-place": "Beijing",
+    "issued": {
+      "date-parts": [
+        [
+          1998
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Hao 郝春文",
+        "given": "Chunwen"
+      }
+    ],
+    "cne-title-original": "唐后期五代宋初敦煌僧尼的社会生活",
+    "cne-title-romanized": "Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo",
+    "cne-title-english": "The social existence of monks and nuns in Dunhuang during the late Tang, Five Dynasties and early Song",
+    "cne-publisher-original": "中国社会科学出版社",
+    "cne-publisher-romanized": "Zhongguo shehui kexue chubanshe"
+  },
+  {
+    "id": "item2",
+    "type": "book",
+    "title": "Saigo no \"Nihonjin\" : Asakawa Kan'Ichi no shōgai",
+    "publisher": "Iwanami Shoten",
+    "publisher-place": "Tōkyō",
+    "issued": {
+      "date-parts": [
+        [
+          1983
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Abe 阿部善雄",
+        "given": "Yoshio"
+      },
+      {
+        "family": "Kaneko 金子英生",
+        "given": "Hideo"
+      }
+    ],
+    "cne-title-original": "最後の「日本人」 : 朝河貫一の生涯",
+    "cne-title-romanized": "Saigo no \"Nihonjin\" : Asakawa Kan'Ichi no shōgai",
+    "cne-title-english": "The last 'Japanese': Life of Kan'ichi Asakawa"
+  },
+  {
+    "id": "item3",
+    "type": "book",
+    "title": "Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli",
+    "publisher": "Yŏrhwadang",
+    "publisher-place": "Seoul",
+    "issued": {
+      "date-parts": [
+        [
+          1990
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Kang",
+        "given": "U-bang"
+      }
+    ],
+    "cne-title-romanized": "Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli",
+    "cne-title-english": "Synthesis and harmony: Principle of the history of ancient Korean sculpture"
+  },
+  {
+    "id": "item4",
+    "type": "article-journal",
+    "title": "Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu",
+    "container-title": "Zhongguo shehui kexue",
+    "volume": "1",
+    "issued": {
+      "date-parts": [
+        [
+          1999
+        ]
+      ]
+    },
+    "page": "168-179",
+    "author": [
+      {
+        "family": "Hua 华林甫",
+        "given": "Linfu"
+      }
+    ],
+    "cne-title-original": "清代以来三峡地区水旱灾害的初步研究",
+    "cne-title-romanized": "Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu",
+    "cne-title-english": "A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty",
+    "cne-journal-original": "中国社会科学",
+    "cne-journal-romanized": "Zhongguo shehui kexue"
+  },
+  {
+    "id": "item5",
+    "type": "article-journal",
+    "title": "Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite",
+    "container-title": "Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō",
+    "volume": "23",
+    "issued": {
+      "date-parts": [
+        [
+          2013
+        ]
+      ]
+    },
+    "page": "1-22",
+    "author": [
+      {
+        "family": "Kondō 近藤成一",
+        "given": "Shigekazu"
+      }
+    ],
+    "cne-title-original": "イェール大学所蔵播磨国大部庄関係文書について",
+    "cne-title-romanized": "Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite",
+    "cne-title-english": "On Harima no Kuni Ōbe no Shō Kankei Monjo at Yale University Collection",
+    "cne-journal-original": "東京大学史料編纂所研究紀要",
+    "cne-journal-romanized": "Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō"
+  },
+  {
+    "id": "item6",
+    "type": "article-journal",
+    "title": "Kyŏnghŭng ŭi saengae e kwanhan chae koch'al",
+    "container-title": "Pulgyo hakpo",
+    "volume": "28",
+    "issue": "1",
+    "issued": {
+      "date-parts": [
+        [
+          1991
+        ]
+      ]
+    },
+    "page": "187-213",
+    "author": [
+      {
+        "family": "Han",
+        "given": "T'ae-sik"
+      }
+    ],
+    "cne-title-romanized": "Kyŏnghŭng ŭi saengae e kwanhan chae koch'al",
+    "cne-title-english": "Re-examination of the life of Kyŏnghŭng"
+  },
+  {
+    "id": "item7",
+    "type": "dataset",
+    "title": "Zhongguo jiben guji ku",
+    "publisher": "Beijing Airusheng shuzihua jishu yanjiu zhongxin",
+    "publisher-place": "Beijing",
+    "issued": {
+      "date-parts": [
+        [
+          2011
+        ]
+      ]
+    },
+    "URL": "http://server.wenzibase.com/dblist.jsp",
+    "author": [
+      {
+        "family": "Beijing Airusheng shuzihua jishu yanjiu zhongxin 北京爱如生数字化技术研究中心"
+      }
+    ],
+    "cne-title-original": "中国基本古籍库",
+    "cne-title-romanized": "Zhongguo jiben guji ku",
+    "cne-title-english": "Database of Chinese Classic Ancient Books"
+  },
+  {
+    "id": "item8",
+    "type": "motion_picture",
+    "title": "Ershisi cheng ji",
+    "publisher": "Cinema Guild",
+    "publisher-place": "New York",
+    "issued": {
+      "date-parts": [
+        [
+          2010
+        ]
+      ]
+    },
+    "director": [
+      {
+        "family": "Jia 贾樟柯",
+        "given": "Zhangke"
+      }
+    ],
+    "cne-title-original": "二十四城记",
+    "cne-title-romanized": "Ershisi cheng ji",
+    "cne-title-english": "24 City"
+  },
+  {
+    "id": "item9",
+    "type": "motion_picture",
+    "title": "Tokyo Story",
+    "publisher": "Criterion Collection",
+    "publisher-place": "USA",
+    "issued": {
+      "date-parts": [
+        [
+          1953
+        ]
+      ]
+    },
+    "note": "Original release: 1953",
+    "director": [
+      {
+        "family": "Ozu",
+        "given": "Yasujirō"
+      }
+    ]
+  },
+  {
+    "id": "item10",
+    "type": "motion_picture",
+    "title": "Parasite",
+    "publisher": "Universal Studios",
+    "publisher-place": "Universal City, CA",
+    "issued": {
+      "date-parts": [
+        [
+          2020
+        ]
+      ]
+    },
+    "director": [
+      {
+        "family": "Pong",
+        "given": "Chun-ho"
+      }
+    ]
+  },
+  {
+    "id": "item11",
+    "type": "motion_picture",
+    "title": "Tōkyō Monogatari",
+    "publisher": "Shōchiku",
+    "issued": {
+      "date-parts": [
+        [
+          1953
+        ]
+      ]
+    },
+    "director": [
+      {
+        "family": "Ozu 小津安二郎",
+        "given": "Yasujirō"
+      }
+    ],
+    "cne-title-original": "東京物語",
+    "cne-title-romanized": "Tōkyō Monogatari"
+  },
+  {
+    "id": "item12",
+    "type": "chapter",
+    "title": "Dunhuang yishu yongzhi gaikuang ji qianxi",
+    "container-title": "Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji",
+    "publisher": "Beijing tushuguan chubanshe",
+    "publisher-place": "Beijing",
+    "issued": {
+      "date-parts": [
+        [
+          2007
+        ]
+      ]
+    },
+    "page": "67-84",
+    "author": [
+      {
+        "family": "Du 杜伟生",
+        "given": "Weisheng"
+      }
+    ],
+    "container-author": [
+      {
+        "family": "Lin 林世田",
+        "given": "Shitian"
+      },
+      {
+        "family": "Morrison",
+        "given": "Alastair"
+      }
+    ],
+    "cne-title-original": "敦煌遗书用纸概况及浅析",
+    "cne-title-romanized": "Dunhuang yishu yongzhi gaikuang ji qianxi",
+    "cne-title-english": "An analysis and description of the use of paper in Dunhuang manuscripts",
+    "cne-booktitle-original": "融攝与创新: 国际敦煌项目第六次会议论文集",
+    "cne-booktitle-romanized": "Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji",
+    "cne-booktitle-english": "Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference"
+  },
+  {
+    "id": "item13",
+    "type": "chapter",
+    "title": "Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō",
+    "container-title": "Senryō suru me senryō suru koe : CIE/USIS eia to VOA rajio",
+    "publisher": "Tōkyō Daigaku Shuppan",
+    "publisher-place": "Tōkyō",
+    "issued": {
+      "date-parts": [
+        [
+          2012
+        ]
+      ]
+    },
+    "page": "291-315",
+    "author": [
+      {
+        "family": "Yoshimi",
+        "given": "Shun'ya"
+      }
+    ],
+    "container-author": [
+      {
+        "family": "Yoshimi",
+        "given": "Shun'ya"
+      },
+      {
+        "family": "Tsuchiya",
+        "given": "Yuka"
+      }
+    ],
+    "cne-title-original": "もう一つのメディアとしての博覧会: 原子力平和利用博の受容",
+    "cne-title-romanized": "Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō",
+    "cne-title-english": "Expo as another media: reception of Atoms for Peace",
+    "cne-booktitle-original": "占領する眼・占領する声: CIE/USIS映画とVOAラジオ",
+    "cne-booktitle-romanized": "Senryō suru me senryō suru koe : CIE/USIS eia to VOA rajio",
+    "cne-booktitle-english": "Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War"
+  },
+  {
+    "id": "item14",
+    "type": "chapter",
+    "title": "Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa",
+    "container-title": "Kogohak ŭl tonghae pon Kaya",
+    "publisher": "Han'guk Kogo Hakhoe",
+    "publisher-place": "Seoul",
+    "issued": {
+      "date-parts": [
+        [
+          2000
+        ]
+      ]
+    },
+    "page": "111-133",
+    "author": [
+      {
+        "family": "Ha",
+        "given": "In-su"
+      }
+    ],
+    "container-author": [
+      {
+        "family": "Han'guk Kogo Hakhoe"
+      }
+    ],
+    "cne-title-romanized": "Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa",
+    "cne-title-english": "Result of the excavation on the shell mounds in Tongsam-dong purification region",
+    "cne-booktitle-romanized": "Kogohak ŭl tonghae pon Kaya",
+    "cne-booktitle-english": "Kaya seen through archaeology"
+  },
+  {
+    "id": "item15",
+    "type": "article-newspaper",
+    "title": "Shiku kaogu kaipi Dunghuangxue yanjiu xinlingyu",
+    "container-title": "Zhongguo shehui kexuebao",
+    "issued": {
+      "date-parts": [
+        [
+          2014,
+          1,
+          8
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Sha",
+        "given": "Wutian"
+      }
+    ],
+    "cne-title-original": "石窟考古开辟敦煌学研究新领域",
+    "cne-title-romanized": "Shiku kaogu kaipi Dunghuangxue yanjiu xinlingyu",
+    "cne-title-english": "Cave archeology to open a new field for Dunhuang studies",
+    "cne-journal-original": "中国社会科学报",
+    "cne-journal-romanized": "Zhongguo shehui kexuebao"
+  },
+  {
+    "id": "item16",
+    "type": "article-newspaper",
+    "title": "Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan",
+    "container-title": "Chosŏn Ilbo",
+    "issued": {
+      "date-parts": [
+        [
+          2008,
+          5,
+          8
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Chu",
+        "given": "Yong-jung"
+      }
+    ],
+    "cne-title-romanized": "Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan",
+    "cne-title-english": "Will suspend the import if mad cow disease attacks in the United States"
+  },
+  {
+    "id": "item17",
+    "type": "webpage",
+    "title": "Quanmian zhengque lijie shehuizhuyi xinnongcun jianshe",
+    "URL": "http://www.gov.cn/node_11140/2006-03/15/content_227640.htm",
+    "issued": {
+      "date-parts": [
+        [
+          2006,
+          3,
+          15
+        ]
+      ]
+    },
+    "accessed": {
+      "date-parts": [
+        [
+          2011,
+          8,
+          10
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "State Council"
+      }
+    ],
+    "cne-title-original": "全面正确理解社会主义新农村建设",
+    "cne-title-romanized": "Quanmian zhengque lijie shehuizhuyi xinnongcun jianshe",
+    "cne-title-english": "Fully and correctly understand the building of a new socialist countryside"
+  },
+  {
+    "id": "item18",
+    "type": "webpage",
+    "title": "DPJ Manifesto for the 2005 House of Representatives Election",
+    "URL": "http://www.dpj.or.jp/english/manifesto5/pdf/manifesto_05.pdf",
+    "issued": {
+      "date-parts": [
+        [
+          2005,
+          8,
+          30
+        ]
+      ]
+    },
+    "accessed": {
+      "date-parts": [
+        [
+          2010,
+          7,
+          7
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Democratic Party of Japan"
+      }
+    ]
+  },
+  {
+    "id": "item19",
+    "type": "webpage",
+    "title": "Current status of COVID-19",
+    "URL": "http://english.seoul.go.kr/?SSid=101_01",
+    "accessed": {
+      "date-parts": [
+        [
+          2020,
+          4,
+          21
+        ]
+      ]
+    },
+    "author": [
+      {
+        "family": "Seoul Metropolitan Government"
+      }
+    ]
+  }
+]

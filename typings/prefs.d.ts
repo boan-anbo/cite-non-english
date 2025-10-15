@@ -9,6 +9,10 @@ declare namespace _ZoteroTypes {
     PluginPrefsMap: {
       "enable": boolean;
       "input": string;
+      "quickLanguages": string;
+      "enableHardcodedTitles": boolean;
+      "hardcodedTitleStyle": string;
+      "hardcodedTitlePresets": string;
     };
   }
 }

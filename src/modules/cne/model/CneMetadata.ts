@@ -4,7 +4,7 @@
  */
 
 import type { CneMetadataData, CneFieldName, FieldVariant } from "../types";
-import { parseExtraField, serializeToExtra } from "./extraFieldParser";
+import { parseCNEMetadata, serializeToExtra } from "../metadata-parser";
 
 /**
  * CneMetadata class
@@ -39,7 +39,7 @@ export class CneMetadata {
   private load(): CneMetadataData {
     try {
       const extraContent = this.item.getField("extra") as string;
-      return parseExtraField(extraContent || "");
+      return parseCNEMetadata(extraContent || "");
     } catch (error) {
       ztoolkit.log("Error loading non-English metadata:", error);
       return {};
@@ -98,9 +98,19 @@ export class CneMetadata {
         // Check if any variant has a value
         if (
           fieldData.original ||
-          fieldData.english ||
-          fieldData.romanized
+          fieldData.romanized ||
+          fieldData.romanizedShort ||
+          fieldData.english
         ) {
+          return true;
+        }
+      }
+    }
+
+    // Check if any author has data
+    if (this.data.authors && this.data.authors.length > 0) {
+      for (const author of this.data.authors) {
+        if (author && (author.lastOriginal || author.firstOriginal)) {
           return true;
         }
       }
@@ -141,7 +151,7 @@ export class CneMetadata {
   /**
    * Get a specific field variant value
    * @param field - Field name (e.g., 'title')
-   * @param variant - Variant type ('original', 'english', 'romanized')
+   * @param variant - Variant type ('original', 'romanized', 'romanized-short', 'english')
    * @returns The field value or undefined
    */
   public getFieldVariant(
@@ -180,8 +190,9 @@ export class CneMetadata {
 
     return !!(
       fieldData.original ||
-      fieldData.english ||
-      fieldData.romanized
+      fieldData.romanized ||
+      fieldData.romanizedShort ||
+      fieldData.english
     );
   }
 
