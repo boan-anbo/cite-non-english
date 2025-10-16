@@ -23,84 +23,61 @@
  * See: reference/biblatex-chicago-cjk-example.bib for expected output
  */
 
-import { parseCNEMetadata, stripCneMetadata } from "./metadata-parser";
+import { parseCNEMetadata } from "./metadata-parser";
 import { mapCNEtoBibLaTeX, hasBibLaTeXData } from "./biblatex-mapper";
 import type { CneMetadataData, CneAuthorData } from "./types";
+import { createInterceptor, type Interceptor } from "./interceptors";
 
 /**
- * BibLaTeX Export Interceptor
- * Manages the interception lifecycle with proper cleanup
+ * BibLaTeX Export Interceptor instance
+ * Uses the reusable InterceptorFactory for future-proof parameter handling
  */
-class BibLaTeXExportInterceptor {
-  private static intercepted = false;
-  private static originalFunction: any = null;
+let biblatexInterceptor: Interceptor | null = null;
 
-  /**
-   * Initialize BibLaTeX export integration
-   *
-   * Sets up interception of itemToExportFormat to automatically inject
-   * CNE metadata into export items for Better BibTeX.
-   */
-  static intercept() {
-    if (this.intercepted) {
-      ztoolkit.log("[CNE] BibLaTeX export already intercepted");
-      return;
-    }
+/**
+ * Initialize BibLaTeX export integration
+ * Public API - creates and installs the interceptor using the factory
+ */
+export function initializeBibLaTeXIntegration() {
+  if (biblatexInterceptor) {
+    ztoolkit.log("[CNE] BibLaTeX interceptor already initialized");
+    return;
+  }
 
-    // Check if function is already wrapped (safety check for reload scenarios)
-    const currentFunction = Zotero.Utilities.Internal.itemToExportFormat as any;
-    if (currentFunction._cneBibLaTeXIntercepted) {
-      ztoolkit.log(
-        "[CNE] WARNING: itemToExportFormat already has CNE marker, skipping to prevent wrapper stacking",
-        "warning",
-      );
-      this.intercepted = true;
-      return;
-    }
+  // Create interceptor using the reusable factory
+  // This automatically handles rest parameters for future-proofing
+  biblatexInterceptor = createInterceptor({
+    targetPath: 'Zotero.Utilities.Internal.itemToExportFormat',
+    wrapperMarker: '_cneBibLaTeXIntercepted',
+    logPrefix: '[CNE BibLaTeX]',
 
-    ztoolkit.log("[CNE] Initializing BibLaTeX export integration");
-
-    // Save original function
-    this.originalFunction = Zotero.Utilities.Internal.itemToExportFormat;
-
-    // Create wrapper function
-    const interceptorWrapper = function (
-      this: any,
-      zoteroItem: any,
-      options?: any,
-    ) {
-      // Call original to get the export item
-      const item = BibLaTeXExportInterceptor.originalFunction.call(
-        this,
-        zoteroItem,
-        options,
-      );
-
+    // afterCall receives the export item and can modify it before returning
+    afterCall: (exportItem: any, zoteroItem: any, ...args: any[]) => {
       try {
         // Parse CNE metadata from Extra field
-        const extraContent = item.extra || "";
+        const extraContent = exportItem.extra || "";
         const cneMetadata = parseCNEMetadata(extraContent);
 
         // Skip if no CNE data
         if (!hasBibLaTeXData(cneMetadata)) {
-          return item;
+          return exportItem;
         }
 
         ztoolkit.log("[CNE] Enriching item for BibLaTeX export", {
-          itemID: item.itemID,
+          itemID: exportItem.itemID,
           hasTitle: !!cneMetadata.title,
           hasAuthors: !!cneMetadata.authors?.length,
         });
 
         // 1. Enrich authors with romanized names
-        enrichAuthorsForBibLaTeX(item, cneMetadata);
+        enrichAuthorsForBibLaTeX(exportItem, cneMetadata);
 
         // 2. Map CNE fields to BibLaTeX tex.* fields
         const biblatexFields = mapCNEtoBibLaTeX(cneMetadata);
 
         // 3. Inject biblatex.* fields into Extra
         if (Object.keys(biblatexFields).length > 0) {
-          item.extra = injectBibLaTeXFields(extraContent, biblatexFields);
+          exportItem.extra = injectBibLaTeXFields(extraContent, biblatexFields);
 
           ztoolkit.log("[CNE] Injected BibLaTeX fields:", {
             fields: Object.keys(biblatexFields),
@@ -111,40 +88,13 @@ class BibLaTeXExportInterceptor {
         // Return item unchanged on error - don't break export
       }
 
-      return item;
-    };
+      return exportItem;
+    },
+  });
 
-    // Mark wrapper to detect if we try to wrap it again
-    (interceptorWrapper as any)._cneBibLaTeXIntercepted = true;
-
-    // Replace with our enriched version
-    Zotero.Utilities.Internal.itemToExportFormat = interceptorWrapper;
-
-    this.intercepted = true;
-    ztoolkit.log("[CNE] BibLaTeX export integration initialized");
-  }
-
-  /**
-   * Remove the interceptor (for cleanup)
-   */
-  static remove() {
-    if (!this.intercepted || !this.originalFunction) {
-      ztoolkit.log("[CNE] BibLaTeX interceptor not active, nothing to remove");
-      return;
-    }
-
-    Zotero.Utilities.Internal.itemToExportFormat = this.originalFunction;
-    this.intercepted = false;
-    ztoolkit.log("[CNE] BibLaTeX export interceptor removed");
-  }
-}
-
-/**
- * Initialize BibLaTeX export integration
- * Public API - delegates to the interceptor class
- */
-export function initializeBibLaTeXIntegration() {
-  BibLaTeXExportInterceptor.intercept();
+  // Install the interceptor
+  biblatexInterceptor.install();
+  ztoolkit.log("[CNE] BibLaTeX export integration initialized");
 }
 
 /**
@@ -152,7 +102,14 @@ export function initializeBibLaTeXIntegration() {
  * Public API for cleanup
  */
 export function removeBibLaTeXIntegration() {
-  BibLaTeXExportInterceptor.remove();
+  if (!biblatexInterceptor) {
+    ztoolkit.log("[CNE] BibLaTeX interceptor not initialized, nothing to remove");
+    return;
+  }
+
+  biblatexInterceptor.remove();
+  biblatexInterceptor = null;
+  ztoolkit.log("[CNE] BibLaTeX export integration removed");
 }
 
 /**
@@ -187,8 +144,19 @@ function enrichAuthorsForBibLaTeX(item: any, metadata: CneMetadataData): void {
 /**
  * Inject BibLaTeX fields into Extra field content
  *
- * Strips CNE metadata lines and appends biblatex.* field lines to the remaining
- * Extra content. This prevents CNE metadata from appearing in the annotation field.
+ * Appends biblatex.* field lines to the Extra content while preserving all
+ * original content including CNE metadata fields.
+ *
+ * IMPORTANT USER PRECEDENCE:
+ * - If user has already provided biblatex.{field}= in Extra, we respect it
+ * - CNE-generated fields are only injected if user hasn't provided them
+ * - This allows users to override CNE's automatic values when needed
+ *
+ * IMPORTANT: We do NOT strip CNE metadata because:
+ * - CSL processing needs these fields (cne-title-romanized, cne-title-original, etc.)
+ * - Stripping them would break CSL styles that depend on these variables
+ * - BibTeX annotation will include them, but that's an acceptable tradeoff
+ *
  * Uses `=` delimiter to indicate raw LaTeX (no escaping needed).
  *
  * Format: biblatex.fieldname= raw_latex_value
@@ -199,36 +167,63 @@ function enrichAuthorsForBibLaTeX(item: any, metadata: CneMetadataData): void {
  * - Not escape the value (because of = delimiter)
  *
  * @param originalExtra - Original Extra field content
- * @param fields - BibLaTeX fields to inject
- * @returns Modified Extra field content
+ * @param fields - CNE-generated BibLaTeX fields to inject
+ * @returns Modified Extra field content with biblatex.* fields appended
  *
  * @example
- * Input:
+ * Input (no user fields):
  *   originalExtra = "OCLC: 123456\ncne-title-original: 清代以來..."
  *   fields = { titleaddon: "\\textzh{清代以來...}" }
- *
  * Output:
- *   "OCLC: 123456\nbiblatex.titleaddon= \\textzh{清代以來...}"
- *   (CNE metadata line is stripped to prevent annotation pollution)
+ *   "OCLC: 123456\ncne-title-original: 清代以來...\nbiblatex.titleaddon= \\textzh{清代以來...}"
+ *
+ * @example
+ * Input (user provided titleaddon):
+ *   originalExtra = "biblatex.titleaddon= My custom title\ncne-title-original: 清代以來..."
+ *   fields = { titleaddon: "\\textzh{清代以來...}", usere: "English translation" }
+ * Output:
+ *   "biblatex.titleaddon= My custom title\ncne-title-original: 清代以來...\nbiblatex.usere= English translation"
+ *   (User's titleaddon kept, CNE's usere added)
  */
 function injectBibLaTeXFields(
   originalExtra: string,
   fields: Record<string, string>,
 ): string {
-  const lines: string[] = [];
+  // Parse existing biblatex.* fields provided by user
+  const userBibLaTeXFields = new Set<string>();
+  const extraLines = originalExtra.split('\n');
 
-  // Strip CNE metadata lines, keep only non-CNE content (like OCLC, DOI, etc.)
-  // This prevents CNE lines from appearing in BibTeX annotation field
-  const cleanedExtra = stripCneMetadata(originalExtra);
-  if (cleanedExtra && cleanedExtra.trim() !== "") {
-    lines.push(cleanedExtra);
+  for (const line of extraLines) {
+    // Match biblatex.fieldname= or biblatex.fieldname: (both formats supported by BBT)
+    const match = line.match(/^biblatex\.([a-zA-Z]+)[=:]/);
+    if (match) {
+      userBibLaTeXFields.add(match[1]);
+    }
   }
 
-  // Add biblatex.* fields
+  const lines: string[] = [];
+
+  // Keep original Extra content (including CNE metadata and user's biblatex fields)
+  // This is important because:
+  // 1. CSL processing needs CNE fields (cne-title-romanized, etc.)
+  // 2. Stripping them here would break CSL styles that depend on these variables
+  // 3. BibTeX annotation field will include them, but that's acceptable
+  // 4. User's biblatex.* fields must be preserved (they take precedence)
+  if (originalExtra && originalExtra.trim() !== "") {
+    lines.push(originalExtra);
+  }
+
+  // Add CNE-generated biblatex.* fields only if user hasn't provided them
   for (const [fieldName, value] of Object.entries(fields)) {
-    // Use = delimiter for raw LaTeX (no escaping)
-    // biblatex. prefix tells Better BibTeX this is BibLaTeX-specific
-    lines.push(`biblatex.${fieldName}= ${value}`);
+    if (userBibLaTeXFields.has(fieldName)) {
+      ztoolkit.log(
+        `[CNE] User provided biblatex.${fieldName}, respecting user value (skipping CNE value)`,
+      );
+    } else {
+      // Use = delimiter for raw LaTeX (no escaping)
+      // biblatex. prefix tells Better BibTeX this is BibLaTeX-specific
+      lines.push(`biblatex.${fieldName}= ${value}`);
+    }
   }
 
   return lines.join("\n");

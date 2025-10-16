@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+src/style_variant_builder/__init__.py
+src/style_variant_builder/build.py
+src/style_variant_builder/prune.py
+src/style_variant_builder/tally_macros.py
+src/style_variant_builder.egg-info/PKG-INFO
+src/style_variant_builder.egg-info/SOURCES.txt
+src/style_variant_builder.egg-info/dependency_links.txt
+src/style_variant_builder.egg-info/entry_points.txt
+src/style_variant_builder.egg-info/requires.txt
+src/style_variant_builder.egg-info/top_level.txt

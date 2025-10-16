@@ -193,6 +193,110 @@ All references to:
 3. **Transparent**: Works behind the scenes
 4. **Compatible**: Doesn't interfere with CSL export
 5. **Maintainable**: Clean separation of concerns
+6. **User Control**: Respects user-provided biblatex fields (user values take precedence)
+7. **Configurable**: Easy to add/remove field mappings via adapter pattern
+
+## Adapter Pattern for Field Mapping
+
+### Overview
+
+The BibLaTeX field mapping uses an **explicit adapter configuration** pattern that makes it easy to control what CNE metadata gets exported to BibLaTeX.
+
+### Key Principle: Controlled Mapping
+
+**NOT** all CNE fields are exported to BibLaTeX. Only CNE fields that have meaningful BibLaTeX equivalents are mapped.
+
+- ✅ `title.original` → `titleaddon` (makes sense in BibLaTeX)
+- ✅ `title.english` → `usere` (makes sense in BibLaTeX)
+- ❌ `cne-title-romanized` → (CSL variable, NOT exported to BibLaTeX)
+
+### Configuration: `BIBLATEX_FIELD_MAPPINGS`
+
+Located in `src/modules/cne/biblatex-mapper.ts`:
+
+```typescript
+export const BIBLATEX_FIELD_MAPPINGS: BibLaTeXFieldMapping[] = [
+  {
+    description: "Original script title (Chinese/Japanese/Korean)",
+    cneFieldPath: "title.original",
+    biblatexField: "titleaddon",
+    formatter: (value) => `\\textzh{${value}}`,
+    enabled: true,
+    standard: true,
+  },
+  {
+    description: "English translation of title",
+    cneFieldPath: "title.english",
+    biblatexField: "usere",
+    formatter: (value) => value,
+    enabled: true,
+    standard: true,
+  },
+  // ... more mappings
+];
+```
+
+### Benefits of Adapter Pattern
+
+1. **Declarative**: All field mappings visible at a glance
+2. **Easy to extend**: Add new mapping = add one object to array
+3. **Easy to disable**: Set `enabled: false` to skip a field
+4. **Clear standard vs experimental**: `standard` flag marks well-supported fields
+5. **Custom formatters**: Each field can have its own formatting logic
+6. **Consistent**: Same config used by `mapCNEtoBibLaTeX()` and `hasBibLaTeXData()`
+
+### Adding a New Field Mapping
+
+```typescript
+{
+  description: "My new field",
+  cneFieldPath: "myfield.subfield",
+  biblatexField: "mybiblateXfield",
+  formatter: (value) => `\\textzh{${value}}`,
+  enabled: true,
+  standard: false, // mark as experimental if not well-supported
+}
+```
+
+## User Precedence
+
+### How It Works
+
+If a user provides their own `biblatex.*` field in the Extra field, CNE respects it:
+
+```
+User's Extra field:
+  biblatex.titleaddon= My custom title
+  cne-title-original: 清代以來三峽地區
+
+Result:
+  ✅ User's titleaddon is kept
+  ❌ CNE's titleaddon is NOT injected (skipped)
+```
+
+### Per-Field Precedence
+
+User precedence is checked **per field**, not all-or-nothing:
+
+```
+User's Extra field:
+  biblatex.titleaddon= My custom title
+  cne-title-original: 清代以來三峽地區
+  cne-title-english: A preliminary study
+
+Result:
+  ✅ biblatex.titleaddon= My custom title (user's value kept)
+  ✅ biblatex.usere= A preliminary study (CNE's value added)
+```
+
+### Implementation
+
+Located in `biblatex-export.ts`, `injectBibLaTeXFields()` function:
+
+1. Parse user's Extra field for existing `biblatex.*` fields
+2. Build a Set of field names user has provided
+3. Only inject CNE fields NOT in that set
+4. Log when user values take precedence
 
 ## Architecture
 
@@ -209,15 +313,23 @@ All references to:
          │  parseCNEMetadata()  │
          └──────────────────────┘
                     ↓
-         ┌──────────────────────┐
-         │  biblatex-mapper.ts  │
-         │  mapCNEtoBibLaTeX()  │
-         └──────────────────────┘
+         ┌──────────────────────────────────┐
+         │  biblatex-mapper.ts              │
+         │  ┌────────────────────────────┐  │
+         │  │ BIBLATEX_FIELD_MAPPINGS    │  │
+         │  │ (adapter configuration)    │  │
+         │  └────────────────────────────┘  │
+         │  mapCNEtoBibLaTeX()              │
+         └──────────────────────────────────┘
                     ↓
-         ┌──────────────────────┐
-         │    biblatex.ts       │
-         │ Intercept & Inject   │
-         └──────────────────────┘
+         ┌──────────────────────────────────┐
+         │    biblatex-export.ts            │
+         │  ┌────────────────────────────┐  │
+         │  │ injectBibLaTeXFields()     │  │
+         │  │ - Check user precedence    │  │
+         │  │ - Inject CNE fields        │  │
+         │  └────────────────────────────┘  │
+         └──────────────────────────────────┘
                     ↓
          ┌──────────────────────┐
          │   Better BibTeX      │

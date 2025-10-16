@@ -1,0 +1,20 @@
+[project]
+name = "style-variant-builder"
+version = "0.1.0"
+description = "Create Citation Style Language (CSL) style variants using a template."
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["lxml>=6.0.0"]
+
+[project.scripts]
+style-variant-builder = "style_variant_builder.build:main"
+
+[dependency-groups]
+dev = [
+    "lxml-stubs>=0.5.1",
+    "pytest>=8.4.2",
+    "pytest-github-actions-annotate-failures>=0.3.0",
+]
+
+[tool.uv]
+package = true

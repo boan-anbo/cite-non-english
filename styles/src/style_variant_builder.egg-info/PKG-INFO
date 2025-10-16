@@ -1,3 +1,11 @@
+Metadata-Version: 2.4
+Name: style-variant-builder
+Version: 0.1.0
+Summary: Create Citation Style Language (CSL) style variants using a template.
+Requires-Python: >=3.13
+Description-Content-Type: text/markdown
+Requires-Dist: lxml>=6.0.0
+
 # Citation Styles
 
 This directory contains CSL (Citation Style Language) styles enhanced with CNE (Cite Non-English) field support.
@@ -8,100 +16,10 @@ This directory contains CSL (Citation Style Language) styles enhanced with CNE (
 styles/
 ├── upstream/          # Pristine copies from the official CSL style repository
 │   └── chicago-notes-bibliography.csl
-├── templates/         # Base templates for variant building
-│   └── chicago-notes-bibliography-template.csl
-├── development/       # Working copies for making modifications
+├── cne/              # CNE-enhanced variants for production use
 │   └── chicago-notes-bibliography-cne.csl
-├── diffs/            # Diff files that record changes between template and variants
-│   └── chicago-notes-bibliography-cne.diff
-├── output/           # Generated final variants (with unused macros pruned)
-│   └── chicago-notes-bibliography/
-│       └── chicago-notes-bibliography-cne.csl
-├── cne/              # Production CNE-enhanced variants (copied from output/)
-│   └── chicago-notes-bibliography-cne.csl
-├── src/              # Python scripts for variant building
-├── Makefile          # Build automation
 └── README.md         # This file
 ```
-
-## Maintaining CNE Style Variants
-
-We use the [Style Variant Builder](https://github.com/citation-style-language/style-variant-builder) to maintain our CNE variants properly. This ensures our modifications are tracked cleanly and can be regenerated when the upstream Chicago style is updated.
-
-### Prerequisites
-
-- `uv` (Python package manager) - Install with: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-- `make` (usually pre-installed on Unix-like systems)
-- `patch` (usually pre-installed)
-
-### Workflow for Modifying CNE Variants
-
-When you need to modify the CNE variant:
-
-1. **Make changes in the development file**
-   ```bash
-   cd styles
-   # Edit development/chicago-notes-bibliography-cne.csl
-   ```
-
-2. **Generate diff file**
-   ```bash
-   make diffs
-   ```
-   This creates/updates `diffs/chicago-notes-bibliography-cne.diff` which records your changes.
-
-3. **Build final variant**
-   ```bash
-   make
-   ```
-   This generates the final style in `output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl` with:
-   - All your modifications applied
-   - Unused macros pruned
-   - Proper header comment added
-
-4. **Update production variant**
-   ```bash
-   cp output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl cne/
-   ```
-
-5. **Clean up** (optional)
-   ```bash
-   make clean  # Removes output/ and development/ directories
-   ```
-
-### Updating from Upstream Chicago Style
-
-When the official Chicago style is updated:
-
-1. **Download new upstream version**
-   ```bash
-   # Download from https://github.com/citation-style-language/styles
-   cp new-chicago-notes-bibliography.csl upstream/
-   ```
-
-2. **Update template**
-   ```bash
-   cp upstream/chicago-notes-bibliography.csl templates/chicago-notes-bibliography-template.csl
-   ```
-
-3. **Regenerate variants**
-   ```bash
-   make dev   # Applies diff to new template
-   make       # Builds final variant
-   ```
-
-4. **Test and update production**
-   ```bash
-   # Test the generated style
-   cp output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl cne/
-   ```
-
-### Benefits of This Approach
-
-- **Clean tracking**: The diff file shows exactly what CNE adds to Chicago
-- **Easy updates**: When Chicago style updates, reapply our diff to the new version
-- **No regressions**: Variant builder ensures all modifications are intentional
-- **Maintainable**: Small, focused diff files are easy to review and modify
 
 ## Using CNE Styles
 
