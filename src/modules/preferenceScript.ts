@@ -1,5 +1,4 @@
 import { config } from "../../package.json";
-import { getString } from "../utils/locale";
 import { getPref, setPref } from "../utils/prefs";
 import {
   getPresetNames,
@@ -7,6 +6,7 @@ import {
   deletePreset,
   getPreset,
   type TitlePreset,
+  type TitleVariant,
 } from "./cne/presets";
 
 export async function registerPrefsScripts(_window: Window) {
@@ -15,104 +15,13 @@ export async function registerPrefsScripts(_window: Window) {
   if (!addon.data.prefs) {
     addon.data.prefs = {
       window: _window,
-      columns: [
-        {
-          dataKey: "title",
-          label: getString("prefs-table-title"),
-          fixedWidth: true,
-          width: 100,
-        },
-        {
-          dataKey: "detail",
-          label: getString("prefs-table-detail"),
-        },
-      ],
-      rows: [
-        {
-          title: "Orange",
-          detail: "It's juicy",
-        },
-        {
-          title: "Banana",
-          detail: "It's sweet",
-        },
-        {
-          title: "Apple",
-          detail: "I mean the fruit APPLE",
-        },
-      ],
     };
   } else {
     addon.data.prefs.window = _window;
   }
-  updatePrefsUI();
   bindPrefEvents();
   populatePresetDropdown();
-}
-
-async function updatePrefsUI() {
-  // You can initialize some UI elements on prefs window
-  // with addon.data.prefs.window.document
-  // Or bind some events to the elements
-  const renderLock = ztoolkit.getGlobal("Zotero").Promise.defer();
-  if (addon.data.prefs?.window == undefined) return;
-  const tableHelper = new ztoolkit.VirtualizedTable(addon.data.prefs?.window)
-    .setContainerId(`${config.addonRef}-table-container`)
-    .setProp({
-      id: `${config.addonRef}-prefs-table`,
-      // Do not use setLocale, as it modifies the Zotero.Intl.strings
-      // Set locales directly to columns
-      columns: addon.data.prefs?.columns,
-      showHeader: true,
-      multiSelect: true,
-      staticColumns: true,
-      disableFontSizeScaling: true,
-    })
-    .setProp("getRowCount", () => addon.data.prefs?.rows.length || 0)
-    .setProp(
-      "getRowData",
-      (index) =>
-        addon.data.prefs?.rows[index] || {
-          title: "no data",
-          detail: "no data",
-        },
-    )
-    // Show a progress window when selection changes
-    .setProp("onSelectionChange", (selection) => {
-      new ztoolkit.ProgressWindow(config.addonName)
-        .createLine({
-          text: `Selected line: ${addon.data.prefs?.rows
-            .filter((v, i) => selection.isSelected(i))
-            .map((row) => row.title)
-            .join(",")}`,
-          progress: 100,
-        })
-        .show();
-    })
-    // When pressing delete, delete selected line and refresh table.
-    // Returning false to prevent default event.
-    .setProp("onKeyDown", (event: KeyboardEvent) => {
-      if (event.key == "Delete" || (Zotero.isMac && event.key == "Backspace")) {
-        addon.data.prefs!.rows =
-          addon.data.prefs?.rows.filter(
-            (v, i) => !tableHelper.treeInstance.selection.isSelected(i),
-          ) || [];
-        tableHelper.render();
-        return false;
-      }
-      return true;
-    })
-    // For find-as-you-type
-    .setProp(
-      "getRowString",
-      (index) => addon.data.prefs?.rows[index].title || "",
-    )
-    // Render the table.
-    .render(-1, () => {
-      renderLock.resolve();
-    });
-  await renderLock.promise;
-  ztoolkit.log("Preference table rendered!");
+  loadPresetToForm();
 }
 
 function bindPrefEvents() {
@@ -141,19 +50,10 @@ function bindPrefEvents() {
   // Bind preset management buttons
   addon.data
     .prefs!.window.document?.querySelector(
-      `#zotero-prefpane-${config.addonRef}-addPreset`,
+      `#zotero-prefpane-${config.addonRef}-savePreset`,
     )
     ?.addEventListener("command", () => {
-      showPresetDialog();
-    });
-
-  addon.data
-    .prefs!.window.document?.querySelector(
-      `#zotero-prefpane-${config.addonRef}-editPreset`,
-    )
-    ?.addEventListener("command", () => {
-      const currentPreset = getPref("hardcodedTitleStyle") as string;
-      showPresetDialog(currentPreset);
+      savePresetFromForm();
     });
 
   addon.data
@@ -162,6 +62,15 @@ function bindPrefEvents() {
     )
     ?.addEventListener("command", () => {
       deleteCurrentPreset();
+    });
+
+  // Load preset to form when selection changes
+  addon.data
+    .prefs!.window.document?.querySelector(
+      `#zotero-prefpane-${config.addonRef}-hardcodedTitleStyle`,
+    )
+    ?.addEventListener("command", () => {
+      loadPresetToForm();
     });
 }
 
@@ -199,69 +108,165 @@ function populatePresetDropdown() {
 }
 
 /**
- * Show dialog to add or edit a preset
+ * Load the selected preset into the form fields
  */
-function showPresetDialog(existingPresetName?: string) {
-  const isEdit = !!existingPresetName;
-  const preset = isEdit ? getPreset(existingPresetName) : null;
+function loadPresetToForm() {
+  const nameInput = addon.data.prefs!.window.document?.querySelector(
+    `#zotero-prefpane-${config.addonRef}-presetName`,
+  ) as HTMLInputElement;
 
-  // Get preset name
-  const name = addon.data.prefs!.window.prompt(
-    isEdit ? "Edit Preset Name:" : "New Preset Name:",
-    existingPresetName || ""
-  );
+  const configInput = addon.data.prefs!.window.document?.querySelector(
+    `#zotero-prefpane-${config.addonRef}-presetConfig`,
+  ) as HTMLInputElement;
 
-  if (!name || name.trim() === "") {
-    return; // User cancelled
+  if (!nameInput || !configInput) return;
+
+  const currentPresetName = getPref("hardcodedTitleStyle") as string;
+  const preset = getPreset(currentPresetName);
+
+  if (preset && currentPresetName) {
+    nameInput.value = currentPresetName;
+    configInput.value = presetToString(preset);
+  } else {
+    nameInput.value = "";
+    configInput.value = "";
+  }
+}
+
+/**
+ * Convert preset to string format
+ * Format: "r*, o, e" where r=romanized, o=original, e=english, * means should appear italic
+ * Note: Internal italicize flags are inverted (double-italics cancellation trick)
+ */
+function presetToString(preset: TitlePreset): string {
+  const shortNames: Record<TitleVariant, string> = {
+    romanized: "r",
+    original: "o",
+    english: "e",
+  };
+
+  return preset.order
+    .map((variant) => {
+      const short = shortNames[variant];
+      // Invert: if italicize=false, user wants it italic, so show *
+      // if italicize=true, user wants it normal (double-italics cancel), so no *
+      const showAsterisk = !preset.italicize[variant];
+      return showAsterisk ? `${short}*` : short;
+    })
+    .join(", ");
+}
+
+/**
+ * Parse preset string format
+ * Format: "r*, o, e" where r=romanized, o=original, e=english
+ * * means user wants this part to appear italic (final visual effect)
+ * Note: We invert the italicize flag internally for double-italics cancellation
+ */
+function parsePresetString(str: string): TitlePreset | null {
+  try {
+    const parts = str.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+
+    const order: TitleVariant[] = [];
+    const italicize = {
+      romanized: false,
+      original: false,
+      english: false,
+    };
+
+    // Map short names to full names (case-insensitive)
+    const shortToFull: Record<string, TitleVariant> = {
+      r: "romanized",
+      o: "original",
+      e: "english",
+      // Also support full names for backward compatibility
+      romanized: "romanized",
+      original: "original",
+      english: "english",
+    };
+
+    for (const part of parts) {
+      const hasAsterisk = part.endsWith("*");
+      const shortName = (hasAsterisk ? part.slice(0, -1) : part).toLowerCase();
+      const variant = shortToFull[shortName];
+
+      if (!variant) {
+        return null; // Invalid variant
+      }
+
+      order.push(variant);
+      // Invert: * means user wants italic → set italicize=false (no <i> tag)
+      // no * means user wants normal → set italicize=true (add <i> for cancellation)
+      italicize[variant] = !hasAsterisk;
+    }
+
+    return { order, italicize };
+  } catch (e) {
+    ztoolkit.log("[CNE] Error parsing preset string:", e);
+    return null;
+  }
+}
+
+/**
+ * Save preset from form fields
+ */
+function savePresetFromForm() {
+  const nameInput = addon.data.prefs!.window.document?.querySelector(
+    `#zotero-prefpane-${config.addonRef}-presetName`,
+  ) as HTMLInputElement;
+
+  const configInput = addon.data.prefs!.window.document?.querySelector(
+    `#zotero-prefpane-${config.addonRef}-presetConfig`,
+  ) as HTMLInputElement;
+
+  if (!nameInput || !configInput) return;
+
+  const name = nameInput.value.trim();
+  const configStr = configInput.value.trim();
+
+  if (!name) {
+    addon.data.prefs!.window.alert("Preset name cannot be empty!");
+    return;
   }
 
-  // Get order (comma-separated)
-  const defaultOrder = preset?.order.join(", ") || "romanized, original, english";
-  const orderStr = addon.data.prefs!.window.prompt(
-    "Title variant order (comma-separated):\nOptions: romanized, original, english",
-    defaultOrder
-  );
+  if (!configStr) {
+    addon.data.prefs!.window.alert("Configuration cannot be empty!");
+    return;
+  }
 
-  if (!orderStr) return;
+  // Parse configuration
+  const newPreset = parsePresetString(configStr);
 
-  // Parse order
-  const order = orderStr
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0) as ("romanized" | "original" | "english")[];
+  if (!newPreset) {
+    addon.data.prefs!.window.alert(
+      `Invalid configuration format!\n\n` +
+      `Expected format: r*, o, e\n` +
+      `Valid variants: r (romanized), o (original), e (english)\n` +
+      `Use * to mark variants that should appear italic`
+    );
+    return;
+  }
 
-  // Get italicize options
-  const italicizeRomanized = addon.data.prefs!.window.confirm(
-    "Italicize romanized variant?\n(Usually: No for Chicago/MLA/APA)"
-  );
-  const italicizeOriginal = addon.data.prefs!.window.confirm(
-    "Italicize original variant?\n(Usually: Yes for Chicago/MLA, No for APA)"
-  );
-  const italicizeEnglish = addon.data.prefs!.window.confirm(
-    "Italicize English translation?\n(Usually: Yes for Chicago/MLA, No for APA)"
-  );
+  // Check if we're renaming
+  const currentPresetName = getPref("hardcodedTitleStyle") as string;
+  const isRename = currentPresetName && currentPresetName !== name;
 
-  // Create preset
-  const newPreset: TitlePreset = {
-    order,
-    italicize: {
-      romanized: italicizeRomanized,
-      original: italicizeOriginal,
-      english: italicizeEnglish,
-    },
-  };
+  // If renaming, delete old preset
+  if (isRename) {
+    deletePreset(currentPresetName);
+  }
 
   // Save preset
   if (addOrUpdatePreset(name, newPreset)) {
-    addon.data.prefs!.window.alert(`Preset "${name}" ${isEdit ? "updated" : "added"} successfully!`);
+    ztoolkit.log(`[CNE] Saved preset: ${name} = ${presetToString(newPreset)}`);
     populatePresetDropdown();
 
-    // If new preset, select it
-    if (!isEdit) {
-      setPref("hardcodedTitleStyle", name);
-    }
+    // Select the preset
+    setPref("hardcodedTitleStyle", name);
+
+    // Reload form (will show the saved preset)
+    loadPresetToForm();
   } else {
-    addon.data.prefs!.window.alert(`Failed to ${isEdit ? "update" : "add"} preset "${name}".`);
+    addon.data.prefs!.window.alert(`Failed to save preset "${name}".`);
   }
 }
 
@@ -285,6 +290,7 @@ function deleteCurrentPreset() {
   if (deletePreset(currentPreset)) {
     addon.data.prefs!.window.alert(`Preset "${currentPreset}" deleted successfully!`);
     populatePresetDropdown();
+    loadPresetToForm();
   } else {
     addon.data.prefs!.window.alert(`Failed to delete preset "${currentPreset}".`);
   }

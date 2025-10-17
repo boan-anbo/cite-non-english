@@ -16,4 +16,8 @@ build
 logs
 
 # Development tools - ignore node_modules only
-tools/citeproc-js-server/node_modules/
+test-debug.txt
+
+# Test artifacts
+*.log
+test-*.md

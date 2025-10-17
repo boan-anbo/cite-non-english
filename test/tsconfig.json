@@ -1,3 +1,6 @@
 {
-  "extends": "../tsconfig.json"
+  "extends": "zotero-types/entries/sandbox/",
+  "compilerOptions": {
+    "types": ["zotero-types"]
+  }
 }
