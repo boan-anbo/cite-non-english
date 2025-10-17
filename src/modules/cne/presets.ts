@@ -196,11 +196,11 @@ export function getDefaultPresets(): TitlePresets {
       },
     },
     apa: {
-      order: ["romanized"], // APA doesn't include original script
+      order: ["romanized", "english"], // APA: romanized + English translation
       italicize: {
-        romanized: false,
+        romanized: true, // Set true to add <i> tag, cancels CSL italic to normal
         original: false,
-        english: false,
+        english: true, // English translation also normal (add <i> tag)
       },
     },
   };

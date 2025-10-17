@@ -145,7 +145,8 @@ function formatTitleField(fieldData: CneFieldData): string {
  */
 export function enrichTitleFields(zoteroItem: any, cslItem: any) {
   // Check if hard-coded title enrichment is enabled
-  if (!getPref("enableHardcodedTitles")) {
+  const isEnabled = getPref("enableHardcodedTitles");
+  if (!isEnabled) {
     return; // Feature disabled
   }
 

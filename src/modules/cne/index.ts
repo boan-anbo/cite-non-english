@@ -5,10 +5,9 @@
 
 import { ItemToCSLJSONInterceptor } from "./interceptors";
 import {
-  testAppendToNote,
   enrichAuthorNames,
   enrichTitleFields,
-  enrichTitleFieldsWithShortForm,
+  injectCSLVariables,
 } from "./callbacks";
 import { initializeBibLaTeXIntegration } from "./biblatex-export";
 
@@ -20,6 +19,12 @@ export function initializeCNEInterceptors() {
   // Install the itemToCSLJSON interceptor for CSL export (preview, Word, etc.)
   ItemToCSLJSONInterceptor.intercept();
 
+  // CRITICAL: Register CSL variable injection FIRST
+  // This works around Zotero's built-in Extra field parser bug where title fields
+  // are not parsed when they appear after author fields. Our robust parser handles
+  // any field ordering and directly injects CSL variables for the CSL style to use.
+  ItemToCSLJSONInterceptor.register(injectCSLVariables);
+
   // Register production callbacks for CSL export
   ItemToCSLJSONInterceptor.register(enrichAuthorNames);
 
@@ -27,12 +32,6 @@ export function initializeCNEInterceptors() {
   // This callback checks the enableHardcodedTitles preference internally
   // Uses preset-based configuration for flexible title formatting
   ItemToCSLJSONInterceptor.register(enrichTitleFields);
-
-  // Optional: Short form for subsequent citations
-  // ItemToCSLJSONInterceptor.register(enrichTitleFieldsWithShortForm);
-
-  // Register test callback (for demonstration - can be commented out in production)
-  // ItemToCSLJSONInterceptor.register(testAppendToNote);
 
   // Initialize BibLaTeX export integration
   // This intercepts itemToExportFormat for Better BibTeX compatibility
