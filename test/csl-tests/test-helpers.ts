@@ -53,15 +53,16 @@ export async function createZoteroItemFromTestCase(
 
   // Add creators
   if (fixture.creators && Array.isArray(fixture.creators)) {
-    for (const creator of fixture.creators) {
+    for (let i = 0; i < fixture.creators.length; i++) {
+      const creator = fixture.creators[i];
       item.setCreator(
-        0,
+        i,
         {
           firstName: creator.firstName || '',
           lastName: creator.lastName || '',
           creatorType: creator.creatorType
         },
-        0
+        i
       );
     }
   }
@@ -199,4 +200,146 @@ export async function saveSnapshot(relativePath: string, content: string): Promi
     console.error(`[saveSnapshot] Stack: ${error.stack}`);
     throw error;
   }
+}
+
+/**
+ * Extract identifiers from a test fixture for matching CSL entries
+ *
+ * Parses the Extra field to extract CNE metadata that can be used to
+ * uniquely identify entries in bibliography output.
+ *
+ * @param fixture - Test fixture data
+ * @returns Object with extracted identifiers
+ */
+export function extractFixtureIdentifiers(fixture: CNETestFixture): {
+  originalTitle?: string;
+  romanizedTitle?: string;
+  englishTitle?: string;
+  originalAuthor?: string;
+  romanizedAuthor?: string;
+  originalJournal?: string;
+  romanizedJournal?: string;
+} {
+  const identifiers: Record<string, string> = {};
+
+  // Parse Extra field for CNE metadata
+  if (fixture.extra) {
+    const lines = fixture.extra.split('\n');
+    for (const line of lines) {
+      const match = line.match(/^([^:]+):\s*(.+)$/);
+      if (match) {
+        const key = match[1].trim();
+        const value = match[2].trim();
+
+        // Map CNE fields to identifiers
+        if (key === 'cne-title-original') {
+          identifiers.originalTitle = value;
+        } else if (key === 'cne-title-romanized') {
+          identifiers.romanizedTitle = value;
+        } else if (key === 'cne-title-english') {
+          identifiers.englishTitle = value;
+        } else if (key === 'cne-author-0-last-original' || key === 'cne-director-0-last-original') {
+          identifiers.originalAuthor = value;
+        } else if (key === 'cne-author-0-last-romanized' || key === 'cne-director-0-last-romanized') {
+          identifiers.romanizedAuthor = value;
+        } else if (key === 'cne-journal-original') {
+          identifiers.originalJournal = value;
+        } else if (key === 'cne-journal-romanized') {
+          identifiers.romanizedJournal = value;
+        }
+      }
+    }
+  }
+
+  // Fall back to main fields if CNE metadata not present
+  if (!identifiers.originalTitle && fixture.title) {
+    identifiers.originalTitle = fixture.title;
+  }
+
+  return identifiers;
+}
+
+/**
+ * Extract a specific CSL entry from bibliography HTML
+ *
+ * Matches entries by finding unique identifiers (original title, romanized title,
+ * author names, journal names) in the text content. Uses a scoring system to handle
+ * entries with different field combinations.
+ *
+ * @param bibliography - Full bibliography HTML string
+ * @param fixture - Test fixture to extract entry for
+ * @returns Inner HTML of the matched CSL entry, or null if not found
+ */
+export function extractCslEntry(
+  bibliography: string,
+  fixture: CNETestFixture
+): string | null {
+  // Extract identifiers from fixture
+  const identifiers = extractFixtureIdentifiers(fixture);
+
+  // Parse HTML using DOMParser
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(bibliography, 'text/html');
+
+  // Get all CSL entry elements
+  const entries = doc.querySelectorAll('.csl-entry');
+
+  if (entries.length === 0) {
+    console.warn('[extractCslEntry] No .csl-entry elements found in bibliography');
+    return null;
+  }
+
+  // Score each entry based on identifier matches
+  let bestMatch: Element | null = null;
+  let bestScore = 0;
+
+  for (const entry of entries) {
+    const entryText = entry.textContent || '';
+    let score = 0;
+
+    // Original title is the strongest identifier (most unique)
+    if (identifiers.originalTitle && entryText.includes(identifiers.originalTitle)) {
+      score += 100;
+    }
+
+    // Romanized title is also very strong
+    if (identifiers.romanizedTitle && entryText.includes(identifiers.romanizedTitle)) {
+      score += 80;
+    }
+
+    // English title (in brackets)
+    if (identifiers.englishTitle && entryText.includes(identifiers.englishTitle)) {
+      score += 60;
+    }
+
+    // Journal titles
+    if (identifiers.originalJournal && entryText.includes(identifiers.originalJournal)) {
+      score += 40;
+    }
+    if (identifiers.romanizedJournal && entryText.includes(identifiers.romanizedJournal)) {
+      score += 40;
+    }
+
+    // Author names (weaker identifiers as they may be common)
+    if (identifiers.originalAuthor && entryText.includes(identifiers.originalAuthor)) {
+      score += 20;
+    }
+    if (identifiers.romanizedAuthor && entryText.includes(identifiers.romanizedAuthor)) {
+      score += 20;
+    }
+
+    // Update best match if this score is higher
+    if (score > bestScore) {
+      bestScore = score;
+      bestMatch = entry;
+    }
+  }
+
+  // Return inner HTML of best match (or null if no good match found)
+  if (bestMatch && bestScore > 0) {
+    return bestMatch.innerHTML;
+  }
+
+  console.warn('[extractCslEntry] No matching entry found for fixture', identifiers);
+  return null;
 }

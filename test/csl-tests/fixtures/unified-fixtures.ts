@@ -29,10 +29,10 @@ export const ALL_FIXTURES: Record<string, CNETestFixture> = {
       lastName: '郝',
       creatorType: 'author'
     }],
-    extra: `cne-author-0-last-original: 郝
-cne-author-0-first-original: 春文
-cne-author-0-last-romanized: Hao
-cne-author-0-first-romanized: Chunwen
+    extra: `cne-creator-0-last-original: 郝
+cne-creator-0-first-original: 春文
+cne-creator-0-last-romanized: Hao
+cne-creator-0-first-romanized: Chunwen
 cne-title-original: 唐后期五代宋初敦煌僧尼的社会生活
 cne-title-romanized: Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo
 cne-title-english: The social existence of monks and nuns in Dunhuang during the late Tang, Five Dynasties and early Song
@@ -53,10 +53,10 @@ cne-publisher-romanized: Zhongguo shehui kexue chubanshe`
       lastName: '华',
       creatorType: 'author'
     }],
-    extra: `cne-author-0-last-original: 华
-cne-author-0-first-original: 林甫
-cne-author-0-last-romanized: Hua
-cne-author-0-first-romanized: Linfu
+    extra: `cne-creator-0-last-original: 华
+cne-creator-0-first-original: 林甫
+cne-creator-0-last-romanized: Hua
+cne-creator-0-first-romanized: Linfu
 cne-title-original: 清代以来三峡地区水旱灾害的初步研究
 cne-title-romanized: Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu
 cne-title-english: A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty
@@ -76,8 +76,8 @@ cne-journal-romanized: Zhongguo shehui kexue`
       lastName: '北京爱如生数字化技术研究中心',
       creatorType: 'author'
     }],
-    extra: `cne-author-0-last-original: 北京爱如生数字化技术研究中心
-cne-author-0-last-romanized: Beijing Airusheng shuzihua jishu yanjiu zhongxin
+    extra: `cne-creator-0-last-original: 北京爱如生数字化技术研究中心
+cne-creator-0-last-romanized: Beijing Airusheng shuzihua jishu yanjiu zhongxin
 cne-title-original: 中国基本古籍库
 cne-title-romanized: Zhongguo jiben guji ku
 cne-title-english: Database of Chinese Classic Ancient Books`
@@ -95,10 +95,10 @@ cne-title-english: Database of Chinese Classic Ancient Books`
       lastName: '贾',
       creatorType: 'director'
     }],
-    extra: `cne-director-0-last-original: 贾
-cne-director-0-first-original: 樟柯
-cne-director-0-last-romanized: Jia
-cne-director-0-first-romanized: Zhangke
+    extra: `cne-creator-0-last-original: 贾
+cne-creator-0-first-original: 樟柯
+cne-creator-0-last-romanized: Jia
+cne-creator-0-first-romanized: Zhangke
 cne-title-original: 二十四城记
 cne-title-romanized: Ershisi cheng ji
 cne-title-english: 24 City`
@@ -113,21 +113,37 @@ cne-title-english: 24 City`
     date: '2007',
     pages: '67-84',
     language: 'zh-CN',
-    creators: [{
-      firstName: '伟生',
-      lastName: '杜',
-      creatorType: 'author'
-    }],
-    extra: `cne-author-0-last-original: 杜
-cne-author-0-first-original: 伟生
-cne-author-0-last-romanized: Du
-cne-author-0-first-romanized: Weisheng
+    creators: [
+      {
+        firstName: '伟生',
+        lastName: '杜',
+        creatorType: 'author'
+      },
+      {
+        firstName: 'Shitian',
+        lastName: 'Lin',
+        creatorType: 'editor'
+      },
+      {
+        firstName: 'Alastair',
+        lastName: 'Morrison',
+        creatorType: 'editor'
+      }
+    ],
+    extra: `cne-creator-0-last-original: 杜
+cne-creator-0-first-original: 伟生
+cne-creator-0-last-romanized: Du
+cne-creator-0-first-romanized: Weisheng
+cne-creator-1-last-original: 林
+cne-creator-1-first-original: 世田
+cne-creator-1-last-romanized: Lin
+cne-creator-1-first-romanized: Shitian
 cne-title-original: 敦煌遗书用纸概况及浅析
 cne-title-romanized: Dunhuang yishu yongzhi gaikuang ji qianxi
 cne-title-english: An analysis and description of the use of paper in Dunhuang manuscripts
-cne-booktitle-original: 融攝与创新: 国际敦煌项目第六次会议论文集
-cne-booktitle-romanized: Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji
-cne-booktitle-english: Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference
+cne-container-title-original: 融攝与创新: 国际敦煌项目第六次会议论文集
+cne-container-title-romanized: Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji
+cne-container-title-english: Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference
 cne-publisher-original: 北京图书馆出版社
 cne-publisher-romanized: Beijing tushuguan chubanshe`
   },
@@ -143,10 +159,10 @@ cne-publisher-romanized: Beijing tushuguan chubanshe`
       lastName: '沙',
       creatorType: 'author'
     }],
-    extra: `cne-author-0-last-original: 沙
-cne-author-0-first-original: 武田
-cne-author-0-last-romanized: Sha
-cne-author-0-first-romanized: Wutian
+    extra: `cne-creator-0-last-original: 沙
+cne-creator-0-first-original: 武田
+cne-creator-0-last-romanized: Sha
+cne-creator-0-first-romanized: Wutian
 cne-title-original: 石窟考古开辟敦煌学研究新领域
 cne-title-romanized: Shiku kaogu kaipi Dunghuangxue yanjiu xinlingyu
 cne-title-english: Cave archeology to open a new field for Dunhuang studies
@@ -177,14 +193,14 @@ cne-journal-romanized: Zhongguo shehui kexuebao`
         creatorType: 'author'
       }
     ],
-    extra: `cne-author-0-last-original: 阿部
-cne-author-0-first-original: 善雄
-cne-author-0-last-romanized: Abe
-cne-author-0-first-romanized: Yoshio
-cne-author-1-last-original: 金子
-cne-author-1-first-original: 英生
-cne-author-1-last-romanized: Kaneko
-cne-author-1-first-romanized: Hideo
+    extra: `cne-creator-0-last-original: 阿部
+cne-creator-0-first-original: 善雄
+cne-creator-0-last-romanized: Abe
+cne-creator-0-first-romanized: Yoshio
+cne-creator-1-last-original: 金子
+cne-creator-1-first-original: 英生
+cne-creator-1-last-romanized: Kaneko
+cne-creator-1-first-romanized: Hideo
 cne-title-original: 最後の「日本人」 : 朝河貫一の生涯
 cne-title-romanized: Saigo no "Nihonjin" : Asakawa Kan'Ichi no shōgai
 cne-title-english: The last 'Japanese': Life of Kan'ichi Asakawa`
@@ -203,10 +219,10 @@ cne-title-english: The last 'Japanese': Life of Kan'ichi Asakawa`
       lastName: '近藤',
       creatorType: 'author'
     }],
-    extra: `cne-author-0-last-original: 近藤
-cne-author-0-first-original: 成一
-cne-author-0-last-romanized: Kondō
-cne-author-0-first-romanized: Shigekazu
+    extra: `cne-creator-0-last-original: 近藤
+cne-creator-0-first-original: 成一
+cne-creator-0-last-romanized: Kondō
+cne-creator-0-first-romanized: Shigekazu
 cne-title-original: イェール大学所蔵播磨国大部庄関係文書について
 cne-title-romanized: Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite
 cne-title-english: On Harima no Kuni Ōbe no Shō Kankei Monjo at Yale University Collection
@@ -225,10 +241,10 @@ cne-journal-romanized: Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō`
       lastName: '小津',
       creatorType: 'director'
     }],
-    extra: `cne-director-0-last-original: 小津
-cne-director-0-first-original: 安二郎
-cne-director-0-last-romanized: Ozu
-cne-director-0-first-romanized: Yasujirō
+    extra: `cne-creator-0-last-original: 小津
+cne-creator-0-first-original: 安二郎
+cne-creator-0-last-romanized: Ozu
+cne-creator-0-first-romanized: Yasujirō
 cne-title-original: 東京物語
 cne-title-romanized: Tōkyō Monogatari`
   },

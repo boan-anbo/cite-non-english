@@ -7,3 +7,7 @@
 [submodule "reference/better-bibtex"]
 	path = reference/better-bibtex
 	url = https://github.com/retorquere/zotero-better-bibtex.git
+[submodule "reference/juris-m"]
+	path = reference/juris-m
+	url = https://github.com/Juris-M/zotero.git
+	branch = jurism-6.0.20

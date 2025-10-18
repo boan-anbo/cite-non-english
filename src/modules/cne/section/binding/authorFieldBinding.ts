@@ -86,13 +86,9 @@ export function setupAuthorFieldBinding(
 
     // Auto-save with debouncing
     debouncedSave(metadata);
-
-    ztoolkit.log(`Author binding updated: ${bindKey} = ${newValue}`);
   };
 
   // Listen for changes - use both "input" (for text inputs) and "change" (for checkbox)
   element.addEventListener("input", updateHandler);
   element.addEventListener("change", updateHandler);
-
-  ztoolkit.log(`Author binding set up for: ${bindKey}`);
 }

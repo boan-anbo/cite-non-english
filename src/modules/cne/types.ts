@@ -18,6 +18,7 @@ export type FieldVariant = "original" | "romanized" | "romanizedShort" | "englis
 export type CneFieldName =
   | "title"
   | "booktitle"
+  | "container-title"
   | "publisher"
   | "journal"
   | "series";
@@ -37,13 +38,13 @@ export interface CneFieldData {
 }
 
 /**
- * CNE data for a single author
- * Stored with indexed fields in Extra (cne-author-0-*, cne-author-1-*, etc.)
+ * CNE data for a single creator (author, editor, director, translator, etc.)
+ * Stored with indexed fields in Extra (cne-creator-0-*, cne-creator-1-*, etc.)
  *
  * Philosophy: Allow users to store original script names in Zotero's native fields,
  * while CNE manages both romanized and original forms for flexible citation handling.
  */
-export interface CneAuthorData {
+export interface CneCreatorData {
   /** Family name in romanized form (Pinyin, Romaji, etc.) */
   lastRomanized?: string;
   /** Given name in romanized form */
@@ -63,8 +64,10 @@ export interface CneAuthorData {
 export interface CneMetadataData {
   /** Article or book title */
   title?: CneFieldData;
-  /** Container title (for chapters, articles) */
+  /** Container title (for chapters, articles) - legacy field name */
   booktitle?: CneFieldData;
+  /** Container title (CSL-compliant hyphenated format) */
+  "container-title"?: CneFieldData;
   /** Publisher name */
   publisher?: CneFieldData;
   /** Journal title */
@@ -73,8 +76,8 @@ export interface CneMetadataData {
   series?: CneFieldData;
   /** ISO language code (e.g., zh-CN, ja-JP, ko-KR, ru-RU, ar-SA) */
   originalLanguage?: string;
-  /** Author names with CNE metadata (indexed by position) */
-  authors?: CneAuthorData[];
+  /** Creator names with CNE metadata (indexed by position, matches Zotero creators array) */
+  authors?: CneCreatorData[];
 }
 
 /**

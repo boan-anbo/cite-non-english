@@ -30,7 +30,7 @@
  *
  * ## Injected Variables
  *
- * For each field (title, journal, publisher, series, booktitle), we inject:
+ * For each field (title, journal, publisher, series, booktitle, container-title), we inject:
  * - cne-{field}-romanized: Romanized version
  * - cne-{field}-romanized-short: Short romanized version
  * - cne-{field}-original: Original script version
@@ -137,8 +137,13 @@ export function injectCSLVariables(zoteroItem: any, cslItem: any) {
     injectFieldVariants(cslItem, 'series', metadata.series);
   }
 
-  // Inject booktitle variants
+  // Inject booktitle variants as container-title (CSL-compliant)
   if (metadata.booktitle) {
-    injectFieldVariants(cslItem, 'booktitle', metadata.booktitle);
+    injectFieldVariants(cslItem, 'container-title', metadata.booktitle);
+  }
+
+  // Inject container-title variants (CSL-compliant hyphenated format)
+  if (metadata["container-title"]) {
+    injectFieldVariants(cslItem, 'container-title', metadata["container-title"]);
   }
 }
