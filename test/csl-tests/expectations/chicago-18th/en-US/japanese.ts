@@ -1,29 +1,15 @@
 import { FIXTURE_IDS } from '../../../fixtures/constants';
 
-/**
- * Expected bibliography output for Japanese fixtures
- * Chicago 18th Edition (Notes and Bibliography) - CNE variant
- * Style locale: en-US
- *
- * Each entry contains the EXACT expected HTML string for that fixture.
- *
- * TODO: Run tests in UPDATE mode to generate actual output, then copy here
- */
-
 export const japaneseExpectations: Record<string, string> = {
   [FIXTURE_IDS.JA_ABE_1983_SAIGO]:
-    // TODO: Add expected output after running test
-    ``,
+    `Abe Yoshio 阿部善雄, and Kaneko Hideo 金子英生. <i>Saigo no “Nihonjin”: Asakawa Kan’Ichi no shōgai</i> 最後の「日本人」: 朝河貫一の生涯 [The last “Japanese”: Life of Kan’ichi Asakawa]. Iwanami Shoten, 1983.`,
 
   [FIXTURE_IDS.JA_KONDO_2013_YALE]:
-    // TODO: Add expected output after running test
-    ``,
+    `Kondō Shigekazu 近藤成一. “Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite” イェール大学所蔵播磨国大部庄関係文書について [On Harima no Kuni Ōbe no Shō Kankei Monjo at Yale University Collection]. <i>Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō</i> 東京大学史料編纂所研究紀要 23 (2013): 1–22.`,
 
   [FIXTURE_IDS.JA_OZU_1953_TOKYO]:
-    // TODO: Add expected output after running test
-    ``,
+    `Ozu Yasujirō 小津安二郎, dir. <i>Tōkyō Monogatari</i> 東京物語. Shōchiku, 1953.`,
 
   [FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU]:
-    // TODO: Add expected output after running test
-    ``
+    `Yoshimi, Shun’ya. “Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō” もう一つのメディアとしての博覧会: 原子力平和利用博の受容 [Expo as another media: reception of Atoms for Peace]. In <i>Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio</i> 占領する眼・占領する声: CIE/USIS映画とVOAラジオ [Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War]. Tōkyō Daigaku Shuppan, 2012.`
 };

@@ -201,8 +201,8 @@ cne-creator-1-last-original: 金子
 cne-creator-1-first-original: 英生
 cne-creator-1-last-romanized: Kaneko
 cne-creator-1-first-romanized: Hideo
-cne-title-original: 最後の「日本人」 : 朝河貫一の生涯
-cne-title-romanized: Saigo no "Nihonjin" : Asakawa Kan'Ichi no shōgai
+cne-title-original: 最後の「日本人」: 朝河貫一の生涯
+cne-title-romanized: Saigo no "Nihonjin": Asakawa Kan'Ichi no shōgai
 cne-title-english: The last 'Japanese': Life of Kan'ichi Asakawa`
   },
 
@@ -266,7 +266,7 @@ cne-title-romanized: Tōkyō Monogatari`
 cne-title-romanized: Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō
 cne-title-english: Expo as another media: reception of Atoms for Peace
 cne-container-title-original: 占領する眼・占領する声: CIE/USIS映画とVOAラジオ
-cne-container-title-romanized: Senryō suru me senryō suru koe : CIE/USIS eia to VOA rajio
+cne-container-title-romanized: Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio
 cne-container-title-english: Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War`
   },
 

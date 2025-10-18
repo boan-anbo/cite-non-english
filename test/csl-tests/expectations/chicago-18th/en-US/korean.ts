@@ -1,29 +1,15 @@
 import { FIXTURE_IDS } from '../../../fixtures/constants';
 
-/**
- * Expected bibliography output for Korean fixtures
- * Chicago 18th Edition (Notes and Bibliography) - CNE variant
- * Style locale: en-US
- *
- * Each entry contains the EXACT expected HTML string for that fixture.
- *
- * TODO: Run tests in UPDATE mode to generate actual output, then copy here
- */
-
 export const koreanExpectations: Record<string, string> = {
   [FIXTURE_IDS.KO_KANG_1990_WONYUNG]:
-    // TODO: Add expected output after running test
-    ``,
+    `Kang, U-bang. <i>Wŏnyung kwa chohwa: Han’guk kodae chogaksa ŭi wŏlli</i> [Synthesis and harmony: Principle of the history of ancient Korean sculpture]. Yŏrhwadang, 1990.`,
 
   [FIXTURE_IDS.KO_HAN_1991_KYONGHUNG]:
-    // TODO: Add expected output after running test
-    ``,
+    `Han, T’ae-sik. “Kyŏnghŭng ŭi saengae e kwanhan chae koch’al” [Re-examination of the life of Kyŏnghŭng]. <i>Pulgyo hakpo</i> 28, no. 1 (1991): 187–213.`,
 
   [FIXTURE_IDS.KO_HA_2000_TONGSAM]:
-    // TODO: Add expected output after running test
-    ``,
+    `Ha, In-su. “Tongsam-dong P’aech’ong chŏnghwa chiyŏk palgul sŏngkwa” [Result of the excavation on the shell mounds in Tongsam-dong purification region]. In <i>Kogohak ŭl tonghae pon Kaya</i> [Kaya seen through archaeology], edited by Han’guk Kogo Hakhoe. Han’guk Kogo Hakhoe, 2000.`,
 
   [FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG]:
-    // TODO: Add expected output after running test
-    ``
+    `Chu, Yong-jung. “Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan” [Will suspend the import if mad cow disease attacks in the United States]. <i>Chosŏn Ilbo</i>, May 8, 2008.`
 };

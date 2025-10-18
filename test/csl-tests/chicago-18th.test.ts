@@ -6,14 +6,18 @@
  *
  * ## Test Architecture
  *
- * 1. **Global Setup** (global-setup.test.ts):
+ * 1. **Global Setup** (00-global-setup.test.ts):
  *    - Creates all items once
  *    - Validates Extra fields
  *
  * 2. **Style Tests** (this file):
  *    - Retrieves existing items
- *    - Renders bibliography once
- *    - Runs read-only assertions
+ *    - Renders bibliography once in memory
+ *    - Runs assertions against TypeScript expectations
+ *
+ * 3. **Snapshot Generator** (snapshot-generator.test.ts):
+ *    - Generates HTML snapshots for user documentation
+ *    - Writes to snapshots/ directory (outside test/ to avoid watch loops)
  *
  * ## Test Strategy
  *
@@ -23,10 +27,7 @@
  * - No need to match by ID
  * - Just check: "does this exact string appear in the output?"
  *
- * ## Running Tests
- *
- * - Normal mode: Compares output against expectations
- * - Update mode: Generates new snapshots (set cne.updateSnapshots pref)
+ * Expectations are defined in TypeScript files (e.g., expectations/chicago-18th/en-US/chinese.ts)
  */
 
 import { assert } from 'chai';
@@ -36,7 +37,7 @@ import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
 import { chineseExpectations } from './expectations/chicago-18th/en-US/chinese';
 import { japaneseExpectations } from './expectations/chicago-18th/en-US/japanese';
 import { koreanExpectations } from './expectations/chicago-18th/en-US/korean';
-import { generateBibliography, loadSnapshot, extractCslEntry } from './test-helpers';
+import { generateBibliography, extractCslEntry } from './test-helpers';
 
 // Configure Chai to show full string diffs (not truncated)
 chai.config.truncateThreshold = 0;
@@ -273,62 +274,4 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
     });
   });
 
-  // ==========================================================================
-  // Snapshot Regression Test
-  // ==========================================================================
-
-  after(async function() {
-    this.timeout(20000);
-
-    const snapshotPath = 'snapshots/chicago-18th/en-US/all-languages.html';
-
-    // Load snapshot
-    let snapshotHtml: string;
-    try {
-      snapshotHtml = await loadSnapshot(snapshotPath);
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('Snapshot not found')) {
-        console.log(`⚠️  Snapshot not found at ${snapshotPath}, skipping comparison`);
-        console.log(`   💡 Generate snapshots with: npm run test:snapshots:generate`);
-        return;
-      } else {
-        throw error;
-      }
-    }
-
-    // Compare each entry from generated bibliography against snapshot
-    console.log('📸 Verifying snapshot regression...');
-    let mismatches = 0;
-
-    Object.entries(ALL_FIXTURES).forEach(([fixtureId, fixture]) => {
-      // Extract entry from generated bibliography
-      const actualEntry = extractCslEntry(bibliography, fixture);
-
-      // Extract entry from snapshot
-      const expectedEntry = extractCslEntry(snapshotHtml, fixture);
-
-      // Skip if entry not found in either source
-      if (!actualEntry || !expectedEntry) {
-        console.warn(`⚠️  Could not extract entry for ${fixtureId}`);
-        return;
-      }
-
-      // Compare (only ~200-500 chars per entry, not 18000+)
-      try {
-        assertEqualWithDiff(
-          actualEntry,
-          expectedEntry,
-          `Snapshot mismatch for fixture: ${fixtureId}`
-        );
-      } catch (error) {
-        mismatches++;
-        throw error;
-      }
-    });
-
-    if (mismatches === 0) {
-      console.log(`✅ Snapshot matches: ${snapshotPath} (${Object.keys(ALL_FIXTURES).length} entries verified)`);
-    }
-  });
 });

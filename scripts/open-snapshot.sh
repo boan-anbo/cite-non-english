@@ -5,7 +5,7 @@ echo "🌐 Opening all-languages snapshot in browser..."
 echo ""
 
 # Define the snapshot file
-SNAPSHOT="test/csl-tests/snapshots/chicago-18th/en-US/all-languages.html"
+SNAPSHOT="snapshots/chicago-notes-bibliography-cne/en-US/all-languages.html"
 
 # Check if file exists
 if [ ! -f "$SNAPSHOT" ]; then

@@ -1,170 +1,146 @@
 # CSL Style Testing
 
-Automated testing for our custom Chicago style with CNE (Cite Non-English) fields.
-
-## Setup
-
-The tests use Zotero's official `citeproc-js-server` (included as git submodule) to process citations programmatically.
-
-### First Time Setup
-
-After cloning the repository, initialize the submodule and install dependencies:
-
-```bash
-# Initialize git submodules (including nested CSL styles & locales)
-git submodule update --init --recursive
-
-# Install citeproc-js-server dependencies
-cd tools/citeproc-js-server
-npm install
-
-# Copy our custom test style to the server
-cd ../..
-cp styles/modified/chicago-notes-bibliography-cne-test.csl tools/citeproc-js-server/csl/
-```
-
-### Start the Server
-
-Before running tests, start the citeproc server in a separate terminal:
-
-```bash
-cd tools/citeproc-js-server
-npm start
-```
-
-The server runs at `http://127.0.0.1:8085` and will automatically reload styles when files change.
+Automated testing for Chicago 18th Edition Notes and Bibliography style with CNE (Cite Non-English) fields.
 
 ## Running Tests
 
-With the server running, in another terminal:
-
 ```bash
-npm run test:csl
+# Run all tests (including snapshot generation)
+npm test
+
+# Run tests with Zotero window open for inspection
+npm run test:inspect
+
+# Update HTML snapshots
+npm run test:snapshots:update
+
+# Open generated snapshot in browser
+npm run test:snapshots:open
 ```
 
-Or run directly:
+## Architecture
 
-```bash
-npx mocha --import=tsx test/csl-tests/*.test.ts
-```
+### 1. Global Setup (`00-global-setup.test.ts`)
+- Creates Zotero items from TypeScript fixtures
+- Runs once before all tests
+- Validates Extra fields contain CNE metadata
 
-## Test Structure
+### 2. Style Tests (`chicago-18th.test.ts`)
+- Renders bibliography in memory using Zotero's CSL processor
+- Asserts against TypeScript expectations
+- No file I/O, fast execution
+
+### 3. Snapshot Generator (`snapshot-generator.test.ts`)
+- Generates HTML snapshots for user documentation
+- Writes to `snapshots/` directory (outside `test/` to avoid watch loops)
+- NOT used for regression testing
 
 ### Test Data
 
-`fixtures/cne-book-sample.json` - CSL JSON test items with CNE fields
+Fixtures are defined in TypeScript:
+- `fixtures/unified-fixtures.ts` - All test items (Chinese, Japanese, Korean)
+- `expectations/chicago-18th/en-US/*.ts` - Expected formatted output
 
-Example item with CNE fields:
-```json
+Example fixture:
+```typescript
 {
-  "id": "item1",
-  "type": "book",
-  "title": "Comprehensive Studies in Japanese Buddhism",
-  "cne-title-original": "日本仏教綜合研究",
-  "cne-title-romanized": "Nihon bukkyō sōgō kenkyū",
-  "cne-title-english": "Comprehensive Studies in Japanese Buddhism",
-  "author": [{"family": "Suzuki", "given": "Daisetz Teitaro"}],
-  "publisher": "Tokyo University Press",
-  "issued": {"date-parts": [[1965]]}
+  itemType: 'book',
+  title: '清代以来三峡地区水旱灾害的初步研究',
+  creators: [{firstName: 'Linfu', lastName: 'Hua', creatorType: 'author'}],
+  extra: `cne-title-romanized: Qingdai yilai Sanxia...
+cne-title-english: A preliminary study of floods...
+cne-creator-0-last-romanized: Hua
+cne-creator-0-last-original: 华`
 }
-```
-
-### Test Cases
-
-`csl-server.test.ts` contains tests that:
-1. POST CSL JSON to the server
-2. Get formatted citations back
-3. Verify CNE fields appear correctly
-
-## Workflow
-
-### Testing a Style Change
-
-1. **Edit the CSL**: Modify `styles/modified/chicago-notes-bibliography-cne-test.csl`
-
-2. **Copy to server**:
-   ```bash
-   cp styles/modified/chicago-notes-bibliography-cne-test.csl tools/citeproc-js-server/csl/
-   ```
-
-3. **Restart server** (it auto-reloads on style changes):
-   ```bash
-   # In the server terminal, Ctrl+C then
-   cd tools/citeproc-js-server && npm start
-   ```
-
-4. **Run tests**:
-   ```bash
-   npm run test:csl
-   ```
-
-5. **Check output** - Tests print the actual citation output for visual inspection
-
-## What We're Testing
-
-- ✅ `cne-title-original` field works in CSL (hyphenated format)
-- ✅ Shows original script (日本仏教綜合研究)
-- ✅ Regular items without CNE fields work normally
-- ✅ Multiple item types (book, article) supported
-- ✅ Full bibliography generation
-
-### Important: Variable Name Format
-
-**CSL requires hyphenated variable names**, not dotted:
-- ✅ **Works**: `cne-title-original: 日本仏教綜合研究`
-- ❌ **Doesn't work**: `cne.title-original: 日本仏教綜合研究`
-
-This applies to both:
-- Extra field format in Zotero
-- Variable references in CSL styles (`<text variable="cne-title-original"/>`)
-
-## Example Output
-
-```
-📚 Citation output for item with CNE fields:
-Suzuki, Daisetz Teitaro. [CNE-ORIGINAL: 日本仏教綜合研究]
-Comprehensive Studies in Japanese Buddhism. Tokyo University Press, 1965.
-
-📖 Citation output for regular item:
-Smith, John. Regular English Book. Oxford University Press, 2020.
 ```
 
 ## Adding New Tests
 
-1. Add test data to `fixtures/`
-2. Add test case in `csl-server.test.ts`:
-
+### 1. Add Fixture
+In `fixtures/unified-fixtures.ts`:
 ```typescript
-it("should test something new", async function () {
-  const result = await getCitation([yourTestItem]);
-  console.log("Output:", result);
-  assert.include(result, "expected content");
-});
+[FIXTURE_IDS.NEW_ITEM]: {
+  itemType: 'article',
+  title: 'Original title',
+  extra: `cne-title-romanized: Romanized title
+cne-title-english: English translation`
+}
+```
+
+### 2. Add Expectation
+In `expectations/chicago-18th/en-US/chinese.ts`:
+```typescript
+export const chineseExpectations: Record<string, string> = {
+  [FIXTURE_IDS.NEW_ITEM]: 'Expected formatted output here',
+}
+```
+
+### 3. Run Tests
+```bash
+npm test
+```
+
+The test will automatically pick up the new fixture and expectation.
+
+## What We're Testing
+
+### CNE Fields
+- ✅ `cne-title-romanized`, `cne-title-original`, `cne-title-english`
+- ✅ `cne-container-title-*` for book sections, articles
+- ✅ `cne-journal-*` for journal articles
+- ✅ `cne-creator-N-*` for romanized and original script names
+
+### Languages Covered
+- 🇨🇳 Chinese (Simplified & Traditional)
+- 🇯🇵 Japanese
+- 🇰🇷 Korean
+
+### Field Name Format
+
+**Extra fields use hyphenated format:**
+```
+cne-title-romanized: Pinyin romanization
+cne-title-original: 汉字原文
+cne-title-english: English translation
+```
+
+**CSL variables also use hyphens:**
+```xml
+<text variable="cne-title-romanized"/>
+<text variable="cne-title-original"/>
+```
+
+## Files
+
+```
+test/csl-tests/
+├── 00-global-setup.test.ts       # Creates Zotero items
+├── chicago-18th.test.ts          # Main test suite
+├── snapshot-generator.test.ts    # Generates HTML snapshots
+├── fixtures/
+│   ├── unified-fixtures.ts       # All test items
+│   ├── constants.ts              # Fixture IDs
+│   └── types.ts                  # TypeScript types
+├── expectations/
+│   └── chicago-18th/
+│       └── en-US/
+│           ├── chinese.ts        # Expected Chinese output
+│           ├── japanese.ts       # Expected Japanese output
+│           └── korean.ts         # Expected Korean output
+└── test-helpers.ts               # Shared test utilities
 ```
 
 ## Troubleshooting
 
-**`tools/citeproc-js-server` directory is empty?**
-- The submodule wasn't initialized. Run:
-  ```bash
-  git submodule update --init --recursive
-  cd tools/citeproc-js-server && npm install
-  ```
+**Tests fail with "Plugin awaiting timeout"?**
+- The CNE plugin isn't loading properly
+- Check `src/index.ts` initialization code
+- Look for errors in Zotero's error console
 
-**Server not responding?**
-- Check it's running: `curl http://127.0.0.1:8085`
-- Restart: Ctrl+C in server terminal, then `npm start`
-- Check if port 8085 is already in use: `lsof -i :8085`
+**Diff shows unexpected characters?**
+- Check character encoding (UTF-8)
+- Ensure Extra fields use correct romanization systems
 
-**Style changes not reflecting?**
-- Make sure you copied the updated CSL to `tools/citeproc-js-server/csl/`
-- Restart the server to reload styles (Ctrl+C, then `npm start`)
-
-**Test failures?**
-- Check the console output - it shows actual citation format
-- Compare with what you expected
-- Adjust assertions or fix the CSL style
-
-**Git submodule issues?**
-- Update submodules: `git submodule update --remote`
-- Reset submodule: `git submodule deinit -f tools/citeproc-js-server && git submodule update --init --recursive`
+**Snapshot generation stuck in loop (test:inspect)?**
+- Snapshots should write to `snapshots/` (not `test/`)
+- Check `test-helpers.ts` saveSnapshot() path logic
