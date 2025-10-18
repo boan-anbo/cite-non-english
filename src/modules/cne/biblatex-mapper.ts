@@ -76,10 +76,10 @@ export const BIBLATEX_FIELD_MAPPINGS: BibLaTeXFieldMapping[] = [
     standard: true,
   },
 
-  // ========== Book Title Fields ==========
+  // ========== Container Title Fields ==========
   {
-    description: "Original script book title (for book sections/chapters)",
-    cneFieldPath: "booktitle.original",
+    description: "Original script container title (for book sections/chapters)",
+    cneFieldPath: "container-title.original",
     biblatexField: "booktitleaddon",
     formatter: (value) => `\\textzh{${value}}`,
     enabled: true,

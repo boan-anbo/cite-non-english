@@ -265,9 +265,9 @@ cne-title-romanized: Tōkyō Monogatari`
     extra: `cne-title-original: もう一つのメディアとしての博覧会: 原子力平和利用博の受容
 cne-title-romanized: Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō
 cne-title-english: Expo as another media: reception of Atoms for Peace
-cne-booktitle-original: 占領する眼・占領する声: CIE/USIS映画とVOAラジオ
-cne-booktitle-romanized: Senryō suru me senryō suru koe : CIE/USIS eia to VOA rajio
-cne-booktitle-english: Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War`
+cne-container-title-original: 占領する眼・占領する声: CIE/USIS映画とVOAラジオ
+cne-container-title-romanized: Senryō suru me senryō suru koe : CIE/USIS eia to VOA rajio
+cne-container-title-english: Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War`
   },
 
   // ============================================================================
@@ -314,15 +314,21 @@ cne-title-english: Re-examination of the life of Kyŏnghŭng`
     place: 'Seoul',
     date: '2000',
     pages: '111-133',
-    creators: [{
-      firstName: 'In-su',
-      lastName: 'Ha',
-      creatorType: 'author'
-    }],
+    creators: [
+      {
+        firstName: 'In-su',
+        lastName: 'Ha',
+        creatorType: 'author'
+      },
+      {
+        lastName: 'Han\'guk Kogo Hakhoe',
+        creatorType: 'editor'
+      }
+    ],
     extra: `cne-title-romanized: Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa
 cne-title-english: Result of the excavation on the shell mounds in Tongsam-dong purification region
-cne-booktitle-romanized: Kogohak ŭl tonghae pon Kaya
-cne-booktitle-english: Kaya seen through archaeology`
+cne-container-title-romanized: Kogohak ŭl tonghae pon Kaya
+cne-container-title-english: Kaya seen through archaeology`
   },
 
   [FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG]: {

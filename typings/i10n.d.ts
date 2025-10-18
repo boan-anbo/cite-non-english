@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 export type FluentMessageId =
-  | 'cne-field-booktitle'
+  | 'cne-field-container-title'
   | 'cne-field-journal'
   | 'cne-field-publisher'
   | 'cne-field-series'

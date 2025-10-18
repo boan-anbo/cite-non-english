@@ -87,7 +87,7 @@ export class CneMetadata {
     // Check if any field has data
     const fields: CneFieldName[] = [
       "title",
-      "booktitle",
+      "container-title",
       "publisher",
       "journal",
       "series",
@@ -126,7 +126,7 @@ export class CneMetadata {
   public clear(): void {
     this.data = {
       title: undefined,
-      booktitle: undefined,
+      "container-title": undefined,
       publisher: undefined,
       journal: undefined,
       series: undefined,
@@ -203,7 +203,7 @@ export class CneMetadata {
   public getFilledFieldCount(): number {
     const fields: CneFieldName[] = [
       "title",
-      "booktitle",
+      "container-title",
       "publisher",
       "journal",
       "series",
