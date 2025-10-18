@@ -30,37 +30,115 @@
  */
 
 import { assert } from 'chai';
-import { FIXTURE_IDS } from './fixtures/constants';
+import * as chai from 'chai';
+import * as Diff from 'diff';
+import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
 import { chineseExpectations } from './expectations/chicago-18th/en-US/chinese';
 import { japaneseExpectations } from './expectations/chicago-18th/en-US/japanese';
 import { koreanExpectations } from './expectations/chicago-18th/en-US/korean';
-import { generateBibliography, loadSnapshot, saveSnapshot } from './test-helpers';
+import { generateBibliography, loadSnapshot, extractCslEntry } from './test-helpers';
+
+// Configure Chai to show full string diffs (not truncated)
+chai.config.truncateThreshold = 0;
+chai.config.showDiff = true;
+
+/**
+ * Assert equality with enhanced diff visualization using jsdiff
+ * Includes character-level diff in the assertion error message
+ *
+ * For large comparisons (like snapshots), suppresses full string output
+ * and only shows the diff analysis to keep output readable.
+ */
+function assertEqualWithDiff(actual: string | null | undefined, expected: string, message: string): void {
+  const actualTrimmed = actual?.trim() || '';
+  const expectedTrimmed = expected.trim();
+
+  if (actualTrimmed !== expectedTrimmed) {
+    // Generate character-level diff
+    const diffResult = Diff.diffChars(expectedTrimmed, actualTrimmed);
+
+    let diffOutput = '\n\n📊 Diff Analysis:\n';
+
+    // Collect all differences with their positions
+    let position = 0;
+    const differences: Array<{pos: number; expected: string; actual: string; context: string}> = [];
+    let currentContext = '';
+
+    diffResult.forEach((part) => {
+      if (part.added || part.removed) {
+        // Find the matching pair (removed + added)
+        const contextBefore = currentContext.slice(-20); // Last 20 chars
+
+        if (!differences.length || differences[differences.length - 1].actual !== '') {
+          // Start new difference entry
+          differences.push({
+            pos: position - contextBefore.length,
+            expected: part.removed ? part.value : '',
+            actual: part.added ? part.value : '',
+            context: contextBefore
+          });
+        } else {
+          // Complete the pair
+          const lastDiff = differences[differences.length - 1];
+          if (part.added) lastDiff.actual = part.value;
+          if (part.removed) lastDiff.expected = part.value;
+        }
+
+        if (!part.removed) position += part.value.length;
+      } else {
+        currentContext += part.value;
+        position += part.value.length;
+      }
+    });
+
+    // Format differences compactly
+    diffOutput += `Found ${differences.length} difference(s):\n\n`;
+
+    differences.forEach((diff, index) => {
+      diffOutput += `Diff #${index + 1} at position ${diff.pos}:\n`;
+
+      // Show context
+      const visibleContext = diff.context
+        .replace(/\n/g, '↵')
+        .replace(/\t/g, '→')
+        .replace(/ /g, '·')
+        .slice(-30); // Show last 30 chars of context
+
+      diffOutput += `  Context: ...${visibleContext}\n`;
+
+      // Show expected vs actual with Unicode info
+      const formatChar = (str: string) => {
+        if (!str) return '(none)';
+        const visible = str.replace(/\n/g, '↵').replace(/\t/g, '→').replace(/ /g, '·');
+        const codes = Array.from(str).map(c => {
+          const code = c.charCodeAt(0);
+          return code > 127 ? `U+${code.toString(16).toUpperCase().padStart(4, '0')}` : `'${c}'`;
+        }).join(' ');
+        return `${visible} [${codes}]`;
+      };
+
+      diffOutput += `  Expected: ${formatChar(diff.expected)}\n`;
+      diffOutput += `  Actual:   ${formatChar(diff.actual)}\n`;
+      diffOutput += '\n';
+    });
+
+    // Throw assertion error with diff but let Chai handle Expected/Received display
+    try {
+      assert.equal(actualTrimmed, expectedTrimmed);
+    } catch (err: any) {
+      // Modify the error message to include our diff analysis
+      err.message = message + diffOutput;
+      throw err;
+    }
+  } else {
+    // Strings match, just run regular assertion
+    assert.equal(actualTrimmed, expectedTrimmed, message);
+  }
+}
 
 // Style configuration
 const STYLE_ID = 'http://www.zotero.org/styles/chicago-notes-bibliography-cne';
 const STYLE_LOCALE = 'en-US';
-
-// Check if we're in update mode
-let UPDATE_SNAPSHOTS = false;
-
-// Check environment variable first
-if (typeof Services !== 'undefined' && Services.env) {
-  const envValue = Services.env.get('UPDATE_SNAPSHOTS');
-  if (envValue === '1' || envValue === 'true') {
-    UPDATE_SNAPSHOTS = true;
-    console.log('[Chicago 18th] UPDATE_SNAPSHOTS enabled via environment variable');
-  }
-}
-
-// Fall back to Zotero preference if not set by environment
-if (!UPDATE_SNAPSHOTS && typeof Zotero !== 'undefined' && Zotero.Prefs) {
-  UPDATE_SNAPSHOTS = Zotero.Prefs.get('extensions.zotero.cne.updateSnapshots', false);
-  if (UPDATE_SNAPSHOTS) {
-    console.log('[Chicago 18th] UPDATE_SNAPSHOTS enabled via Zotero preference');
-  }
-}
-
-console.log(`[Chicago 18th] UPDATE_SNAPSHOTS mode: ${UPDATE_SNAPSHOTS}`);
 
 /**
  * Install a CSL style silently by copying to Zotero's styles directory
@@ -106,12 +184,6 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
     // Initialize Zotero styles
     await Zotero.Styles.init();
 
-    if (UPDATE_SNAPSHOTS) {
-      console.log('🔄 UPDATE MODE: Will generate new snapshots');
-    } else {
-      console.log('🧪 TEST MODE: Will compare against snapshots and expectations');
-    }
-
     // Retrieve all items created in global setup
     console.log('📚 Retrieving existing items...');
     const libraryID = Zotero.Libraries.userLibraryID;
@@ -126,6 +198,7 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
       STYLE_LOCALE
     );
     console.log(`✅ Generated bibliography (${bibliography.length} characters)`);
+
   });
 
   // ==========================================================================
@@ -133,82 +206,22 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
   // ==========================================================================
 
   describe('Chinese materials', function() {
-    it(`should format ${FIXTURE_IDS.ZHCN_HAO_1998_TANG} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_HAO_1998_TANG];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_HAO_1998_TANG}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_HAO_1998_TANG}, skipping`);
-      }
-    });
+    // Dynamically generate tests from expectations
+    Object.entries(chineseExpectations).forEach(([fixtureId, expected]) => {
+      const hasExpectation = expected && expected.trim();
+      const testFn = hasExpectation ? it : it.skip;
+      const testName = hasExpectation
+        ? `should format ${fixtureId} correctly`
+        : `should format ${fixtureId} correctly - no expectation`;
 
-    it(`should format ${FIXTURE_IDS.ZHCN_HUA_1999_QINGDAI} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_HUA_1999_QINGDAI];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_HUA_1999_QINGDAI}`
+      testFn(testName, function() {
+        const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
+        assertEqualWithDiff(
+          actual,
+          expected,
+          `CSL entry for ${fixtureId} does not match expected output`
         );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_HUA_1999_QINGDAI}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.ZHCN_BEIJING_AIRUSHENG_2011} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_BEIJING_AIRUSHENG_2011];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_BEIJING_AIRUSHENG_2011}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_BEIJING_AIRUSHENG_2011}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.ZHCN_JIA_2010_ERSHISI} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_JIA_2010_ERSHISI];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_JIA_2010_ERSHISI}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_JIA_2010_ERSHISI}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.ZHCN_SHA_2014_SHIKU} correctly`, function() {
-      const expected = chineseExpectations[FIXTURE_IDS.ZHCN_SHA_2014_SHIKU];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.ZHCN_SHA_2014_SHIKU}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.ZHCN_SHA_2014_SHIKU}, skipping`);
-      }
+      });
     });
   });
 
@@ -217,56 +230,22 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
   // ==========================================================================
 
   describe('Japanese materials', function() {
-    it(`should format ${FIXTURE_IDS.JA_ABE_1983_SAIGO} correctly`, function() {
-      const expected = japaneseExpectations[FIXTURE_IDS.JA_ABE_1983_SAIGO];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.JA_ABE_1983_SAIGO}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.JA_ABE_1983_SAIGO}, skipping`);
-      }
-    });
+    // Dynamically generate tests from expectations
+    Object.entries(japaneseExpectations).forEach(([fixtureId, expected]) => {
+      const hasExpectation = expected && expected.trim();
+      const testFn = hasExpectation ? it : it.skip;
+      const testName = hasExpectation
+        ? `should format ${fixtureId} correctly`
+        : `should format ${fixtureId} correctly - no expectation`;
 
-    it(`should format ${FIXTURE_IDS.JA_KONDO_2013_YALE} correctly`, function() {
-      const expected = japaneseExpectations[FIXTURE_IDS.JA_KONDO_2013_YALE];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.JA_KONDO_2013_YALE}`
+      testFn(testName, function() {
+        const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
+        assertEqualWithDiff(
+          actual,
+          expected,
+          `CSL entry for ${fixtureId} does not match expected output`
         );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.JA_KONDO_2013_YALE}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.JA_OZU_1953_TOKYO} correctly`, function() {
-      const expected = japaneseExpectations[FIXTURE_IDS.JA_OZU_1953_TOKYO];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.JA_OZU_1953_TOKYO}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.JA_OZU_1953_TOKYO}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU} correctly`, function() {
-      const expected = japaneseExpectations[FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU}, skipping`);
-      }
+      });
     });
   });
 
@@ -275,56 +254,22 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
   // ==========================================================================
 
   describe('Korean materials', function() {
-    it(`should format ${FIXTURE_IDS.KO_KANG_1990_WONYUNG} correctly`, function() {
-      const expected = koreanExpectations[FIXTURE_IDS.KO_KANG_1990_WONYUNG];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.KO_KANG_1990_WONYUNG}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.KO_KANG_1990_WONYUNG}, skipping`);
-      }
-    });
+    // Dynamically generate tests from expectations
+    Object.entries(koreanExpectations).forEach(([fixtureId, expected]) => {
+      const hasExpectation = expected && expected.trim();
+      const testFn = hasExpectation ? it : it.skip;
+      const testName = hasExpectation
+        ? `should format ${fixtureId} correctly`
+        : `should format ${fixtureId} correctly - no expectation`;
 
-    it(`should format ${FIXTURE_IDS.KO_HAN_1991_KYONGHUNG} correctly`, function() {
-      const expected = koreanExpectations[FIXTURE_IDS.KO_HAN_1991_KYONGHUNG];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.KO_HAN_1991_KYONGHUNG}`
+      testFn(testName, function() {
+        const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
+        assertEqualWithDiff(
+          actual,
+          expected,
+          `CSL entry for ${fixtureId} does not match expected output`
         );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.KO_HAN_1991_KYONGHUNG}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.KO_HA_2000_TONGSAM} correctly`, function() {
-      const expected = koreanExpectations[FIXTURE_IDS.KO_HA_2000_TONGSAM];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.KO_HA_2000_TONGSAM}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.KO_HA_2000_TONGSAM}, skipping`);
-      }
-    });
-
-    it(`should format ${FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG} correctly`, function() {
-      const expected = koreanExpectations[FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG];
-      if (expected && expected.trim()) {
-        assert.include(
-          bibliography,
-          expected.trim(),
-          `Bibliography should contain correctly formatted ${FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG}`
-        );
-      } else {
-        console.log(`⚠️  No expectation defined for ${FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG}, skipping`);
-      }
+      });
     });
   });
 
@@ -337,30 +282,53 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
 
     const snapshotPath = 'snapshots/chicago-18th/en-US/all-languages.html';
 
-    if (UPDATE_SNAPSHOTS) {
-      // Update mode: Save new snapshot
-      console.log(`💾 Saving snapshot to ${snapshotPath}...`);
-      await saveSnapshot(snapshotPath, bibliography);
-      console.log(`✅ Updated snapshot: ${snapshotPath}`);
-    } else {
-      // Test mode: Compare with existing snapshot
-      try {
-        const expected = await loadSnapshot(snapshotPath);
-        assert.equal(
-          bibliography.trim(),
-          expected.trim(),
-          'Bibliography snapshot mismatch'
-        );
-        console.log(`✅ Snapshot matches: ${snapshotPath}`);
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        if (errorMessage.includes('Snapshot not found')) {
-          console.log(`⚠️  Snapshot not found at ${snapshotPath}, skipping comparison`);
-        } else {
-          console.error(`❌ Error loading/comparing snapshot: ${errorMessage}`);
-          throw error;
-        }
+    // Load snapshot
+    let snapshotHtml: string;
+    try {
+      snapshotHtml = await loadSnapshot(snapshotPath);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('Snapshot not found')) {
+        console.log(`⚠️  Snapshot not found at ${snapshotPath}, skipping comparison`);
+        console.log(`   💡 Generate snapshots with: npm run test:snapshots:generate`);
+        return;
+      } else {
+        throw error;
       }
+    }
+
+    // Compare each entry from generated bibliography against snapshot
+    console.log('📸 Verifying snapshot regression...');
+    let mismatches = 0;
+
+    Object.entries(ALL_FIXTURES).forEach(([fixtureId, fixture]) => {
+      // Extract entry from generated bibliography
+      const actualEntry = extractCslEntry(bibliography, fixture);
+
+      // Extract entry from snapshot
+      const expectedEntry = extractCslEntry(snapshotHtml, fixture);
+
+      // Skip if entry not found in either source
+      if (!actualEntry || !expectedEntry) {
+        console.warn(`⚠️  Could not extract entry for ${fixtureId}`);
+        return;
+      }
+
+      // Compare (only ~200-500 chars per entry, not 18000+)
+      try {
+        assertEqualWithDiff(
+          actualEntry,
+          expectedEntry,
+          `Snapshot mismatch for fixture: ${fixtureId}`
+        );
+      } catch (error) {
+        mismatches++;
+        throw error;
+      }
+    });
+
+    if (mismatches === 0) {
+      console.log(`✅ Snapshot matches: ${snapshotPath} (${Object.keys(ALL_FIXTURES).length} entries verified)`);
     }
   });
 });

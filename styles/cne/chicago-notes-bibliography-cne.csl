@@ -498,7 +498,7 @@
         <choose>
           <if type="software">
             <!-- `software` listed under the name of the publisher or developer (CMOS18 14.169) -->
-            <text variable="publisher"/>
+            <text macro="publisher-select-variable"/>
           </if>
           <else-if type="standard">
             <!-- `standard` listed in bibliography under organization, but note omits this (CMOS18 14.159) -->
@@ -1525,6 +1525,76 @@
           <text prefix="[" suffix="]" variable="cne-title-english"/>
         </group>
       </if>
+    </choose>
+  </macro>
+  <!-- CNE Helper: Select full container-title (journal/book) variable -->
+  <macro name="container-title-select-variable">
+    <choose>
+      <if variable="cne-container-title-romanized">
+        <text variable="cne-container-title-romanized"/>
+      </if>
+      <else-if variable="cne-journal-romanized">
+        <text variable="cne-journal-romanized"/>
+      </else-if>
+      <else>
+        <text variable="container-title"/>
+      </else>
+    </choose>
+  </macro>
+  <!-- CNE Helper: Select short container-title variable -->
+  <macro name="container-title-select-variable-short">
+    <choose>
+      <if variable="cne-container-title-romanized">
+        <!-- CNE mode: try short romanized, fallback to full -->
+        <choose>
+          <if variable="cne-container-title-romanized-short">
+            <text variable="cne-container-title-romanized-short"/>
+          </if>
+          <else>
+            <text variable="cne-container-title-romanized"/>
+          </else>
+        </choose>
+      </if>
+      <else-if variable="cne-journal-romanized">
+        <!-- CNE mode: try short romanized, fallback to full -->
+        <choose>
+          <if variable="cne-journal-romanized-short">
+            <text variable="cne-journal-romanized-short"/>
+          </if>
+          <else>
+            <text variable="cne-journal-romanized"/>
+          </else>
+        </choose>
+      </else-if>
+      <else>
+        <!-- Standard: use container-title with auto-shortening -->
+        <text form="short" variable="container-title"/>
+      </else>
+    </choose>
+  </macro>
+  <!-- CNE Helper: Add original container-title supplements (original + translation) -->
+  <macro name="container-title-cne-supplements">
+    <choose>
+      <if variable="cne-container-title-romanized">
+        <group delimiter=" ">
+          <text variable="cne-container-title-original"/>
+          <text prefix="[" suffix="]" variable="cne-container-title-english"/>
+        </group>
+      </if>
+      <else-if variable="cne-journal-romanized">
+        <text variable="cne-journal-original"/>
+      </else-if>
+    </choose>
+  </macro>
+  <!-- CNE Helper: Select publisher variable -->
+  <macro name="publisher-select-variable">
+    <choose>
+      <if variable="cne-publisher-romanized">
+        <text variable="cne-publisher-romanized"/>
+      </if>
+      <else>
+        <text variable="publisher"/>
+      </else>
     </choose>
   </macro>
   <macro name="title-primary">
@@ -3301,7 +3371,10 @@
   <!-- Serial source title -->
   <macro name="source-serial-name">
     <group delimiter=" ">
-      <text font-style="italic" text-case="title" variable="container-title"/>
+      <group delimiter=" ">
+        <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
+        <text macro="container-title-cne-supplements"/>
+      </group>
       <choose>
         <!-- TODO: remove conditional when Zotero stops double-mapping `event-place` and `publisher-place` -->
         <if match="none" variable="event-date event-title">
@@ -3523,7 +3596,7 @@
         <else>
           <text variable="collection-title"/>
           <!-- publisher possible with `interview` (CMOS18 14.110) -->
-          <text variable="publisher"/>
+          <text macro="publisher-select-variable"/>
           <text macro="source-serial-volume-status-bib"/>
         </else>
       </choose>
@@ -3622,7 +3695,7 @@
         <else>
           <text variable="collection-title"/>
           <!-- publisher possible with `interview` (CMOS18 14.110) -->
-          <text variable="publisher"/>
+          <text macro="publisher-select-variable"/>
           <text macro="source-serial-volume-status-note"/>
         </else>
       </choose>
@@ -3815,12 +3888,18 @@
         <text font-style="italic" text-case="title" variable="volume-title"/>
       </else-if>
       <else>
-        <text font-style="italic" text-case="title" variable="container-title"/>
+        <group delimiter=" ">
+          <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
+          <text macro="container-title-cne-supplements"/>
+        </group>
       </else>
     </choose>
   </macro>
   <macro name="source-monographic-title-note">
-    <text font-style="italic" text-case="title" variable="container-title"/>
+    <group delimiter=" ">
+      <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
+      <text macro="container-title-cne-supplements"/>
+    </group>
   </macro>
   <!-- Monographic source description -->
   <macro name="source-monographic-description-bib">
@@ -4982,12 +5061,12 @@
     <group delimiter=" ">
       <choose>
         <if type="thesis" variable="publisher">
-          <text text-case="capitalize-first" variable="publisher"/>
+          <text text-case="capitalize-first" macro="publisher-select-variable"/>
         </if>
         <else-if variable="publisher">
           <group delimiter=": ">
             <!-- <text text-case="capitalize-first" variable="publisher-place"/> -->
-            <text text-case="capitalize-first" variable="publisher"/>
+            <text text-case="capitalize-first" macro="publisher-select-variable"/>
           </group>
         </else-if>
         <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
@@ -5008,12 +5087,12 @@
     <group delimiter=" ">
       <choose>
         <if type="thesis" variable="publisher">
-          <text variable="publisher"/>
+          <text macro="publisher-select-variable"/>
         </if>
         <else-if variable="publisher">
           <group delimiter=": ">
             <!-- <text variable="publisher-place"/> -->
-            <text variable="publisher"/>
+            <text macro="publisher-select-variable"/>
           </group>
         </else-if>
         <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->

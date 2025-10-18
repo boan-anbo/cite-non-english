@@ -17,6 +17,7 @@ logs
 
 # Development tools - ignore node_modules only
 test-debug.txt
+tools/style-variant-builder/
 
 # Test artifacts
 *.log

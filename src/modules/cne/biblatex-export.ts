@@ -25,7 +25,7 @@
 
 import { parseCNEMetadata } from "./metadata-parser";
 import { mapCNEtoBibLaTeX, hasBibLaTeXData } from "./biblatex-mapper";
-import type { CneMetadataData, CneAuthorData } from "./types";
+import type { CneMetadataData, CneCreatorData } from "./types";
 import { createInterceptor, type Interceptor } from "./interceptors";
 
 /**

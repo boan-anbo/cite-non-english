@@ -52,9 +52,5 @@ export function setupStaticFieldBinding(
 
     // Auto-save with debouncing
     debouncedSave(metadata);
-
-    ztoolkit.log(`Data binding updated: ${bindKey} = ${newValue}`);
   });
-
-  ztoolkit.log(`Data binding set up for: ${bindKey}`);
 }

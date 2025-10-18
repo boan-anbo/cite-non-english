@@ -65,7 +65,7 @@ export type {
   CneFieldName,
   CneFieldData,
   CneMetadataData,
-  CneAuthorData,
+  CneCreatorData,
   FieldConfig,
   VariantLabelConfig,
 } from "./types";

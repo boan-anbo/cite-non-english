@@ -6,7 +6,7 @@
  * and need to be dynamically generated based on the number of creators.
  */
 
-import type { CneAuthorData } from "../types";
+import type { CneCreatorData } from "../types";
 import {
   createFieldSection,
   createTextInput,
@@ -30,7 +30,7 @@ import {
 export function buildAuthorFieldGroup(
   index: number,
   creator: any,
-  authorData?: CneAuthorData,
+  authorData?: CneCreatorData,
 ): any {
   // Get native name and creator type for display
   const nativeName = formatNativeNamePlain(creator);
@@ -97,7 +97,7 @@ export function buildAuthorFieldGroup(
  */
 export function buildAllAuthorFieldGroups(
   item: Zotero.Item,
-  authors?: CneAuthorData[],
+  authors?: CneCreatorData[],
 ): any[] {
   const creators = item.getCreators();
 
@@ -185,7 +185,7 @@ function formatNativeNamePlain(creator: any): string {
  * @param authorData - Current author data (if any)
  * @returns Element configuration for options section
  */
-function createOptionsSection(index: number, authorData?: CneAuthorData): any {
+function createOptionsSection(index: number, authorData?: CneCreatorData): any {
   return {
     tag: "div",
     namespace: "html",

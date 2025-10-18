@@ -32,8 +32,7 @@
  */
 
 import { assert } from 'chai';
-import { FIXTURE_IDS } from './fixtures/constants';
-import { ALL_FIXTURES } from './fixtures/unified-fixtures';
+import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
 import { createZoteroItemFromTestCase } from './test-helpers';
 
 describe('Global Setup - Batch Item Creation', function() {
@@ -108,8 +107,8 @@ describe('Global Setup - Batch Item Creation', function() {
     assert.isNotEmpty(extra, 'Extra field should not be empty');
 
     // Check for key CNE fields
-    assert.include(extra, 'cne-author-0-last-romanized: Hua', 'Should have romanized author last name');
-    assert.include(extra, 'cne-author-0-first-romanized: Linfu', 'Should have romanized author first name');
+    assert.include(extra, 'cne-creator-0-last-romanized: Hua', 'Should have romanized author last name');
+    assert.include(extra, 'cne-creator-0-first-romanized: Linfu', 'Should have romanized author first name');
     assert.include(extra, 'cne-title-romanized:', 'Should have romanized title');
     assert.include(extra, 'cne-title-english:', 'Should have English translation');
     assert.include(extra, 'cne-journal-romanized: Zhongguo shehui kexue', 'Should have romanized journal');
@@ -132,7 +131,7 @@ describe('Global Setup - Batch Item Creation', function() {
     assert.exists(beijingItem, 'beijing-airusheng-2011 item should exist');
 
     const extra = beijingItem!.getField('extra');
-    assert.include(extra, 'cne-author-0-last-romanized:', 'Should have romanized institutional author');
+    assert.include(extra, 'cne-creator-0-last-romanized:', 'Should have romanized institutional author');
     assert.include(extra, 'cne-title-romanized:', 'Should have romanized title');
   });
 
@@ -151,7 +150,7 @@ describe('Global Setup - Batch Item Creation', function() {
     assert.exists(abeItem, 'abe-1983-saigo item should exist');
 
     const extra = abeItem!.getField('extra');
-    assert.include(extra, 'cne-author-0-last-romanized: Abe', 'Should have first author romanized');
-    assert.include(extra, 'cne-author-1-last-romanized: Kaneko', 'Should have second author romanized');
+    assert.include(extra, 'cne-creator-0-last-romanized: Abe', 'Should have first author romanized');
+    assert.include(extra, 'cne-creator-1-last-romanized: Kaneko', 'Should have second author romanized');
   });
 });

@@ -8,19 +8,18 @@
  *   cne-title-romanized-short: Wenxue shi
  *   cne-title-english: History of Ancient Chinese Literature
  *
- * Author fields use indexed format:
- *   cne-author-0-last-original: 郝
- *   cne-author-0-first-original: 春文
- *   cne-author-0-last-romanized: Hao
- *   cne-author-0-first-romanized: Chunwen
- *   cne-author-0-options: {"spacing":"comma","order":"romanized-first"}
+ * Creator fields use indexed format:
+ *   cne-creator-0-last-original: 郝
+ *   cne-creator-0-first-original: 春文
+ *   cne-creator-0-last-romanized: Hao
+ *   cne-creator-0-first-romanized: Chunwen
  */
 
 import type {
   CneFieldData,
   CneMetadataData,
   FieldVariant,
-  CneAuthorData,
+  CneCreatorData,
 } from "./types";
 import {
   NAMESPACE,
@@ -31,9 +30,10 @@ import {
 /**
  * Regular expression to match CNE metadata lines in Extra field
  * Format: cne-fieldname-variant: value
+ * Supports hyphenated field names (e.g., container-title)
  */
 const CNE_FIELD_REGEX = new RegExp(
-  `^${NAMESPACE}-([a-z]+)-(${FIELD_VARIANTS.join("|")}): (.+)$`,
+  `^${NAMESPACE}-([a-z-]+)-(${FIELD_VARIANTS.join("|")}): (.+)$`,
   "i",
 );
 
@@ -47,146 +47,145 @@ const LANGUAGE_FIELD_REGEX = new RegExp(
 );
 
 /**
- * Regular expression to match indexed author fields (both romanized and original)
- * Format: cne-author-{index}-{namePart}-{variant}: value
+ * Regular expression to match indexed creator fields (both romanized and original)
+ * Format: cne-creator-{index}-{namePart}-{variant}: value
  * Examples:
- *   cne-author-0-last-romanized: Hao
- *   cne-author-0-first-romanized: Chunwen
- *   cne-author-0-last-original: 郝
- *   cne-author-0-first-original: 春文
+ *   cne-creator-0-last-romanized: Hao
+ *   cne-creator-0-first-romanized: Chunwen
+ *   cne-creator-0-last-original: 郝
+ *   cne-creator-0-first-original: 春文
  */
-const AUTHOR_FIELD_REGEX = new RegExp(
-  `^${NAMESPACE}-author-(\\d+)-(last|first)-(romanized|original):\\s*(.+)$`,
+const CREATOR_FIELD_REGEX = new RegExp(
+  `^${NAMESPACE}-creator-(\\d+)-(last|first)-(romanized|original):\\s*(.+)$`,
   "i",
 );
 
 /**
- * Regular expression to match author option fields (flattened)
- * Format: cne-author-{index}-options-{optionName}: value
- * Example: cne-author-0-options-original-spacing: true
+ * Regular expression to match creator option fields (flattened)
+ * Format: cne-creator-{index}-options-{optionName}: value
+ * Example: cne-creator-0-options-original-spacing: true
  */
-const AUTHOR_OPTIONS_REGEX = new RegExp(
-  `^${NAMESPACE}-author-(\\d+)-options-original-spacing:\\s*(.+)$`,
+const CREATOR_OPTIONS_REGEX = new RegExp(
+  `^${NAMESPACE}-creator-(\\d+)-options-original-spacing:\\s*(.+)$`,
   "i",
 );
 
 /**
- * Parse indexed author fields from Extra field lines
+ * Parse indexed creator fields from Extra field lines
  *
- * Extracts author metadata in indexed format:
- * - cne-author-0-last-romanized: Hao
- * - cne-author-0-first-romanized: Chunwen
- * - cne-author-0-last-original: 郝
- * - cne-author-0-first-original: 春文
- * - cne-author-0-options-original-spacing: true
+ * Extracts creator metadata in indexed format:
+ * - cne-creator-0-last-romanized: Hao
+ * - cne-creator-0-first-romanized: Chunwen
+ * - cne-creator-0-last-original: 郝
+ * - cne-creator-0-first-original: 春文
  *
  * @param lines - Array of Extra field lines
- * @returns Array of author data (may have gaps if authors are not sequential)
+ * @returns Array of creator data (may have gaps if creators are not sequential)
  */
-function parseAuthorFields(lines: string[]): CneAuthorData[] {
-  const authorsMap = new Map<number, CneAuthorData>();
+function parseCreatorFields(lines: string[]): CneCreatorData[] {
+  const creatorsMap = new Map<number, CneCreatorData>();
 
   for (const line of lines) {
     const trimmedLine = line.trim();
 
-    // Try to match author field line (romanized or original)
-    const fieldMatch = trimmedLine.match(AUTHOR_FIELD_REGEX);
+    // Try to match creator field line (romanized or original)
+    const fieldMatch = trimmedLine.match(CREATOR_FIELD_REGEX);
     if (fieldMatch) {
       const index = parseInt(fieldMatch[1], 10);
       const namePart = fieldMatch[2]; // 'last' or 'first'
       const variant = fieldMatch[3]; // 'romanized' or 'original'
       const value = fieldMatch[4].trim();
 
-      // Initialize author if needed
-      if (!authorsMap.has(index)) {
-        authorsMap.set(index, {});
+      // Initialize creator if needed
+      if (!creatorsMap.has(index)) {
+        creatorsMap.set(index, {});
       }
 
       // Build field name: lastRomanized, firstRomanized, lastOriginal, firstOriginal
       const capitalizedPart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
       const capitalizedVariant = variant.charAt(0).toUpperCase() + variant.slice(1);
-      const fieldName = (namePart + capitalizedVariant) as keyof CneAuthorData;
-      const author = authorsMap.get(index)!;
-      (author as any)[fieldName] = value;
+      const fieldName = (namePart + capitalizedVariant) as keyof CneCreatorData;
+      const creator = creatorsMap.get(index)!;
+      (creator as any)[fieldName] = value;
       continue;
     }
 
-    // Try to match author options line (original-spacing only)
-    const optionsMatch = trimmedLine.match(AUTHOR_OPTIONS_REGEX);
+    // Try to match creator options line (original-spacing only)
+    const optionsMatch = trimmedLine.match(CREATOR_OPTIONS_REGEX);
     if (optionsMatch) {
       const index = parseInt(optionsMatch[1], 10);
       const value = optionsMatch[2].trim();
 
-      if (!authorsMap.has(index)) {
-        authorsMap.set(index, {});
+      if (!creatorsMap.has(index)) {
+        creatorsMap.set(index, {});
       }
 
-      const author = authorsMap.get(index)!;
-      author.optionsOriginalSpacing = value === "true";
+      const creator = creatorsMap.get(index)!;
+      creator.optionsOriginalSpacing = value === "true";
     }
   }
 
   // Convert map to array, preserving indices
-  const maxIndex = Math.max(...Array.from(authorsMap.keys()));
-  const authors: CneAuthorData[] = [];
+  const maxIndex = Math.max(...Array.from(creatorsMap.keys()));
+  const creators: CneCreatorData[] = [];
   for (let i = 0; i <= maxIndex; i++) {
-    if (authorsMap.has(i)) {
-      authors[i] = authorsMap.get(i)!;
+    if (creatorsMap.has(i)) {
+      creators[i] = creatorsMap.get(i)!;
     }
   }
 
-  return authors.length > 0 ? authors : [];
+  return creators.length > 0 ? creators : [];
 }
 
 /**
- * Serialize author data to Extra field lines
+ * Serialize creator data to Extra field lines
  *
- * Generates indexed author field lines:
- * - cne-author-0-last-original: 郝
- * - cne-author-0-first-original: 春文
+ * Generates indexed creator field lines:
+ * - cne-creator-0-last-original: 郝
+ * - cne-creator-0-first-original: 春文
  * - etc.
  *
- * @param authors - Array of author data
+ * @param creators - Array of creator data
  * @returns Array of formatted Extra field lines
  */
-function serializeAuthorFields(authors?: CneAuthorData[]): string[] {
+function serializeCreatorFields(creators?: CneCreatorData[]): string[] {
   const lines: string[] = [];
 
-  if (!authors || authors.length === 0) {
+  if (!creators || creators.length === 0) {
     return lines;
   }
 
-  authors.forEach((author, index) => {
-    if (!author) return; // Skip gaps in array
+  creators.forEach((creator, index) => {
+    if (!creator) return; // Skip gaps in array
 
     // Serialize romanized name fields
-    if (author.lastRomanized) {
+    if (creator.lastRomanized) {
       lines.push(
-        `${NAMESPACE}-author-${index}-last-romanized: ${author.lastRomanized}`,
+        `${NAMESPACE}-creator-${index}-last-romanized: ${creator.lastRomanized}`,
       );
     }
-    if (author.firstRomanized) {
+    if (creator.firstRomanized) {
       lines.push(
-        `${NAMESPACE}-author-${index}-first-romanized: ${author.firstRomanized}`,
+        `${NAMESPACE}-creator-${index}-first-romanized: ${creator.firstRomanized}`,
       );
     }
 
     // Serialize original script name fields
-    if (author.lastOriginal) {
+    if (creator.lastOriginal) {
       lines.push(
-        `${NAMESPACE}-author-${index}-last-original: ${author.lastOriginal}`,
+        `${NAMESPACE}-creator-${index}-last-original: ${creator.lastOriginal}`,
       );
     }
-    if (author.firstOriginal) {
+    if (creator.firstOriginal) {
       lines.push(
-        `${NAMESPACE}-author-${index}-first-original: ${author.firstOriginal}`,
+        `${NAMESPACE}-creator-${index}-first-original: ${creator.firstOriginal}`,
       );
     }
 
     // Serialize original spacing option
-    if (author.optionsOriginalSpacing !== undefined) {
+    if (creator.optionsOriginalSpacing !== undefined) {
       lines.push(
-        `${NAMESPACE}-author-${index}-options-original-spacing: ${author.optionsOriginalSpacing}`,
+        `${NAMESPACE}-creator-${index}-options-original-spacing: ${creator.optionsOriginalSpacing}`,
       );
     }
   });
@@ -199,7 +198,7 @@ function serializeAuthorFields(authors?: CneAuthorData[]): string[] {
  *
  * Extracts structured CNE metadata including:
  * - Title variants (romanized, original, english, romanizedShort)
- * - Author information with indexed format
+ * - Creator information with indexed format
  * - Journal, publisher, series metadata
  * - Original language code
  *
@@ -215,10 +214,10 @@ export function parseCNEMetadata(extraContent: string): CneMetadataData {
 
   const lines = extraContent.split("\n");
 
-  // Parse author fields first (they need all lines)
-  const authors = parseAuthorFields(lines);
-  if (authors.length > 0) {
-    metadata.authors = authors;
+  // Parse creator fields first (they need all lines)
+  const creators = parseCreatorFields(lines);
+  if (creators.length > 0) {
+    metadata.authors = creators;
   }
 
   // Parse other fields line by line
@@ -271,12 +270,12 @@ export function serializeToExtra(
     const lines = extraContent.split("\n");
     for (const line of lines) {
       const trimmedLine = line.trim();
-      // Keep lines that don't match our CNE format (including author fields)
+      // Keep lines that don't match our CNE format (including creator fields)
       if (
         !trimmedLine.match(CNE_FIELD_REGEX) &&
         !trimmedLine.match(LANGUAGE_FIELD_REGEX) &&
-        !trimmedLine.match(AUTHOR_FIELD_REGEX) &&
-        !trimmedLine.match(AUTHOR_OPTIONS_REGEX)
+        !trimmedLine.match(CREATOR_FIELD_REGEX) &&
+        !trimmedLine.match(CREATOR_OPTIONS_REGEX)
       ) {
         preservedLines.push(line);
       }
@@ -297,6 +296,7 @@ export function serializeToExtra(
   const fieldNames = [
     "title",
     "booktitle",
+    "container-title",
     "publisher",
     "journal",
     "series",
@@ -315,9 +315,9 @@ export function serializeToExtra(
     }
   }
 
-  // Add author fields
-  const authorLines = serializeAuthorFields(metadata.authors);
-  cneLines.push(...authorLines);
+  // Add creator fields
+  const creatorLines = serializeCreatorFields(metadata.authors);
+  cneLines.push(...creatorLines);
 
   // Combine preserved lines and CNE lines
   const allLines = [...preservedLines, ...cneLines];
@@ -342,8 +342,8 @@ export function hasCneMetadata(extraContent: string): boolean {
     if (
       trimmedLine.match(CNE_FIELD_REGEX) ||
       trimmedLine.match(LANGUAGE_FIELD_REGEX) ||
-      trimmedLine.match(AUTHOR_FIELD_REGEX) ||
-      trimmedLine.match(AUTHOR_OPTIONS_REGEX)
+      trimmedLine.match(CREATOR_FIELD_REGEX) ||
+      trimmedLine.match(CREATOR_OPTIONS_REGEX)
     ) {
       return true;
     }
@@ -382,8 +382,8 @@ export function stripCneMetadata(extraContent: string): string {
     if (
       !trimmedLine.match(CNE_FIELD_REGEX) &&
       !trimmedLine.match(LANGUAGE_FIELD_REGEX) &&
-      !trimmedLine.match(AUTHOR_FIELD_REGEX) &&
-      !trimmedLine.match(AUTHOR_OPTIONS_REGEX)
+      !trimmedLine.match(CREATOR_FIELD_REGEX) &&
+      !trimmedLine.match(CREATOR_OPTIONS_REGEX)
     ) {
       nonCneLines.push(line);
     }
