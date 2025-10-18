@@ -498,7 +498,7 @@
         <choose>
           <if type="software">
             <!-- `software` listed under the name of the publisher or developer (CMOS18 14.169) -->
-            <text macro="publisher-select-variable"/>
+            <text macro="cne-publisher-select"/>
           </if>
           <else-if type="standard">
             <!-- `standard` listed in bibliography under organization, but note omits this (CMOS18 14.159) -->
@@ -935,7 +935,7 @@
             </choose>
             <group delimiter=" ">
               <text macro="title-primary"/>
-              <text macro="title-cne-supplements"/>
+              <text macro="cne-title-supplements"/>
             </group>
           </else-if>
         </choose>
@@ -1314,7 +1314,7 @@
             <!-- notes always open with the primary title -->
             <group delimiter=" ">
               <text macro="title-primary"/>
-              <text macro="title-cne-supplements"/>
+              <text macro="cne-title-supplements"/>
             </group>
           </if>
           <else>
@@ -1327,7 +1327,7 @@
         <!-- notes always open with the primary title -->
         <group delimiter=" ">
           <text macro="title-primary"/>
-          <text macro="title-cne-supplements"/>
+          <text macro="cne-title-supplements"/>
         </group>
       </else>
     </choose>
@@ -1390,7 +1390,7 @@
     <group delimiter=". ">
       <group delimiter=" ">
         <text macro="title-primary"/>
-        <text macro="title-cne-supplements"/>
+        <text macro="cne-title-supplements"/>
       </group>
       <group delimiter=", ">
         <text macro="label-part-number-capitalized"/>
@@ -1402,7 +1402,7 @@
     <group delimiter=", ">
       <group delimiter=" ">
         <text macro="title-primary"/>
-        <text macro="title-cne-supplements"/>
+        <text macro="cne-title-supplements"/>
       </group>
       <group delimiter=", ">
         <text macro="label-part-number"/>
@@ -1417,7 +1417,7 @@
       <if variable="container-title">
         <group delimiter=" ">
           <text macro="title-primary"/>
-          <text macro="title-cne-supplements"/>
+          <text macro="cne-title-supplements"/>
         </group>
       </if>
       <!-- For monographic items without `container-title`, bibliography entries list `part-title` or `volume-title` first if available -->
@@ -1430,7 +1430,7 @@
       <else>
         <group delimiter=" ">
           <text macro="title-primary"/>
-          <text macro="title-cne-supplements"/>
+          <text macro="cne-title-supplements"/>
         </group>
       </else>
     </choose>
@@ -1486,7 +1486,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Select full title variable -->
-  <macro name="title-select-variable">
+  <macro name="cne-title-select">
     <choose>
       <if variable="cne-title-romanized">
         <text variable="cne-title-romanized"/>
@@ -1497,7 +1497,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Select short title variable -->
-  <macro name="title-select-variable-short">
+  <macro name="cne-title-select-short">
     <choose>
       <if variable="cne-title-romanized">
         <!-- CNE mode: try short romanized, fallback to full -->
@@ -1517,7 +1517,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Add original + translation supplements -->
-  <macro name="title-cne-supplements">
+  <macro name="cne-title-supplements">
     <choose>
       <if variable="cne-title-romanized">
         <group delimiter=" ">
@@ -1528,7 +1528,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Select full container-title (journal/book) variable -->
-  <macro name="container-title-select-variable">
+  <macro name="cne-container-title-select">
     <choose>
       <if variable="cne-container-title-romanized">
         <text variable="cne-container-title-romanized"/>
@@ -1542,7 +1542,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Select short container-title variable -->
-  <macro name="container-title-select-variable-short">
+  <macro name="cne-container-title-select-short">
     <choose>
       <if variable="cne-container-title-romanized">
         <!-- CNE mode: try short romanized, fallback to full -->
@@ -1573,7 +1573,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Add original container-title supplements (original + translation) -->
-  <macro name="container-title-cne-supplements">
+  <macro name="cne-container-title-supplements">
     <choose>
       <if variable="cne-container-title-romanized">
         <group delimiter=" ">
@@ -1587,7 +1587,7 @@
     </choose>
   </macro>
   <!-- CNE Helper: Select publisher variable -->
-  <macro name="publisher-select-variable">
+  <macro name="cne-publisher-select">
     <choose>
       <if variable="cne-publisher-romanized">
         <text variable="cne-publisher-romanized"/>
@@ -1601,49 +1601,49 @@
     <choose>
       <if type="patent">
         <!-- No italics or quotes, sentence case -->
-        <text form="short" text-case="capitalize-first" macro="title-select-variable"/>
+        <text form="short" text-case="capitalize-first" macro="cne-title-select"/>
       </if>
       <else-if match="any" type="bill collection legislation regulation treaty">
         <!-- No italics or quotes, title case -->
-        <text text-case="title" macro="title-select-variable"/>
+        <text text-case="title" macro="cne-title-select"/>
       </else-if>
       <else-if type="legal_case">
         <!-- Italicized, sentence case -->
-        <text font-style="italic" macro="title-select-variable"/>
+        <text font-style="italic" macro="cne-title-select"/>
       </else-if>
       <else-if match="any" type="book classic graphic hearing map">
         <!-- Italicized, title case (regardless of `container-title`) -->
-        <text font-style="italic" text-case="title" macro="title-select-variable"/>
+        <text font-style="italic" text-case="title" macro="cne-title-select"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="author container-title">
         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
-        <text quotes="true" text-case="title" macro="title-select-variable"/>
+        <text quotes="true" text-case="title" macro="cne-title-select"/>
       </else-if>
       <else-if type="entry-dictionary" variable="container-title">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable"/>
+        <text quotes="true" macro="cne-title-select"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="container-title">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable"/>
+        <text quotes="true" macro="cne-title-select"/>
       </else-if>
       <else-if type="post">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable"/>
+        <text quotes="true" macro="cne-title-select"/>
       </else-if>
       <!-- Other types are formatted based on presence of `container-title` -->
       <else-if variable="container-title">
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="title-select-variable"/>
+        <text quotes="true" text-case="title" macro="cne-title-select"/>
       </else-if>
       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
         <!-- Container-like but not necessarily with `container-title` -->
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="title-select-variable"/>
+        <text quotes="true" text-case="title" macro="cne-title-select"/>
       </else-if>
       <else>
         <!-- Italicized, title case (default) -->
-        <text font-style="italic" text-case="title" macro="title-select-variable"/>
+        <text font-style="italic" text-case="title" macro="cne-title-select"/>
       </else>
     </choose>
   </macro>
@@ -1651,49 +1651,49 @@
     <choose>
       <if type="patent">
         <!-- No italics or quotes, sentence case -->
-        <text text-case="capitalize-first" macro="title-select-variable-short"/>
+        <text text-case="capitalize-first" macro="cne-title-select-short"/>
       </if>
       <else-if match="any" type="bill collection legislation regulation treaty">
         <!-- No italics or quotes, title case -->
-        <text text-case="title" macro="title-select-variable-short"/>
+        <text text-case="title" macro="cne-title-select-short"/>
       </else-if>
       <else-if type="legal_case">
         <!-- Italicized, sentence case -->
-        <text font-style="italic" macro="title-select-variable-short"/>
+        <text font-style="italic" macro="cne-title-select-short"/>
       </else-if>
       <else-if match="any" type="book classic graphic hearing map">
         <!-- Italicized, title case (regardless of `container-title`) -->
-        <text font-style="italic" text-case="title" macro="title-select-variable-short"/>
+        <text font-style="italic" text-case="title" macro="cne-title-select-short"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="author container-title">
         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
-        <text quotes="true" text-case="title" macro="title-select-variable-short"/>
+        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
       </else-if>
       <else-if type="entry-dictionary" variable="container-title">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable-short"/>
+        <text quotes="true" macro="cne-title-select-short"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="container-title">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable-short"/>
+        <text quotes="true" macro="cne-title-select-short"/>
       </else-if>
       <else-if type="post">
         <!-- Quotes, sentence case -->
-        <text quotes="true" macro="title-select-variable-short"/>
+        <text quotes="true" macro="cne-title-select-short"/>
       </else-if>
       <!-- Other types are formatted based on presence of `container-title` -->
       <else-if variable="container-title">
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="title-select-variable-short"/>
+        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
       </else-if>
       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
         <!-- Container-like but not necessarily with `container-title` -->
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="title-select-variable-short"/>
+        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
       </else-if>
       <else>
         <!-- Italicized, title case (default) -->
-        <text font-style="italic" text-case="title" macro="title-select-variable-short"/>
+        <text font-style="italic" text-case="title" macro="cne-title-select-short"/>
       </else>
     </choose>
   </macro>
@@ -3127,7 +3127,7 @@
             <group delimiter=", ">
               <group delimiter=" ">
                 <text macro="title-primary"/>
-                <text macro="title-cne-supplements"/>
+                <text macro="cne-title-supplements"/>
               </group>
               <names variable="collection-editor">
                 <label form="verb" suffix=" "/>
@@ -3158,7 +3158,7 @@
             <group delimiter=", ">
               <group delimiter=" ">
                 <text macro="title-primary"/>
-                <text macro="title-cne-supplements"/>
+                <text macro="cne-title-supplements"/>
               </group>
               <names variable="collection-editor">
                 <label form="verb" suffix=" "/>
@@ -3372,8 +3372,8 @@
   <macro name="source-serial-name">
     <group delimiter=" ">
       <group delimiter=" ">
-        <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
-        <text macro="container-title-cne-supplements"/>
+        <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+        <text macro="cne-container-title-supplements"/>
       </group>
       <choose>
         <!-- TODO: remove conditional when Zotero stops double-mapping `event-place` and `publisher-place` -->
@@ -3596,7 +3596,7 @@
         <else>
           <text variable="collection-title"/>
           <!-- publisher possible with `interview` (CMOS18 14.110) -->
-          <text macro="publisher-select-variable"/>
+          <text macro="cne-publisher-select"/>
           <text macro="source-serial-volume-status-bib"/>
         </else>
       </choose>
@@ -3695,7 +3695,7 @@
         <else>
           <text variable="collection-title"/>
           <!-- publisher possible with `interview` (CMOS18 14.110) -->
-          <text macro="publisher-select-variable"/>
+          <text macro="cne-publisher-select"/>
           <text macro="source-serial-volume-status-note"/>
         </else>
       </choose>
@@ -3889,16 +3889,16 @@
       </else-if>
       <else>
         <group delimiter=" ">
-          <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
-          <text macro="container-title-cne-supplements"/>
+          <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+          <text macro="cne-container-title-supplements"/>
         </group>
       </else>
     </choose>
   </macro>
   <macro name="source-monographic-title-note">
     <group delimiter=" ">
-      <text font-style="italic" text-case="title" macro="container-title-select-variable"/>
-      <text macro="container-title-cne-supplements"/>
+      <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+      <text macro="cne-container-title-supplements"/>
     </group>
   </macro>
   <!-- Monographic source description -->
@@ -5061,12 +5061,12 @@
     <group delimiter=" ">
       <choose>
         <if type="thesis" variable="publisher">
-          <text text-case="capitalize-first" macro="publisher-select-variable"/>
+          <text text-case="capitalize-first" macro="cne-publisher-select"/>
         </if>
         <else-if variable="publisher">
           <group delimiter=": ">
             <!-- <text text-case="capitalize-first" variable="publisher-place"/> -->
-            <text text-case="capitalize-first" macro="publisher-select-variable"/>
+            <text text-case="capitalize-first" macro="cne-publisher-select"/>
           </group>
         </else-if>
         <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
@@ -5087,12 +5087,12 @@
     <group delimiter=" ">
       <choose>
         <if type="thesis" variable="publisher">
-          <text macro="publisher-select-variable"/>
+          <text macro="cne-publisher-select"/>
         </if>
         <else-if variable="publisher">
           <group delimiter=": ">
             <!-- <text variable="publisher-place"/> -->
-            <text macro="publisher-select-variable"/>
+            <text macro="cne-publisher-select"/>
           </group>
         </else-if>
         <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
