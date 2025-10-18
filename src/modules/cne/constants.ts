@@ -36,9 +36,9 @@ export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
     description: "Article or book title",
   },
   {
-    name: "booktitle",
-    label: "Book/Container Title",
-    l10nKey: "cne-field-booktitle",
+    name: "container-title",
+    label: "Container Title",
+    l10nKey: "cne-field-container-title",
     description: "Container title for chapters or articles",
   },
   {

@@ -17,7 +17,6 @@ export type FieldVariant = "original" | "romanized" | "romanizedShort" | "englis
  */
 export type CneFieldName =
   | "title"
-  | "booktitle"
   | "container-title"
   | "publisher"
   | "journal"
@@ -64,8 +63,6 @@ export interface CneCreatorData {
 export interface CneMetadataData {
   /** Article or book title */
   title?: CneFieldData;
-  /** Container title (for chapters, articles) - legacy field name */
-  booktitle?: CneFieldData;
   /** Container title (CSL-compliant hyphenated format) */
   "container-title"?: CneFieldData;
   /** Publisher name */

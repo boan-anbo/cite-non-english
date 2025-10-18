@@ -136,7 +136,7 @@ function formatTitleField(fieldData: CneFieldData): string {
  *
  * Supported fields:
  * - title (main title)
- * - container-title (journal, booktitle)
+ * - container-title (journal, container-title)
  * - collection-title (series)
  * - publisher
  *
@@ -170,15 +170,15 @@ export function enrichTitleFields(zoteroItem: any, cslItem: any) {
     }
   }
 
-  // Enrich container-title (maps to journal or booktitle)
+  // Enrich container-title (maps to journal or container-title)
   if (metadata.journal && (metadata.journal.romanized || metadata.journal.original || metadata.journal.english)) {
     const formatted = formatTitleField(metadata.journal);
     if (formatted) {
       cslItem["container-title"] = formatted;
       enrichedCount++;
     }
-  } else if (metadata.booktitle && (metadata.booktitle.romanized || metadata.booktitle.original || metadata.booktitle.english)) {
-    const formatted = formatTitleField(metadata.booktitle);
+  } else if (metadata["container-title"] && (metadata["container-title"].romanized || metadata["container-title"].original || metadata["container-title"].english)) {
+    const formatted = formatTitleField(metadata["container-title"]);
     if (formatted) {
       cslItem["container-title"] = formatted;
       enrichedCount++;

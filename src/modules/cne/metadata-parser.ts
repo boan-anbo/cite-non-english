@@ -295,7 +295,6 @@ export function serializeToExtra(
   // Add field data for each field
   const fieldNames = [
     "title",
-    "booktitle",
     "container-title",
     "publisher",
     "journal",
