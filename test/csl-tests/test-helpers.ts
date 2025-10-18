@@ -45,8 +45,8 @@ export async function createZoteroItemFromTestCase(
       try {
         item.setField(key, value);
       } catch (error) {
-        // Silently skip fields that don't exist for this item type
-        // This allows fixtures to have optional fields
+        // Log errors for debugging (some fields might not exist for certain item types)
+        console.log(`[createItem] Could not set field '${key}' = '${value}': ${error}`);
       }
     }
   }
@@ -109,57 +109,46 @@ export async function generateBibliography(
 }
 
 /**
- * Load snapshot from file
+ * Generate citations (notes format) for items using specified style and locale
  *
- * @param relativePath - Path relative to test/csl-tests/ directory
- * @returns Snapshot content
+ * @param items - Array of Zotero items
+ * @param styleId - CSL style ID (e.g., 'http://www.zotero.org/styles/chicago-notes-bibliography-cne')
+ * @param styleLocale - Style locale (e.g., 'en-US', 'zh-CN')
+ * @returns HTML citations output formatted as numbered list (notes style)
  */
-export async function loadSnapshot(relativePath: string): Promise<string> {
-  try {
-    const dataDir = Zotero.DataDirectory.dir;
-    console.log(`[loadSnapshot] dataDir: ${dataDir}`);
-
-    // Data dir is at: .scaffold/test/data
-    // We need: test/csl-tests/{relativePath}
-    const parent1 = PathUtils.parent(dataDir);
-    console.log(`[loadSnapshot] parent1: ${parent1}`);
-    const parent2 = PathUtils.parent(parent1);
-    console.log(`[loadSnapshot] parent2: ${parent2}`);
-    const projectRoot = PathUtils.parent(parent2);
-    console.log(`[loadSnapshot] projectRoot: ${projectRoot}`);
-
-    // Build path step by step
-    const testDir = PathUtils.join(projectRoot, 'test');
-    console.log(`[loadSnapshot] testDir: ${testDir}`);
-    const cslTestsDir = PathUtils.join(testDir, 'csl-tests');
-    console.log(`[loadSnapshot] cslTestsDir: ${cslTestsDir}`);
-
-    // Split relative path and join each component separately
-    // relativePath is like "snapshots/chicago-18th/en-US/chinese.html"
-    const pathParts = relativePath.split('/');
-    let fullPath = cslTestsDir;
-    for (const part of pathParts) {
-      fullPath = PathUtils.join(fullPath, part);
-    }
-    console.log(`[loadSnapshot] fullPath: ${fullPath}`);
-
-    const exists = await IOUtils.exists(fullPath);
-    if (!exists) {
-      throw new Error(`Snapshot not found: ${fullPath}`);
-    }
-
-    return await IOUtils.readUTF8(fullPath);
-  } catch (error) {
-    console.error(`[loadSnapshot] Error: ${error.message}`);
-    console.error(`[loadSnapshot] Stack: ${error.stack}`);
-    throw error;
+export async function generateCitations(
+  items: Zotero.Item[],
+  styleId: string,
+  styleLocale: string = 'en-US'
+): Promise<string> {
+  // Get style
+  const style = Zotero.Styles.get(styleId);
+  if (!style) {
+    throw new Error(`Style not found: ${styleId}`);
   }
+
+  // Get CiteProc engine with specified locale
+  const engine = style.getCiteProc(styleLocale, 'html');
+
+  // Generate citations as numbered list (asCitationList=true)
+  const output = Zotero.Cite.makeFormattedBibliographyOrCitationList(
+    engine,
+    items,
+    'html',
+    true  // asCitationList parameter triggers notes/citations mode
+  );
+
+  if (!output) {
+    throw new Error('Citations generation returned empty result');
+  }
+
+  return output;
 }
 
 /**
  * Save snapshot to file
  *
- * @param relativePath - Path relative to test/csl-tests/ directory
+ * @param relativePath - Path relative to project root directory
  * @param content - Content to write
  */
 export async function saveSnapshot(relativePath: string, content: string): Promise<void> {
@@ -168,20 +157,16 @@ export async function saveSnapshot(relativePath: string, content: string): Promi
     console.log(`[saveSnapshot] dataDir: ${dataDir}`);
 
     // Data dir is at: .scaffold/test/data
-    // We need: test/csl-tests/{relativePath}
+    // We need: {projectRoot}/{relativePath}
     const parent1 = PathUtils.parent(dataDir);
     const parent2 = PathUtils.parent(parent1);
     const projectRoot = PathUtils.parent(parent2);
     console.log(`[saveSnapshot] projectRoot: ${projectRoot}`);
 
     // Build path step by step
-    const testDir = PathUtils.join(projectRoot, 'test');
-    const cslTestsDir = PathUtils.join(testDir, 'csl-tests');
-
-    // Split relative path and join each component separately
-    // relativePath is like "snapshots/chicago-18th/en-US/chinese.html"
+    // relativePath is like "snapshots/chicago-18th/en-US/all-languages.html"
     const pathParts = relativePath.split('/');
-    let fullPath = cslTestsDir;
+    let fullPath = projectRoot;
     for (const part of pathParts) {
       fullPath = PathUtils.join(fullPath, part);
     }

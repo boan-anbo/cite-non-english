@@ -29,11 +29,7 @@
     "release": "zotero-plugin release",
     "test": "zotero-plugin test --exit-on-finish",
     "test:inspect": "zotero-plugin test",
-    "test:csl": "mocha --import=tsx test/csl-tests/*.test.ts",
-    "test:snapshots": "zotero-plugin test --exit-on-finish",
-    "test:snapshots:inspect": "zotero-plugin test",
-    "test:snapshots:generate": "zotero-plugin test --exit-on-finish",
-    "test:snapshots:update": "./scripts/test-snapshots-update.sh",
+    "test:snapshots:update": "npm test",
     "test:snapshots:open": "./scripts/open-snapshot.sh",
     "update-deps": "npm update --save"
   },

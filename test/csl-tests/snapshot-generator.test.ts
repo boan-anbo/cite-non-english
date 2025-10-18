@@ -1,12 +1,19 @@
 /**
  * Snapshot Generator
  *
- * This test file generates snapshots for all configured CSL styles.
- * Unlike the main test files, this ONLY generates snapshots - no comparisons.
+ * This test file generates HTML snapshots for all configured CSL styles.
+ * Snapshots are written to snapshots/ directory (outside test/ to avoid watch loops).
+ *
+ * ## Purpose
+ *
+ * Snapshots serve as:
+ * - User documentation and examples
+ * - Visual reference for citation formatting
+ * - NOT used for regression testing (tests use TypeScript expectations)
  *
  * ## Usage
  *
- * Run with: `npm run test:snapshots:generate`
+ * Runs automatically with: `npm test` or `npm run test:snapshots:update`
  *
  * ## Architecture
  *
@@ -14,8 +21,8 @@
  * 2. Retrieves those existing items (not creating duplicates)
  * 3. For each registered style+locale:
  *    - Installs the style
- *    - Generates bibliography from the same items
- *    - Saves to the style-specific snapshot path
+ *    - Generates bibliography from the same items in memory
+ *    - Saves to snapshots/{style}/{locale}/all-languages.html
  *
  * ## Adding New Styles
  *
@@ -32,13 +39,16 @@
  */
 
 import { assert } from 'chai';
-import { generateBibliography, saveSnapshot } from './test-helpers';
+import { generateBibliography, generateCitations, saveSnapshot } from './test-helpers';
 
 /**
  * Style Registry
  *
  * Defines all styles for which we generate snapshots.
- * Each entry specifies the style ID, filename, locale, and output path.
+ * Each entry specifies the style ID, filename, locale, and output paths.
+ * Two snapshots are generated per style:
+ * - Bibliography format (standard bibliography output)
+ * - Notes format (individual citations as numbered list)
  */
 const STYLE_REGISTRY = [
   {
@@ -46,7 +56,8 @@ const STYLE_REGISTRY = [
     styleId: 'http://www.zotero.org/styles/chicago-notes-bibliography-cne',
     styleFilename: 'chicago-notes-bibliography-cne.csl',
     locale: 'en-US',
-    snapshotPath: 'snapshots/chicago-18th/en-US/all-languages.html'
+    snapshotPathBibliography: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-notes.html'
   },
   // Add more styles here as needed:
   // {
@@ -54,7 +65,8 @@ const STYLE_REGISTRY = [
   //   styleId: 'http://www.zotero.org/styles/apa-7th-cne',
   //   styleFilename: 'apa-7th-cne.csl',
   //   locale: 'en-US',
-  //   snapshotPath: 'snapshots/apa-7th/en-US/all-languages.html'
+  //   snapshotPathBibliography: 'snapshots/apa-7th/en-US/all-languages-bibliography.html',
+  //   snapshotPathNotes: 'snapshots/apa-7th/en-US/all-languages-notes.html'
   // },
 ];
 
@@ -126,24 +138,32 @@ describe('Snapshot Generator', function() {
     for (const style of STYLE_REGISTRY) {
       console.log(`  🎯 ${style.name} (${style.locale})`);
 
-      // Generate bibliography
+      // Generate bibliography format
       const bibliography = await generateBibliography(
         allItems,
         style.styleId,
         style.locale
       );
-      console.log(`     Generated: ${bibliography.length} characters`);
+      console.log(`     Generated bibliography: ${bibliography.length} characters`);
+      await saveSnapshot(style.snapshotPathBibliography, bibliography);
+      console.log(`     Saved to: ${style.snapshotPathBibliography}`);
 
-      // Save snapshot
-      await saveSnapshot(style.snapshotPath, bibliography);
-      console.log(`     Saved to: ${style.snapshotPath}`);
+      // Generate notes format
+      const citations = await generateCitations(
+        allItems,
+        style.styleId,
+        style.locale
+      );
+      console.log(`     Generated notes: ${citations.length} characters`);
+      await saveSnapshot(style.snapshotPathNotes, citations);
+      console.log(`     Saved to: ${style.snapshotPathNotes}`);
       console.log('');
     }
 
     console.log('✅ All snapshots generated successfully!');
     console.log('');
     console.log('💡 Next steps:');
-    console.log('   - Review changes: git diff test/csl-tests/snapshots/');
+    console.log('   - Review changes: git diff snapshots/');
     console.log('   - Run tests: npm test');
     console.log('');
   });
