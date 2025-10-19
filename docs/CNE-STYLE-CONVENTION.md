@@ -531,6 +531,39 @@ When creating or updating CNE style variants:
    - Check both bibliography and citation formats
    - Test with Chinese, Japanese, and Korean sources
 
+### Future-Proofing: Semantic Abstraction Layer
+
+**Key Architectural Principle:** CNE-CONFIG provides a **semantic** interface that is independent of citeproc implementation details.
+
+#### Separation of Concerns
+
+```
+Style Authors → CNE-CONFIG (semantic) → parseCNEConfig → configureCiteproc → Citeproc-js
+                    ↑                                           ↓
+                 STABLE                                    CAN CHANGE
+```
+
+**User-Facing API (Stable):**
+```json
+{"persons":["translit","orig"],"romanizedFormatting":"native"}
+```
+
+Describes **WHAT** the style wants (romanized + original, Asian formatting) without specifying **HOW** to achieve it.
+
+**Internal Implementation (Can Evolve):**
+- Today: Dual variants with different `multi.main` values
+- Tomorrow: Could use different mechanism if citeproc changes
+- Future: Could support entirely different citation processors
+
+#### Benefits
+
+1. **Citeproc Updates:** If citeproc-js adds new APIs or changes behavior, we update `configureCiteproc.ts` without breaking existing styles
+2. **Processor Independence:** Could support CSL-Java, citeproc-rs, or other processors with same CNE-CONFIG
+3. **Gradual Migration:** If citeproc fixes underlying issues, we can simplify implementation gradually
+4. **New Requirements:** Can add new formatting options to CNE-CONFIG while maintaining backward compatibility
+
+This is **dependency inversion** - high-level policy (CNE-CONFIG) doesn't depend on low-level details (citeproc internals).
+
 ### Technical References
 
 - **Architecture documentation:** `/docs/PLAN-multi-slot-architecture.md`
