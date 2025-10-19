@@ -33,7 +33,7 @@
 
 import { assert } from 'chai';
 import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
-import { createZoteroItemFromTestCase } from './test-helpers';
+import { createZoteroItemFromTestCase, stylesManager, installCslStyle } from './test-helpers';
 
 describe('Global Setup - Batch Item Creation', function() {
   // Increase timeout for batch creation
@@ -56,6 +56,15 @@ describe('Global Setup - Batch Item Creation', function() {
       await Promise.all(existingItems.map(item => item.eraseTx()));
       console.log(`✅ Deleted ${existingItems.length} existing items`);
     }
+
+    // Install all CNE styles BEFORE initializing Zotero.Styles
+    console.log('📝 Installing CNE styles...');
+    await installCslStyle('chicago-notes-bibliography-cne.csl');
+    await installCslStyle('apa-7th-cne.csl');
+    console.log('✅ Styles installed');
+
+    // Initialize Zotero Styles ONCE for all tests (after styles are installed)
+    await stylesManager.ensureInitialized();
 
     console.log(`📦 Creating ${Object.keys(ALL_FIXTURES).length} test items...`);
 

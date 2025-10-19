@@ -75,34 +75,43 @@
  * - cne-creator-1 matches second creator, etc.
  * - CSL processor automatically handles role labels ("edited by", "directed by")
  *
- * ## Enrichment Strategy
+ * ## Enrichment Strategy (Multi-Slot Architecture)
  *
  * For each creator with CNE metadata:
  * 1. Set `multi.main = originalLanguage` for Asian name ordering
- * 2. Replace family/given with romanized versions if available
- * 3. Append original script name to the given field via STRING CONCATENATION
+ * 2. Replace family/given with romanized versions (primary slot)
+ * 3. Populate multi._key[originalLang] with original script (secondary slot)
  *
  * For creators WITHOUT CNE metadata:
  * 1. Set `multi.main = "en"` to preserve Western name ordering
  * 2. Skip all other enrichment (no modifications to family/given)
  *
- * ## Why String Concatenation Instead of multi._key?
+ * ## Multi-Slot Architecture with Runtime Configuration
  *
- * We use string concatenation (e.g., `given: "Xiaobo 王小波"`) to display both
- * romanized and original script simultaneously. Why not use multi._key?
+ * **Previous Approach (before 2025-10-18)**:
+ * String concatenation (`given: "Xiaobo 王小波"`) was used because we believed
+ * multi._key only worked with CSL-M styles, which are non-standard.
  *
- * **Experiment A (2025-10-17)** tested storing romanized/original as separate
- * variants in multi._key (romanized in main fields, original in multi._key["zh-CN"]).
- * Result: Citeproc-js only SELECTS one variant based on cite-lang-prefs.
+ * **Current Approach (after 2025-10-18 investigation)**:
+ * Store language variants separately in multi._key and configure citeproc at runtime:
  *
- * Standard CSL styles have `cite-lang-prefs: ['orig']` (only ONE slot), so only
- * romanized OR original displays, NOT both. Multi-slot display (`['translit', 'orig']`)
- * requires CSL-M styles, which are not standardized and have sustainability concerns.
+ * 1. **Data Layer**: ALWAYS populate complete data
+ *    - Main fields (family/given) → Romanized version
+ *    - multi._key[originalLang] → Original script version
  *
- * **Conclusion**: String concatenation is the ONLY viable way to display both
- * languages simultaneously in standard CSL styles (Chicago, APA, MLA).
+ * 2. **Configuration Layer**: Styles declare preferences via CNE-CONFIG metadata
+ *    - APA: `CNE-CONFIG: persons=translit` → Show romanized only
+ *    - Chicago: `CNE-CONFIG: persons=translit,orig` → Show both
  *
- * See docs/multi-key-experiment.md for full experimental results and analysis.
+ * 3. **Engine Configuration**: Apply cite-lang-prefs at runtime
+ *    - `engine.setLangPrefsForCites({persons: ['translit', 'orig']})`
+ *    - This OVERRIDES the default cite-lang-prefs from CSL files
+ *
+ * **Key Insight**: We don't need CSL-M styles or special CSL syntax. We just need
+ * to configure cite-lang-prefs via JavaScript APIs AFTER engine creation but
+ * BEFORE rendering. This works with standard CSL styles.
+ *
+ * See docs/PLAN-multi-slot-architecture.md for complete architecture details.
  *
  * ## Complete Example: Mixed Creator List
  *
@@ -129,24 +138,37 @@
  * [
  *   {
  *     family: "Du",
- *     given: "Weisheng 杜伟生",
- *     multi: { main: "zh-CN" }  // ← Asian ordering
+ *     given: "Weisheng",
+ *     multi: {
+ *       main: "zh-CN",  // ← Asian ordering
+ *       _key: {
+ *         "zh-CN": { family: "杜", given: "伟生" }  // ← Original script in secondary slot
+ *       }
+ *     }
  *   },
  *   {
  *     family: "Lin",
- *     given: "Shitian 林世田",
- *     multi: { main: "zh-CN" }  // ← Asian ordering
+ *     given: "Shitian",
+ *     multi: {
+ *       main: "zh-CN",  // ← Asian ordering
+ *       _key: {
+ *         "zh-CN": { family: "林", given: "世田" }  // ← Original script in secondary slot
+ *       }
+ *     }
  *   },
  *   {
  *     family: "Morrison",
  *     given: "Alastair",
- *     multi: { main: "en" }      // ← Western ordering (THE FIX!)
+ *     multi: { main: "en" }  // ← Western ordering, no multi._key (no CNE data)
  *   }
  * ]
  * ```
  *
- * **Rendered result:**
+ * **Rendered result (with CNE-CONFIG: persons=translit,orig)**:
  * "Du Weisheng 杜伟生... edited by Lin Shitian 林世田 and Alastair Morrison"
+ *
+ * **Rendered result (with CNE-CONFIG: persons=translit)**:
+ * "Du Weisheng... edited by Lin Shitian and Alastair Morrison"
  *
  * ## Technical References
  *
@@ -295,8 +317,9 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
 
   // Get the original language code for CNE creators
   // This will be used to set multi.main for Asian name ordering
-  // Priority: 1) CNE metadata, 2) item language field, 3) default to "zh"
-  const originalLang = metadata.originalLanguage || zoteroItem.getField("language") || "zh";
+  // Priority: 1) CNE metadata, 2) item.language field, 3) default to "zh"
+  const originalLang = metadata.originalLanguage || cslItem.language || "zh";
+  Zotero.debug(`[CNE] Processing item with originalLang: ${originalLang}`);
 
   // Track position in metadata.authors array as we process creators sequentially
   let metadataIndex = 0;
@@ -364,12 +387,18 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
         if (!cslCreator.multi) {
           cslCreator.multi = {};
         }
+        if (!cslCreator.multi._key) {
+          cslCreator.multi._key = {};  // Always initialize to prevent undefined errors
+        }
         cslCreator.multi.main = originalLang;
       } else {
         // This creator has NO CNE data → force English for Western ordering
         // Example: Alastair Morrison → "Alastair Morrison" (given-first)
         if (!cslCreator.multi) {
           cslCreator.multi = {};
+        }
+        if (!cslCreator.multi._key) {
+          cslCreator.multi._key = {};  // Always initialize to prevent undefined errors
         }
         cslCreator.multi.main = "en";
       }
@@ -380,26 +409,42 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       }
 
       // ============================================================================
-      // Name Enrichment: String Concatenation Approach
+      // Name Enrichment: Multi-Slot Architecture with multi._key
       // ============================================================================
       //
-      // We concatenate romanized + original names in the `given` field to display
-      // both simultaneously (e.g., "Du Weisheng 杜伟生").
+      // We now use citeproc-js's multi-slot rendering system to display different
+      // language variants based on cite-lang-prefs configuration declared in CSL styles.
       //
-      // WHY NOT USE multi._key FOR DISPLAY?
+      // ARCHITECTURE:
       //
-      // We tested storing romanized/original as separate variants in multi._key
-      // (romanized in main fields, original in multi._key["zh-CN"]), but
-      // Experiment A (2025-10-17) proved that citeproc-js only SELECTS one
-      // variant from multi._key based on cite-lang-prefs configuration.
+      // 1. Main fields (family/given) → Romanized version (primary slot)
+      // 2. multi._key[originalLang] → Original script version (secondary slot)
+      // 3. CNE-CONFIG in style metadata → Controls which slots display
       //
-      // Standard CSL styles have cite-lang-prefs: ['orig'] (only ONE slot),
-      // so only romanized OR original displays, NOT both.
+      // EXAMPLES:
       //
-      // CONCLUSION: String concatenation is the ONLY way to display both
-      // romanized + original simultaneously in standard CSL styles.
+      // - APA style declares: CNE-CONFIG: persons=translit
+      //   → Only romanized displays: "Du, W."
       //
-      // See docs/multi-key-experiment.md for full experimental analysis.
+      // - Chicago style declares: CNE-CONFIG: persons=translit,orig
+      //   → Both display: "Du Weisheng 杜伟生"
+      //
+      // KEY INSIGHT from 2025-10-18 investigation:
+      //
+      // While standard CSL styles have cite-lang-prefs: ['orig'] (single slot),
+      // we can OVERRIDE this configuration at runtime using JavaScript APIs:
+      //   - engine.setLangPrefsForCites({persons: ['translit', 'orig']})
+      //
+      // This allows CNE styles to use multi-slot rendering WITHOUT requiring
+      // CSL-M style files or non-standard CSL syntax.
+      //
+      // STRATEGY:
+      //
+      // - ALWAYS populate complete data (both romanized AND original)
+      // - Let cite-lang-prefs decide what to display (configured via CNE-CONFIG)
+      // - No conditional logic - data population is style-agnostic
+      //
+      // See docs/PLAN-multi-slot-architecture.md for complete architecture.
       // ============================================================================
 
       // Handle literal names (single-field names) - convert to family/given if we have romanized data
@@ -412,27 +457,58 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
         }
       }
 
-      // Replace family/given with CNE romanized names if available
-      if (cneCreator.lastRomanized) {
-        cslCreator.family = cneCreator.lastRomanized;
+      // DUAL-VARIANT MULTI-SLOT ARCHITECTURE
+      //
+      // Creates TWO romanized variants to support both Chicago (no commas) and APA (commas).
+      //
+      // Background: Citeproc's _isRomanesque() function (lines 13771-13779) checks multi.main:
+      // - If multi.main='ja'/'zh', romanesque downgraded 2→1 (mixed content, no commas)
+      // - If multi.main='en', romanesque stays 2 (pure romanesque, respects CSL formatting)
+      //
+      // Data structure:
+      // - Main fields = ORIGINAL (for 'orig' slot - citeproc.js line 14240)
+      // - multi._key['en'] = ROMANIZED WITHOUT multi.main (native formatting, no commas)
+      // - multi._key['en-x-western'] = ROMANIZED WITH multi.main='en' (western formatting, commas)
+      //
+      // CNE-CONFIG controls which variant to use via romanizedFormatting:
+      // - Chicago: romanizedFormatting='native' → uses 'en' tag → no commas
+      // - APA: romanizedFormatting='western' → uses 'en-x-western' tag → commas
+
+      // 1. Set ORIGINAL in main fields (for 'orig' slot)
+      if (cneCreator.lastOriginal) {
+        cslCreator.family = cneCreator.lastOriginal;
       }
-      if (cneCreator.firstRomanized) {
-        cslCreator.given = cneCreator.firstRomanized;
+      if (cneCreator.firstOriginal) {
+        cslCreator.given = cneCreator.firstOriginal;
       }
 
-      // Append original script name to the given field
-      // NOTE: This string concatenation is NECESSARY because standard CSL styles
-      // do not support displaying multiple language variants from multi._key.
-      // Experiment A confirmed that multi._key only enables language SELECTION,
-      // not simultaneous DISPLAY. See docs/multi-key-experiment.md.
-      const originalName = formatOriginalName(cneCreator);
-      if (originalName) {
-        if (cslCreator.given) {
-          cslCreator.given = `${cslCreator.given} ${originalName}`;
-        } else {
-          cslCreator.given = originalName;
-        }
+      // 2. Create DUAL romanized variants (for 'translit' slot)
+      if (cneCreator.lastRomanized || cneCreator.firstRomanized) {
+        // Variant 1: NATIVE formatting (no commas) - for Chicago
+        // Inherits item.language, gets romanesque=1, formats as "Family Given"
+        cslCreator.multi._key['en'] = {
+          family: cneCreator.lastRomanized || '',
+          given: cneCreator.firstRomanized || ''
+          // NO multi.main - inherits item.language='ja'/'zh'
+        };
+
+        // Variant 2: WESTERN formatting (commas) - for APA
+        // Sets multi.main='en', gets romanesque=2, respects CSL name-as-sort-order
+        cslCreator.multi._key['en-x-western'] = {
+          family: cneCreator.lastRomanized || '',
+          given: cneCreator.firstRomanized || '',
+          multi: {
+            main: 'en'  // CRITICAL: Forces western formatting with commas
+          }
+        };
       }
+
+      Zotero.debug(
+        `[CNE] Dual-variant architecture - Main=original, en=native romanized, en-x-western=western romanized` +
+        `\n  Main fields (original): ${JSON.stringify({ family: cslCreator.family, given: cslCreator.given })}` +
+        `\n  multi._key['en'] (native romanized): ${JSON.stringify(cslCreator.multi._key['en'])}` +
+        `\n  multi._key['en-x-western'] (western romanized): ${JSON.stringify(cslCreator.multi._key['en-x-western'])}`
+      );
 
       enrichedCount++;
     }

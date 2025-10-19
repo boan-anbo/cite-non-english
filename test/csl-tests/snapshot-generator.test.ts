@@ -59,46 +59,15 @@ const STYLE_REGISTRY = [
     snapshotPathBibliography: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-bibliography.html',
     snapshotPathNotes: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-notes.html'
   },
-  // Add more styles here as needed:
-  // {
-  //   name: 'APA 7th Edition - CNE',
-  //   styleId: 'http://www.zotero.org/styles/apa-7th-cne',
-  //   styleFilename: 'apa-7th-cne.csl',
-  //   locale: 'en-US',
-  //   snapshotPathBibliography: 'snapshots/apa-7th/en-US/all-languages-bibliography.html',
-  //   snapshotPathNotes: 'snapshots/apa-7th/en-US/all-languages-notes.html'
-  // },
+  {
+    name: 'APA 7th Edition - CNE',
+    styleId: 'http://www.zotero.org/styles/apa-7th-cne',
+    styleFilename: 'apa-7th-cne.csl',
+    locale: 'en-US',
+    snapshotPathBibliography: 'snapshots/apa-7th-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/apa-7th-cne/en-US/all-languages-notes.html'
+  },
 ];
-
-/**
- * Install a CSL style by copying to Zotero's styles directory
- *
- * @param styleFilename - Filename of the style (e.g., 'chicago-notes-bibliography-cne.csl')
- */
-async function installStyle(styleFilename: string): Promise<void> {
-  const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, 'styles');
-  await IOUtils.makeDirectory(stylesDir, { ignoreExisting: true });
-
-  const dataDir = Zotero.DataDirectory.dir;
-  const projectRoot = PathUtils.parent(PathUtils.parent(dataDir));
-  const sourcePath = PathUtils.join(
-    projectRoot,
-    'build',
-    'addon',
-    'styles',
-    'cne',
-    styleFilename
-  );
-
-  const sourceExists = await IOUtils.exists(sourcePath);
-  if (!sourceExists) {
-    throw new Error(`Style file not found at: ${sourcePath}`);
-  }
-
-  const destPath = PathUtils.join(stylesDir, styleFilename);
-  await IOUtils.copy(sourcePath, destPath, { noOverwrite: false });
-  console.log(`  ✅ Installed: ${styleFilename}`);
-}
 
 describe('Snapshot Generator', function() {
   let allItems: Zotero.Item[];
@@ -106,47 +75,19 @@ describe('Snapshot Generator', function() {
   before(async function() {
     this.timeout(60000); // Longer timeout for multiple styles
 
-    console.log('');
-    console.log('📸 Snapshot Generator');
-    console.log('════════════════════════════════════════');
-    console.log('');
-
     // Retrieve all items created by global setup
-    console.log('📚 Retrieving existing items from Zotero...');
     const libraryID = Zotero.Libraries.userLibraryID;
     allItems = await Zotero.Items.getAll(libraryID);
-    console.log(`  ✅ Found ${allItems.length} items`);
-    console.log('');
-
-    // Install all styles
-    console.log('🎨 Installing CSL styles...');
-    for (const style of STYLE_REGISTRY) {
-      await installStyle(style.styleFilename);
-    }
-    console.log('');
-
-    // Initialize Zotero styles system
-    console.log('🔧 Initializing Zotero Styles...');
-    await Zotero.Styles.init();
-    console.log('  ✅ Styles initialized');
-    console.log('');
 
     // Generate snapshots for each style
-    console.log('📝 Generating snapshots for all styles...');
-    console.log('');
-
     for (const style of STYLE_REGISTRY) {
-      console.log(`  🎯 ${style.name} (${style.locale})`);
-
       // Generate bibliography format
       const bibliography = await generateBibliography(
         allItems,
         style.styleId,
         style.locale
       );
-      console.log(`     Generated bibliography: ${bibliography.length} characters`);
       await saveSnapshot(style.snapshotPathBibliography, bibliography);
-      console.log(`     Saved to: ${style.snapshotPathBibliography}`);
 
       // Generate notes format
       const citations = await generateCitations(
@@ -154,18 +95,8 @@ describe('Snapshot Generator', function() {
         style.styleId,
         style.locale
       );
-      console.log(`     Generated notes: ${citations.length} characters`);
       await saveSnapshot(style.snapshotPathNotes, citations);
-      console.log(`     Saved to: ${style.snapshotPathNotes}`);
-      console.log('');
     }
-
-    console.log('✅ All snapshots generated successfully!');
-    console.log('');
-    console.log('💡 Next steps:');
-    console.log('   - Review changes: git diff snapshots/');
-    console.log('   - Run tests: npm test');
-    console.log('');
   });
 
   it('should have generated all snapshots', function() {

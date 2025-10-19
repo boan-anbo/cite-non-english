@@ -5,6 +5,11 @@
  */
 
 import { getString } from "../../utils/locale";
+import {
+  extractCNEConfigFromStyle,
+  configureCiteprocForCNE,
+  getDefaultCNEConfig,
+} from './config';
 
 /**
  * Decorator for example functions
@@ -409,6 +414,17 @@ export class CnePreviewFactory {
       // Get CSL engine (citeproc-js)
       // This is the same engine Zotero uses for citations
       const cslEngine = style.getCiteProc(locale, "html");
+
+      // Configure engine for CNE multi-slot rendering
+      // Extract CNE-CONFIG from style metadata and apply to engine
+      const cneConfig = extractCNEConfigFromStyle(style);
+      if (cneConfig) {
+        console.log('[CNE Preview] Found CNE-CONFIG, applying to engine:', cneConfig);
+        configureCiteprocForCNE(cslEngine, cneConfig);
+      } else {
+        console.log('[CNE Preview] No CNE-CONFIG found, using default configuration');
+        configureCiteprocForCNE(cslEngine, getDefaultCNEConfig());
+      }
 
       // Prepare item IDs
       const itemIds = items.map((item) => item.id);

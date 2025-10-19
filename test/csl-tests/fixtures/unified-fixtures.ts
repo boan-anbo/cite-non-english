@@ -80,11 +80,13 @@ cne-journal-romanized: Zhongguo shehui kexue`
 cne-creator-0-last-romanized: Beijing Airusheng shuzihua jishu yanjiu zhongxin
 cne-title-original: 中国基本古籍库
 cne-title-romanized: Zhongguo jiben guji ku
-cne-title-english: Database of Chinese Classic Ancient Books`
+cne-title-english: Database of Chinese Classic Ancient Books
+cne-publisher-romanized: Beijing Airusheng shuzihua jishu yanjiu zhongxin`
   },
 
   [FIXTURE_IDS.ZHCN_JIA_2010_ERSHISI]: {
     itemType: 'film',
+    genre: 'Film',
     title: '二十四城记',
     publisher: 'Cinema Guild',
     place: 'New York',
@@ -235,7 +237,7 @@ cne-journal-romanized: Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō`
     title: '東京物語',
     publisher: 'Shōchiku',
     date: '1953',
-    language: 'ja',
+    language: 'ja-JP',
     creators: [{
       firstName: '安二郎',
       lastName: '小津',

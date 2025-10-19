@@ -141,33 +141,6 @@ function assertEqualWithDiff(actual: string | null | undefined, expected: string
 const STYLE_ID = 'http://www.zotero.org/styles/chicago-notes-bibliography-cne';
 const STYLE_LOCALE = 'en-US';
 
-/**
- * Install a CSL style silently by copying to Zotero's styles directory
- */
-async function installStyleSilently(styleFilename: string): Promise<void> {
-  const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, 'styles');
-  await IOUtils.makeDirectory(stylesDir, { ignoreExisting: true });
-
-  const dataDir = Zotero.DataDirectory.dir;
-  const projectRoot = PathUtils.parent(PathUtils.parent(dataDir));
-  const sourcePath = PathUtils.join(
-    projectRoot,
-    'build',
-    'addon',
-    'styles',
-    'cne',
-    styleFilename
-  );
-
-  const sourceExists = await IOUtils.exists(sourcePath);
-  if (!sourceExists) {
-    throw new Error(`Style file not found at: ${sourcePath}`);
-  }
-
-  const destPath = PathUtils.join(stylesDir, styleFilename);
-  await IOUtils.copy(sourcePath, destPath, { noOverwrite: false });
-}
-
 describe('Chicago 18th Edition - CNE (en-US)', function() {
   let bibliography: string;
 
@@ -175,31 +148,16 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
   before(async function() {
     this.timeout(30000);
 
-    // Install CNE style
-    try {
-      await installStyleSilently('chicago-notes-bibliography-cne.csl');
-    } catch (error) {
-      console.warn('⚠️  Could not install style:', error);
-    }
-
-    // Initialize Zotero styles
-    await Zotero.Styles.init();
-
     // Retrieve all items created in global setup
-    console.log('📚 Retrieving existing items...');
     const libraryID = Zotero.Libraries.userLibraryID;
     const allItems = await Zotero.Items.getAll(libraryID);
-    console.log(`✅ Found ${allItems.length} items`);
 
     // Render bibliography ONCE for all items
-    console.log('📚 Generating bibliography for all items...');
     bibliography = await generateBibliography(
       allItems,
       STYLE_ID,
       STYLE_LOCALE
     );
-    console.log(`✅ Generated bibliography (${bibliography.length} characters)`);
-
   });
 
   // ==========================================================================
