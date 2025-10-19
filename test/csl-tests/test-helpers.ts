@@ -3,6 +3,158 @@
  */
 
 import type { CNETestFixture } from './fixtures/types';
+import {
+  extractCNEConfigFromStyle,
+  configureCiteprocForCNE,
+  getDefaultCNEConfig,
+} from '../../src/modules/cne/config';
+
+/**
+ * Zotero Styles Lifecycle Manager
+ *
+ * Manages the initialization and state of the Zotero styles system
+ * across all test files. Ensures styles are initialized exactly once
+ * and provides observable state for debugging.
+ *
+ * @example
+ * ```typescript
+ * // In global setup or test before hooks
+ * await stylesManager.ensureInitialized();
+ *
+ * // Check if ready (useful for debugging)
+ * if (stylesManager.isReady()) {
+ *   console.log('Styles ready!');
+ * }
+ * ```
+ */
+class StylesLifecycleManager {
+  private state: 'uninitialized' | 'initializing' | 'ready' | 'failed' = 'uninitialized';
+  private initError: Error | null = null;
+  private initPromise: Promise<void> | null = null;
+
+  /**
+   * Ensure Zotero.Styles is initialized.
+   *
+   * This method is idempotent - safe to call multiple times.
+   * Subsequent calls will:
+   * - Return immediately if already initialized
+   * - Wait for in-progress initialization to complete
+   * - Re-throw the original error if initialization failed
+   *
+   * @throws {Error} If initialization fails
+   */
+  async ensureInitialized(): Promise<void> {
+    // Already ready
+    if (this.state === 'ready') {
+      console.log('ℹ️  Zotero.Styles already initialized');
+      return;
+    }
+
+    // Previously failed - throw the original error
+    if (this.state === 'failed') {
+      console.error('❌ Zotero.Styles initialization previously failed');
+      throw this.initError || new Error('Styles initialization failed (unknown error)');
+    }
+
+    // Currently initializing - wait for it
+    if (this.state === 'initializing' && this.initPromise) {
+      console.log('⏳ Waiting for in-progress initialization...');
+      return this.initPromise;
+    }
+
+    // First call - perform initialization
+    this.state = 'initializing';
+    console.log('🎨 Initializing Zotero.Styles...');
+
+    this.initPromise = this._performInit();
+    return this.initPromise;
+  }
+
+  /**
+   * Internal method to perform actual initialization
+   */
+  private async _performInit(): Promise<void> {
+    try {
+      await Zotero.Styles.init();
+      this.state = 'ready';
+      console.log('✅ Zotero.Styles initialized successfully');
+    } catch (error) {
+      this.state = 'failed';
+      this.initError = error instanceof Error ? error : new Error(String(error));
+
+      console.error('❌ Failed to initialize Zotero.Styles:', this.initError.message);
+      if (this.initError.stack) {
+        console.error('Stack trace:', this.initError.stack);
+      }
+
+      throw this.initError;
+    }
+  }
+
+  /**
+   * Check if styles system is ready
+   *
+   * @returns true if initialized and ready to use
+   */
+  isReady(): boolean {
+    return this.state === 'ready';
+  }
+
+  /**
+   * Get current state (useful for debugging)
+   *
+   * @returns Current initialization state
+   */
+  getState(): string {
+    return this.state;
+  }
+
+  /**
+   * Get initialization error if failed
+   *
+   * @returns Error object if initialization failed, null otherwise
+   */
+  getError(): Error | null {
+    return this.initError;
+  }
+
+  /**
+   * Reset state (primarily for testing the manager itself)
+   *
+   * WARNING: Only use this if you know what you're doing!
+   * In normal test execution, styles should be initialized once.
+   */
+  _reset(): void {
+    this.state = 'uninitialized';
+    this.initError = null;
+    this.initPromise = null;
+    console.warn('⚠️  StylesLifecycleManager reset - this should rarely be needed');
+  }
+}
+
+// Export singleton instance
+export const stylesManager = new StylesLifecycleManager();
+
+/**
+ * Install a CSL style file from addon to Zotero styles directory
+ *
+ * @param styleFilename - Name of the style file (e.g., 'chicago-notes-bibliography-cne.csl')
+ */
+export async function installCslStyle(styleFilename: string): Promise<void> {
+  const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, 'styles');
+  await IOUtils.makeDirectory(stylesDir, { ignoreExisting: true });
+
+  // Navigate from test/data -> parent -> parent -> cite-non-english
+  const dataDir = Zotero.DataDirectory.dir;
+  const test = PathUtils.parent(dataDir);
+  const scaffold = PathUtils.parent(test);
+  const root = PathUtils.parent(scaffold);
+
+  const sourcePath = PathUtils.join(root, 'styles', 'cne', styleFilename);
+  const destPath = PathUtils.join(stylesDir, styleFilename);
+
+  await IOUtils.copy(sourcePath, destPath, { noOverwrite: false });
+}
 
 /**
  * Create a Zotero item from a test fixture
@@ -94,6 +246,17 @@ export async function generateBibliography(
 
   // Get CiteProc engine with specified locale
   const engine = style.getCiteProc(styleLocale, 'html');
+
+  // Configure engine for CNE multi-slot rendering
+  // Extract CNE-CONFIG from style metadata and apply to engine
+  const cneConfig = extractCNEConfigFromStyle(style);
+  if (cneConfig) {
+    console.log('[Test Helpers] Found CNE-CONFIG, applying to engine:', cneConfig);
+    configureCiteprocForCNE(engine, cneConfig);
+  } else {
+    console.log('[Test Helpers] No CNE-CONFIG found, using default configuration');
+    configureCiteprocForCNE(engine, getDefaultCNEConfig());
+  }
 
   // Register items with engine
   engine.updateItems(items.map(item => item.id));

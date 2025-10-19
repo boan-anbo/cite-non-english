@@ -1,8 +1,8 @@
 /**
- * Chicago 18th Edition (Notes and Bibliography) - CNE variant tests
+ * APA 7th Edition - CNE variant tests
  *
- * This test suite validates CNE style handling for Chicago Manual of Style
- * 18th edition. Tests use items created in global-setup.test.ts.
+ * This test suite validates CNE style handling for APA 7th edition.
+ * Tests use items created in global-setup.test.ts.
  *
  * ## Test Architecture
  *
@@ -27,16 +27,16 @@
  * - No need to match by ID
  * - Just check: "does this exact string appear in the output?"
  *
- * Expectations are defined in TypeScript files (e.g., expectations/chicago-18th/en-US/chinese.ts)
+ * Expectations are defined in TypeScript files (e.g., expectations/apa-7th/en-US/chinese.ts)
  */
 
 import { assert } from 'chai';
 import * as chai from 'chai';
 import * as Diff from 'diff';
 import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
-import { chineseExpectations } from './expectations/chicago-18th/en-US/chinese';
-import { japaneseExpectations } from './expectations/chicago-18th/en-US/japanese';
-import { koreanExpectations } from './expectations/chicago-18th/en-US/korean';
+import { chineseExpectations } from './expectations/apa-7th/en-US/chinese';
+import { japaneseExpectations } from './expectations/apa-7th/en-US/japanese';
+import { koreanExpectations } from './expectations/apa-7th/en-US/korean';
 import { generateBibliography, extractCslEntry } from './test-helpers';
 
 // Configure Chai to show full string diffs (not truncated)
@@ -138,10 +138,10 @@ function assertEqualWithDiff(actual: string | null | undefined, expected: string
 }
 
 // Style configuration
-const STYLE_ID = 'http://www.zotero.org/styles/chicago-notes-bibliography-cne';
+const STYLE_ID = 'http://www.zotero.org/styles/apa-7th-cne';
 const STYLE_LOCALE = 'en-US';
 
-describe('Chicago 18th Edition - CNE (en-US)', function() {
+describe('APA 7th Edition - CNE (en-US)', function() {
   let bibliography: string;
 
   // Initialize styles before running tests

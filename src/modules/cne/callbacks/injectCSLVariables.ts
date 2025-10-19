@@ -109,7 +109,19 @@ function injectFieldVariants(
  */
 export function injectCSLVariables(zoteroItem: any, cslItem: any) {
   // Get Extra field content
-  const extraContent = zoteroItem.getField("extra");
+  // Note: zoteroItem in callback context may not have getField() method
+  // Try multiple access patterns
+  let extraContent: string | undefined;
+
+  if (typeof zoteroItem.getField === 'function') {
+    extraContent = zoteroItem.getField("extra");
+  } else if (zoteroItem.extra) {
+    extraContent = zoteroItem.extra;
+  } else if (cslItem.note) {
+    // CSL-JSON sometimes puts Extra in note field
+    extraContent = cslItem.note;
+  }
+
   if (!extraContent) {
     return;
   }
