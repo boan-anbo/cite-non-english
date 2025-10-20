@@ -36,7 +36,7 @@
     <category field="sociology"/>
     <category field="theology"/>
     <summary>Chicago-style source citations (with Bluebook for legal citations), author-date system, with CNE (Cite Non-English) field support for displaying romanized, original, and English translation of non-English titles, container titles, and publishers
-CNE-CONFIG: {"persons":["translit","orig"],"romanizedFormatting":"native"}</summary>
+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
     <updated>2025-10-19T00:00:00+00:00</updated>
     <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
   </info>

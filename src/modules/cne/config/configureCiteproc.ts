@@ -106,17 +106,18 @@ export function configureCiteprocForCNE(engine: any, config: CNEConfigOptions): 
       Zotero.debug('[CNE Config] WARNING: Could not verify cite-lang-prefs was set');
     }
 
-    // Configure language tags for transliteration slot based on romanizedFormatting
+    // Configure language tags for transliteration slot based on name formatting
     //
     // Dual-variant architecture:
-    // - 'native' → ['en'] → uses multi._key['en'] (no multi.main, no commas)
-    // - 'western' → ['en-x-western'] → uses multi._key['en-x-western'] (multi.main='en', commas)
+    // - separator='space' → ['en'] → uses multi._key['en'] (no multi.main, no commas)
+    // - separator='comma' → ['en-x-western'] → uses multi._key['en-x-western'] (multi.main='en', commas)
     //
-    // If romanizedFormatting not specified, defaults to 'native' for backward compatibility
-    const romanizedFormatting = config.romanizedFormatting || 'native';
-    const translitTags = romanizedFormatting === 'western' ? ['en-x-western'] : ['en'];
+    // Defaults to 'space' for backward compatibility
+    const romanizedCJK = config.nameFormatting?.romanizedCJK;
+    const separator = romanizedCJK?.separator || 'space';
+    const translitTags = separator === 'comma' ? ['en-x-western'] : ['en'];
 
-    Zotero.debug('[CNE Config] romanizedFormatting: ' + romanizedFormatting);
+    Zotero.debug('[CNE Config] nameFormatting.romanizedCJK.separator: ' + separator);
     Zotero.debug('[CNE Config] Checking if setLangTagsForCslTransliteration exists: ' +
                 typeof engine.setLangTagsForCslTransliteration);
     Zotero.debug('[CNE Config] Setting transliteration language tags: ' + JSON.stringify(translitTags));

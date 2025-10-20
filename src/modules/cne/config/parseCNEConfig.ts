@@ -9,21 +9,73 @@
  */
 
 /**
+ * Name formatting options for romanized CJK names
+ *
+ * Provides granular control over how romanized CJK names are formatted.
+ * Describes the observable format without cultural assumptions.
+ */
+export interface RomanizedCJKFormatting {
+  /**
+   * Name component order
+   *
+   * - `'last-name-first'`: Family name, then given name (e.g., "Hao Chunwen" or "Hao, C.")
+   * - `'first-name-first'`: Given name, then family name (e.g., "Chunwen Hao")
+   *
+   * @default 'last-name-first'
+   */
+  order?: 'last-name-first' | 'first-name-first';
+
+  /**
+   * Separator between family and given names
+   *
+   * - `'comma'`: Comma separator (e.g., "Hao, C.") - APA style
+   * - `'space'`: Space separator (e.g., "Hao Chunwen") - Chicago style
+   *
+   * @default 'space'
+   */
+  separator?: 'comma' | 'space';
+}
+
+/**
+ * Name formatting options
+ *
+ * Controls how names are formatted beyond basic slot selection.
+ */
+export interface NameFormatting {
+  /** Formatting options for romanized CJK names */
+  romanizedCJK?: RomanizedCJKFormatting;
+
+  // Future: originalCJK, romanizedArabic, etc.
+}
+
+/**
  * CNE Configuration Options
  *
- * Specifies which language variants to display for each field type.
- * Maps to citeproc-js cite-lang-prefs structure.
+ * Specifies which language variants to display for each field type
+ * and how to format them.
  *
  * @example
  * ```typescript
- * // Chicago CNE: Show romanized + original for names
+ * // Chicago CNE: Show romanized + original, family-first with space
  * {
- *   persons: ['translit', 'orig']
+ *   persons: ['translit', 'orig'],
+ *   nameFormatting: {
+ *     romanizedCJK: {
+ *       order: 'last-name-first',
+ *       separator: 'space'
+ *     }
+ *   }
  * }
  *
- * // APA CNE: Show romanized only
+ * // APA CNE: Show romanized only, family-first with comma
  * {
- *   persons: ['translit']
+ *   persons: ['translit'],
+ *   nameFormatting: {
+ *     romanizedCJK: {
+ *       order: 'last-name-first',
+ *       separator: 'comma'
+ *     }
+ *   }
  * }
  * ```
  */
@@ -31,13 +83,17 @@ export interface CNEConfigOptions {
   /** Language variants for personal/corporate names */
   persons?: string[];
 
+  /** Name formatting options */
+  nameFormatting?: NameFormatting;
+
   /**
-   * Formatting style for romanized CJK names
+   * @deprecated Use nameFormatting.romanizedCJK instead
    *
-   * - `'native'`: Asian formatting (family-first, no comma) - Chicago style
-   * - `'western'`: Western formatting (family, given with comma) - APA style
+   * Legacy formatting style for romanized CJK names.
+   * Kept for backward compatibility.
    *
-   * @default 'native'
+   * - `'native'`: Maps to {order: 'last-name-first', separator: 'space'}
+   * - `'western'`: Maps to {order: 'last-name-first', separator: 'comma'}
    */
   romanizedFormatting?: 'native' | 'western';
 }
@@ -120,10 +176,72 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
       const validFields: FieldType[] = ['persons'];
       const validSlots: SlotValue[] = ['orig', 'translit', 'translat'];
       const validFormattingStyles = ['native', 'western'];
+      const validOrders = ['last-name-first', 'first-name-first'];
+      const validSeparators = ['comma', 'space'];
 
       // Validate and convert to CNEConfigOptions
       for (const [key, value] of Object.entries(parsed)) {
-        // Handle romanizedFormatting separately
+        // Handle nameFormatting (new modular structure)
+        if (key === 'nameFormatting') {
+          if (!value || typeof value !== 'object' || Array.isArray(value)) {
+            throw new Error(
+              `nameFormatting must be an object, got: ${typeof value}`
+            );
+          }
+
+          const nameFormatting: NameFormatting = {};
+
+          // Handle romanizedCJK
+          if ('romanizedCJK' in value) {
+            const romanizedCJK = (value as any).romanizedCJK;
+            if (!romanizedCJK || typeof romanizedCJK !== 'object' || Array.isArray(romanizedCJK)) {
+              throw new Error(
+                `nameFormatting.romanizedCJK must be an object, got: ${typeof romanizedCJK}`
+              );
+            }
+
+            const romanizedCJKFormatting: RomanizedCJKFormatting = {};
+
+            // Validate order
+            if ('order' in romanizedCJK) {
+              const order = romanizedCJK.order;
+              if (typeof order !== 'string') {
+                throw new Error(
+                  `nameFormatting.romanizedCJK.order must be a string, got: ${typeof order}`
+                );
+              }
+              if (!validOrders.includes(order)) {
+                throw new Error(
+                  `Invalid order: "${order}". Valid values: ${validOrders.join(', ')}`
+                );
+              }
+              romanizedCJKFormatting.order = order as 'last-name-first' | 'first-name-first';
+            }
+
+            // Validate separator
+            if ('separator' in romanizedCJK) {
+              const separator = romanizedCJK.separator;
+              if (typeof separator !== 'string') {
+                throw new Error(
+                  `nameFormatting.romanizedCJK.separator must be a string, got: ${typeof separator}`
+                );
+              }
+              if (!validSeparators.includes(separator)) {
+                throw new Error(
+                  `Invalid separator: "${separator}". Valid values: ${validSeparators.join(', ')}`
+                );
+              }
+              romanizedCJKFormatting.separator = separator as 'comma' | 'space';
+            }
+
+            nameFormatting.romanizedCJK = romanizedCJKFormatting;
+          }
+
+          config.nameFormatting = nameFormatting;
+          continue;
+        }
+
+        // Handle legacy romanizedFormatting (backward compatibility)
         if (key === 'romanizedFormatting') {
           if (typeof value !== 'string') {
             throw new Error(
@@ -142,7 +260,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         // Validate field type (e.g., 'persons')
         if (!validFields.includes(key as FieldType)) {
           throw new Error(
-            `Invalid field type: "${key}". Valid types: ${validFields.join(', ')}, romanizedFormatting. ` +
+            `Invalid field type: "${key}". Valid types: ${validFields.join(', ')}, nameFormatting, romanizedFormatting (deprecated). ` +
             `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
             `Title formatting is controlled by CSL macros.`
           );
@@ -175,7 +293,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         config[key as FieldType] = value;
       }
 
-      return config;
+      return normalizeConfig(config);
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new Error(`Invalid JSON in CNE-CONFIG: ${error.message}`);
@@ -235,6 +353,34 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
 
     // Store in config
     config[fieldType as FieldType] = slots;
+  }
+
+  return normalizeConfig(config);
+}
+
+/**
+ * Normalize CNE-CONFIG by applying backward compatibility transforms
+ *
+ * Converts legacy `romanizedFormatting` to new `nameFormatting` structure.
+ *
+ * @param config - Raw parsed configuration
+ * @returns Normalized configuration
+ */
+function normalizeConfig(config: CNEConfigOptions): CNEConfigOptions {
+  // If legacy romanizedFormatting is present and new nameFormatting is not,
+  // convert to new structure
+  if (config.romanizedFormatting && !config.nameFormatting) {
+    const legacy = config.romanizedFormatting;
+
+    // Map legacy values to new structure
+    const nameFormatting: NameFormatting = {
+      romanizedCJK: {
+        order: 'last-name-first',  // Both legacy formats use family-first
+        separator: legacy === 'western' ? 'comma' : 'space'
+      }
+    };
+
+    config.nameFormatting = nameFormatting;
   }
 
   return config;
