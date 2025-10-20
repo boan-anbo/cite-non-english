@@ -269,7 +269,7 @@ CNE-CONFIG: <field-type>=<slot1>[,<slot2>[,<slot3>]] [<field-type>=...]
 ### Romanized Name Formatting Control (`nameFormatting`)
 
 **Version:** 2.1
-**Introduced:** 2025-10-19 (v2.0 as romanizedFormatting)\n**Refactored:** 2025-10-20 (v2.1 as modular nameFormatting)
+**Introduced:** 2025-10-20
 **Problem Solved:** Conflicting comma requirements between Chicago and APA styles for romanized CJK names
 
 #### The Problem: Comma Formatting Conflict
@@ -352,20 +352,6 @@ The `nameFormatting.romanizedCJK.separator` field in CNE-CONFIG selects which va
   - `romanizedCJK`: Object specifying how romanized CJK names format
     - `order`: `"last-name-first"` or `"first-name-first"` (default: `"last-name-first"`)
     - `separator`: `"space"` or `"comma"` (default: `"space"`)
-
-**Legacy Formats (backward compatible):**
-
-Version 2.0 format (deprecated):
-```json
-{"persons":["translit","orig"],"romanizedFormatting":"native"}
-```
-Automatically converted to: `{"order":"last-name-first","separator":"space"}`
-
-Version 1.0 format (deprecated):
-```
-persons=translit,orig
-```
-Defaults to space separator, no nameFormatting customization.
 
 #### nameFormatting.romanizedCJK Values
 

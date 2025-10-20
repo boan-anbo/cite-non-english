@@ -85,17 +85,6 @@ export interface CNEConfigOptions {
 
   /** Name formatting options */
   nameFormatting?: NameFormatting;
-
-  /**
-   * @deprecated Use nameFormatting.romanizedCJK instead
-   *
-   * Legacy formatting style for romanized CJK names.
-   * Kept for backward compatibility.
-   *
-   * - `'native'`: Maps to {order: 'last-name-first', separator: 'space'}
-   * - `'western'`: Maps to {order: 'last-name-first', separator: 'comma'}
-   */
-  romanizedFormatting?: 'native' | 'western';
 }
 
 /**
@@ -175,7 +164,6 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
       const config: CNEConfigOptions = {};
       const validFields: FieldType[] = ['persons'];
       const validSlots: SlotValue[] = ['orig', 'translit', 'translat'];
-      const validFormattingStyles = ['native', 'western'];
       const validOrders = ['last-name-first', 'first-name-first'];
       const validSeparators = ['comma', 'space'];
 
@@ -241,26 +229,10 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
           continue;
         }
 
-        // Handle legacy romanizedFormatting (backward compatibility)
-        if (key === 'romanizedFormatting') {
-          if (typeof value !== 'string') {
-            throw new Error(
-              `romanizedFormatting must be a string, got: ${typeof value}`
-            );
-          }
-          if (!validFormattingStyles.includes(value)) {
-            throw new Error(
-              `Invalid romanizedFormatting: "${value}". Valid values: ${validFormattingStyles.join(', ')}`
-            );
-          }
-          config.romanizedFormatting = value as 'native' | 'western';
-          continue;
-        }
-
         // Validate field type (e.g., 'persons')
         if (!validFields.includes(key as FieldType)) {
           throw new Error(
-            `Invalid field type: "${key}". Valid types: ${validFields.join(', ')}, nameFormatting, romanizedFormatting (deprecated). ` +
+            `Invalid field type: "${key}". Valid types: ${validFields.join(', ')}, nameFormatting. ` +
             `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
             `Title formatting is controlled by CSL macros.`
           );
@@ -293,7 +265,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         config[key as FieldType] = value;
       }
 
-      return normalizeConfig(config);
+      return config;
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new Error(`Invalid JSON in CNE-CONFIG: ${error.message}`);
@@ -353,34 +325,6 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
 
     // Store in config
     config[fieldType as FieldType] = slots;
-  }
-
-  return normalizeConfig(config);
-}
-
-/**
- * Normalize CNE-CONFIG by applying backward compatibility transforms
- *
- * Converts legacy `romanizedFormatting` to new `nameFormatting` structure.
- *
- * @param config - Raw parsed configuration
- * @returns Normalized configuration
- */
-function normalizeConfig(config: CNEConfigOptions): CNEConfigOptions {
-  // If legacy romanizedFormatting is present and new nameFormatting is not,
-  // convert to new structure
-  if (config.romanizedFormatting && !config.nameFormatting) {
-    const legacy = config.romanizedFormatting;
-
-    // Map legacy values to new structure
-    const nameFormatting: NameFormatting = {
-      romanizedCJK: {
-        order: 'last-name-first',  // Both legacy formats use family-first
-        separator: legacy === 'western' ? 'comma' : 'space'
-      }
-    };
-
-    config.nameFormatting = nameFormatting;
   }
 
   return config;
