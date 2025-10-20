@@ -1,6 +1,6 @@
 # CNE Style Modification Convention
 
-**Version:** 2.0
+**Version:** 2.1
 **Last Updated:** 2025-10-18
 **Build System:** Style Variant Builder
 **Reference Implementation:** `tools/style-variant-builder/templates/cne-chicago-template.csl`
@@ -198,7 +198,7 @@ We add exactly **7 standard helper macros** to every CNE style variant. These ma
 
 ## CNE-CONFIG Metadata Convention
 
-**Version:** 2.0
+**Version:** 2.1
 **Introduced:** 2025-10-18
 **Updated:** 2025-10-19 (added `romanizedFormatting` for comma control)
 **Purpose:** Enable style-specific control of multi-slot rendering and formatting for creator names
@@ -266,10 +266,10 @@ CNE-CONFIG: <field-type>=<slot1>[,<slot2>[,<slot3>]] [<field-type>=...]
 - Second slot → Secondary (rendered in bibliography only)
 - Third slot → Tertiary (rendered in bibliography only)
 
-### Romanized Name Formatting Control (`romanizedFormatting`)
+### Romanized Name Formatting Control (`nameFormatting`)
 
-**Version:** 2.0
-**Introduced:** 2025-10-19
+**Version:** 2.1
+**Introduced:** 2025-10-19 (v2.0 as romanizedFormatting)\n**Refactored:** 2025-10-20 (v2.1 as modular nameFormatting)
 **Problem Solved:** Conflicting comma requirements between Chicago and APA styles for romanized CJK names
 
 #### The Problem: Comma Formatting Conflict
@@ -329,39 +329,69 @@ CNE creates **two romanized variants** with different `multi.main` values:
    - Sets `multi.main='en'` → treated as pure English
    - Maintains romanesque=2 → respects CSL `name-as-sort-order` → commas
 
-The `romanizedFormatting` field in CNE-CONFIG selects which variant to use via citeproc's `setLangTagsForCslTransliteration()` API.
+The `nameFormatting.romanizedCJK.separator` field in CNE-CONFIG selects which variant to use via citeproc's `setLangTagsForCslTransliteration()` API.
 
-#### JSON Format (Required for romanizedFormatting)
+#### JSON Format (Required for nameFormatting)
 
-**Version 2.0 Syntax:**
+**Version 2.1 Syntax (Modular):**
 ```json
-{"persons":["translit","orig"],"romanizedFormatting":"native"}
+{
+  "persons": ["translit", "orig"],
+  "nameFormatting": {
+    "romanizedCJK": {
+      "order": "last-name-first",
+      "separator": "space"
+    }
+  }
+}
 ```
 
 **Fields:**
-- `persons`, `institutions`, `titles`, etc.: Arrays of slot values
-- `romanizedFormatting`: `"native"` or `"western"` (optional, defaults to `"native"`)
+- `persons`, `institutions`: Arrays of slot values (`orig`, `translit`, `translat`)
+- `nameFormatting`: Object containing formatting options
+  - `romanizedCJK`: Object specifying how romanized CJK names format
+    - `order`: `"last-name-first"` or `"first-name-first"` (default: `"last-name-first"`)
+    - `separator`: `"space"` or `"comma"` (default: `"space"`)
 
-**Legacy Format (backward compatible):**
+**Legacy Formats (backward compatible):**
+
+Version 2.0 format (deprecated):
+```json
+{"persons":["translit","orig"],"romanizedFormatting":"native"}
 ```
-persons=translit,orig titles=translit,orig
+Automatically converted to: `{"order":"last-name-first","separator":"space"}`
+
+Version 1.0 format (deprecated):
 ```
+persons=translit,orig
+```
+Defaults to space separator, no nameFormatting customization.
 
-Legacy format does NOT support `romanizedFormatting` and defaults to native formatting.
+#### nameFormatting.romanizedCJK Values
 
-#### romanizedFormatting Values
+**order:**
+- `"last-name-first"` (default): Family name comes first (e.g., "Hao Chunwen", "Hao, C.")
+- `"first-name-first"`: Given name comes first (e.g., "Chunwen Hao" - rarely used)
 
-**`"native"` (default):**
-- Uses `multi._key['en']` variant (no `multi.main`)
-- Romanized CJK names format as: "Hao Chunwen" (family-first, no comma)
-- **Use for:** Chicago Manual of Style, any style preserving Asian name conventions
+**separator:**
+- `"space"` (default): Space separator → "Hao Chunwen" (family-first, no comma)
+  - Uses `multi._key['en']` variant (no `multi.main`)
+  - Triggers romanesque=1 → ignores CSL `name-as-sort-order`
+  - **Use for:** Chicago Manual of Style, styles preserving Asian name conventions
 
-**`"western"`:**
-- Uses `multi._key['en-x-western']` variant (with `multi.main='en'`)
-- Romanized CJK names format as: "Hao, C." (inverted with comma)
-- **Use for:** APA Style, any style requiring Western comma formatting for all names
+- `"comma"`: Comma separator → "Hao, C." (inverted with comma)
+  - Uses `multi._key['en-x-western']` variant (with `multi.main='en'`)
+  - Triggers romanesque=2 → respects CSL `name-as-sort-order`
+  - **Use for:** APA Style, styles requiring Western comma formatting for all names
 
-**Migration Note:** Existing CNE styles without `romanizedFormatting` default to `"native"`, preserving Chicago-style behavior.
+#### Design Philosophy
+
+The new modular format:
+- ✅ Avoids cultural assumptions (not "native" vs "western", but "space" vs "comma")
+- ✅ Self-explanatory (describes observable format)
+- ✅ Modular (order and separator controlled independently)
+- ✅ Extensible (can add `originalCJK` spacing, etc. in future)
+- ✅ Implementation-agnostic (hides citeproc details from style authors)
 
 ### Examples by Style
 
@@ -369,7 +399,7 @@ Legacy format does NOT support `romanizedFormatting` and defaults to native form
 
 ```xml
 <summary>Chicago-style source citations, notes and bibliography system, with CNE support
-CNE-CONFIG: {"persons":["translit","orig"],"romanizedFormatting":"native"}</summary>
+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
 ```
 
 **Configuration:**
@@ -384,7 +414,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"romanizedFormatting":"native"}</summ
 
 ```xml
 <summary>Chicago-style source citations, author-date system, with CNE support
-CNE-CONFIG: {"persons":["translit","orig"],"romanizedFormatting":"native"}</summary>
+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
 ```
 
 **Result:** Same as notes-bibliography variant
@@ -393,7 +423,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"romanizedFormatting":"native"}</summ
 
 ```xml
 <summary>APA 7th edition with CNE support
-CNE-CONFIG: {"persons":["translit"],"romanizedFormatting":"western"}</summary>
+CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}</summary>
 ```
 
 **Configuration:**
@@ -512,13 +542,13 @@ When creating or updating CNE style variants:
 2. **Add appropriate CNE-CONFIG (JSON format required for v2.0):**
    - **Chicago-like styles:**
      ```json
-     {"persons":["translit","orig"],"romanizedFormatting":"native"}
+     {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}
      ```
      Displays: "Hao Chunwen 郝春文" (romanized + original, no comma)
 
    - **APA-like styles:**
      ```json
-     {"persons":["translit"],"romanizedFormatting":"western"}
+     {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}
      ```
      Displays: "Hao, C." (romanized only, with comma)
 
@@ -545,7 +575,7 @@ Style Authors → CNE-CONFIG (semantic) → parseCNEConfig → configureCiteproc
 
 **User-Facing API (Stable):**
 ```json
-{"persons":["translit","orig"],"romanizedFormatting":"native"}
+{"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}
 ```
 
 Describes **WHAT** the style wants (romanized + original, Asian formatting) without specifying **HOW** to achieve it.
