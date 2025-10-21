@@ -52,6 +52,14 @@ import { generateBibliography, generateCitations, saveSnapshot } from './test-he
  */
 const STYLE_REGISTRY = [
   {
+    name: 'Chicago 18th Edition (author-date) - CNE',
+    styleId: 'http://www.zotero.org/styles/chicago-author-date-cne',
+    styleFilename: 'chicago-author-date-cne.csl',
+    locale: 'en-US',
+    snapshotPathBibliography: 'snapshots/chicago-author-date-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/chicago-author-date-cne/en-US/all-languages-notes.html'
+  },
+  {
     name: 'Chicago 18th Edition (Notes and Bibliography) - CNE',
     styleId: 'http://www.zotero.org/styles/chicago-notes-bibliography-cne',
     styleFilename: 'chicago-notes-bibliography-cne.csl',
@@ -66,6 +74,30 @@ const STYLE_REGISTRY = [
     locale: 'en-US',
     snapshotPathBibliography: 'snapshots/apa-7th-cne/en-US/all-languages-bibliography.html',
     snapshotPathNotes: 'snapshots/apa-7th-cne/en-US/all-languages-notes.html'
+  },
+  {
+    name: 'MLA 8th Edition - CNE',
+    styleId: 'http://www.zotero.org/styles/modern-language-association-8th-cne',
+    styleFilename: 'modern-language-association-8th-cne.csl',
+    locale: 'en-US',
+    snapshotPathBibliography: 'snapshots/modern-language-association-8th-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/modern-language-association-8th-cne/en-US/all-languages-notes.html'
+  },
+  {
+    name: 'MLA 9th Edition (in-text) - CNE',
+    styleId: 'http://www.zotero.org/styles/modern-language-association-9th-in-text-cne',
+    styleFilename: 'modern-language-association-9th-in-text-cne.csl',
+    locale: 'en-US',
+    snapshotPathBibliography: 'snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-notes.html'
+  },
+  {
+    name: 'MLA 9th Edition (notes) - CNE',
+    styleId: 'http://www.zotero.org/styles/modern-language-association-9th-notes-cne',
+    styleFilename: 'modern-language-association-9th-notes-cne.csl',
+    locale: 'en-US',
+    snapshotPathBibliography: 'snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-bibliography.html',
+    snapshotPathNotes: 'snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-notes.html'
   },
 ];
 

@@ -1,6 +1,6 @@
 --- templates/apa-7th-template.csl
 +++ development/apa-7th-cne.csl
-@@ -1,20 +1,26 @@
+@@ -1,20 +1,27 @@
  <?xml version="1.0" encoding="utf-8"?>
  <style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="never" page-range-format="expanded">
    <info>
@@ -12,7 +12,7 @@
 +    <title>American Psychological Association 7th edition - CNE</title>
 +    <title-short>APA CNE</title-short>
 +    <id>http://www.zotero.org/styles/apa-7th-cne</id>
-+    <link href="http://www.zotero.org/styles/apa-7th-cne" rel="self"/>
++    <link href="https://raw.githubusercontent.com/boan-anbo/cite-non-english/main/styles/cne/apa-7th-cne.csl" rel="self"/>
 +    <link href="http://www.zotero.org/styles/apa" rel="template"/>
      <link href="https://apastyle.apa.org/style-grammar-guidelines/references/examples" rel="documentation"/>
 +    <link href="https://github.com/boan-anbo/cite-non-english" rel="documentation"/>
@@ -27,13 +27,14 @@
      <category citation-format="author-date"/>
      <category field="psychology"/>
      <category field="generic-base"/>
--    <updated>2024-07-09T20:08:41+00:00</updated>
-+    <summary>APA 7th edition with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English titles</summary>
+-    <updated>2025-01-22T18:45:37+00:00</updated>
++    <summary>APA 7th edition with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English titles
++CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}</summary>
 +    <updated>2025-10-18T00:00:00+00:00</updated>
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
-@@ -576,11 +582,17 @@
+@@ -576,11 +583,17 @@
      <!-- For book-like items, assume part-number and part-title refer to the book/volume. -->
      <choose>
        <if variable="container-title" match="any">
@@ -53,7 +54,7 @@
        </else>
      </choose>
    </macro>
-@@ -593,7 +605,10 @@
+@@ -593,7 +606,10 @@
            <if variable="reviewed-title" match="none"/>
            <else>
              <group delimiter=": ">
@@ -65,7 +66,7 @@
                <text macro="part-title"/>
              </group>
            </else>
-@@ -601,7 +616,10 @@
+@@ -601,7 +617,10 @@
        </if>
        <else>
          <group delimiter=": ">
@@ -77,7 +78,7 @@
            <text macro="part-title"/>
          </group>
        </else>
-@@ -618,7 +636,7 @@
+@@ -618,7 +637,7 @@
    </macro>
    <macro name="title-plus-volume-title">
      <group delimiter=": ">
@@ -86,7 +87,7 @@
        <text macro="volume-title"/>
      </group>
    </macro>
-@@ -701,6 +719,101 @@
+@@ -701,6 +720,101 @@
              <text variable="title" form="short" font-style="italic" text-case="title"/>
            </else>
          </choose>
@@ -188,7 +189,7 @@
        </else>
      </choose>
    </macro>
-@@ -1520,7 +1633,10 @@
+@@ -1520,7 +1634,10 @@
    <macro name="container-periodical">
      <group delimiter=". ">
        <group delimiter=", ">
@@ -200,7 +201,7 @@
          <choose>
            <if variable="volume">
              <group>
-@@ -1605,9 +1721,12 @@
+@@ -1605,9 +1722,12 @@
                  <names variable="container-author"/>
                </substitute>
              </names>
@@ -216,7 +217,7 @@
              </group>
            </group>
            <text macro="parenthetical-container"/>
-@@ -1622,7 +1741,7 @@
+@@ -1622,7 +1742,7 @@
          <if type="thesis">
            <choose>
              <if variable="archive DOI URL" match="none">
@@ -225,7 +226,7 @@
              </if>
            </choose>
          </if>
-@@ -1630,19 +1749,19 @@
+@@ -1630,19 +1750,19 @@
            <!-- For websites, treat container title like publisher -->
            <group delimiter="; ">
              <text variable="container-title" text-case="title"/>

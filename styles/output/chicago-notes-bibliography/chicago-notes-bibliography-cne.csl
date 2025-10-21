@@ -7,7 +7,7 @@
     <title>Chicago Manual of Style 18th edition (notes and bibliography) - CNE</title>
     <title-short>CMOS CNE</title-short>
     <id>http://www.zotero.org/styles/chicago-notes-bibliography-cne</id>
-    <link href="http://www.zotero.org/styles/chicago-notes-bibliography-cne" rel="self"/>
+    <link href="https://raw.githubusercontent.com/boan-anbo/cite-non-english/main/styles/cne/chicago-notes-bibliography-cne.csl" rel="self"/>
     <link href="http://www.zotero.org/styles/chicago-notes-bibliography" rel="template"/>
     <link href="https://www.chicagomanualofstyle.org/" rel="documentation"/>
     <author>
@@ -34,8 +34,9 @@
     <category field="social_science"/>
     <category field="sociology"/>
     <category field="theology"/>
-    <summary>Chicago-style source citations (with Bluebook for legal citations), notes and bibliography system, with CNE (Cite Non-English) field support for displaying original non-English titles</summary>
-    <updated>2025-10-14T09:00:00+00:00</updated>
+    <summary>Chicago-style source citations (with Bluebook for legal citations), notes and bibliography system, with CNE (Cite Non-English) field support for displaying original non-English titles
+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
+    <updated>2025-10-19T00:00:00+00:00</updated>
     <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
   </info>
   <locale xml:lang="en">

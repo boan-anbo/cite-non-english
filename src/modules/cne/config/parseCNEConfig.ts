@@ -56,7 +56,19 @@ export interface NameFormatting {
  *
  * @example
  * ```typescript
- * // Chicago CNE: Show romanized + original, family-first with space
+ * // MLA CNE: Show romanized + original for both names and titles
+ * {
+ *   persons: ['translit', 'orig'],
+ *   titles: ['translit', 'orig'],
+ *   nameFormatting: {
+ *     romanizedCJK: {
+ *       order: 'last-name-first',
+ *       separator: 'space'
+ *     }
+ *   }
+ * }
+ *
+ * // Chicago CNE: Show romanized + original for names, family-first with space
  * {
  *   persons: ['translit', 'orig'],
  *   nameFormatting: {

@@ -1,0 +1,195 @@
+--- templates/modern-language-association-8th-template.csl
++++ development/modern-language-association-8th-cne.csl
+@@ -1,20 +1,27 @@
+ <?xml version="1.0" encoding="utf-8"?>
+ <style xmlns="http://purl.org/net/xbiblio/csl" class="in-text" version="1.0" demote-non-dropping-particle="never" page-range-format="minimal-two">
+   <info>
+-    <title>Modern Language Association 8th edition</title>
+-    <title-short>MLA</title-short>
+-    <id>http://www.zotero.org/styles/modern-language-association-8th-edition</id>
+-    <link href="http://www.zotero.org/styles/modern-language-association-8th-edition" rel="self"/>
++    <title>Modern Language Association 8th edition - CNE</title>
++    <title-short>MLA 8 CNE</title-short>
++    <id>http://www.zotero.org/styles/modern-language-association-8th-cne</id>
++    <link href="https://raw.githubusercontent.com/boan-anbo/cite-non-english/main/styles/cne/modern-language-association-8th-cne.csl" rel="self"/>
++    <link href="http://www.zotero.org/styles/modern-language-association-8th-edition" rel="template"/>
+     <link href="http://style.mla.org" rel="documentation"/>
++    <link href="https://github.com/boan-anbo/cite-non-english" rel="documentation"/>
+     <author>
+       <name>Sebastian Karcher</name>
+     </author>
++    <contributor>
++      <name>Bo An</name>
++      <uri>https://github.com/boan-anbo/cite-non-english</uri>
++    </contributor>
+     <category citation-format="author"/>
+     <category field="generic-base"/>
+     <category field="humanities"/>
+     <category field="literature"/>
+-    <summary>This style adheres to the MLA 8th edition handbook. Follows the structure of references as outlined in the MLA Manual closely</summary>
+-    <updated>2025-06-30T16:44:30+00:00</updated>
++    <summary>MLA 8th edition with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English sources.
++CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}</summary>
++    <updated>2025-10-21T00:00:00+00:00</updated>
+     <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
+   </info>
+   <locale xml:lang="en">
+@@ -71,25 +78,34 @@
+   <macro name="title">
+     <choose>
+       <if variable="container-title" match="any">
+-        <text variable="title" quotes="true" text-case="title"/>
+-      </if>
+-      <else>
+-        <text variable="title" font-style="italic" text-case="title"/>
++        <group delimiter=" ">
++          <text macro="cne-title-select" quotes="true" text-case="title"/>
++          <text macro="cne-title-supplements"/>
++        </group>
++      </if>
++      <else>
++        <group delimiter=" ">
++          <text macro="cne-title-select" font-style="italic" text-case="title"/>
++          <text macro="cne-title-supplements"/>
++        </group>
+       </else>
+     </choose>
+   </macro>
+   <macro name="title-short">
+     <choose>
+       <if variable="container-title" match="any">
+-        <text variable="title" form="short" quotes="true" text-case="title"/>
+-      </if>
+-      <else>
+-        <text variable="title" form="short" font-style="italic" text-case="title"/>
++        <text macro="cne-title-select-short" form="short" quotes="true" text-case="title"/>
++      </if>
++      <else>
++        <text macro="cne-title-select-short" form="short" font-style="italic" text-case="title"/>
+       </else>
+     </choose>
+   </macro>
+   <macro name="container-title">
+-    <text variable="container-title" font-style="italic" text-case="title"/>
++    <group delimiter=" ">
++      <text macro="cne-container-title-select" font-style="italic" text-case="title"/>
++      <text macro="cne-container-title-supplements"/>
++    </group>
+   </macro>
+   <macro name="other-contributors">
+     <choose>
+@@ -198,7 +214,7 @@
+   <macro name="publisher">
+     <choose>
+       <if type="article-magazine article-newspaper article-journal" match="none">
+-        <text variable="publisher"/>
++        <text macro="cne-publisher-select"/>
+       </if>
+     </choose>
+   </macro>
+@@ -328,4 +344,105 @@
+       </group>
+     </layout>
+   </bibliography>
++  <!-- CNE Helper Macros -->
++  <macro name="cne-title-select">
++    <choose>
++      <if variable="cne-title-romanized">
++        <text variable="cne-title-romanized"/>
++      </if>
++      <else>
++        <text variable="title"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-title-select-short">
++    <choose>
++      <if variable="cne-title-romanized">
++        <choose>
++          <if variable="cne-title-romanized-short">
++            <text variable="cne-title-romanized-short"/>
++          </if>
++          <else>
++            <text variable="cne-title-romanized"/>
++          </else>
++        </choose>
++      </if>
++      <else>
++        <text form="short" variable="title"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-title-supplements">
++    <choose>
++      <if variable="cne-title-romanized">
++        <group delimiter=" ">
++          <text variable="cne-title-original"/>
++          <text prefix="[" suffix="]" variable="cne-title-english"/>
++        </group>
++      </if>
++    </choose>
++  </macro>
++  <macro name="cne-container-title-select">
++    <choose>
++      <if variable="cne-container-title-romanized">
++        <text variable="cne-container-title-romanized"/>
++      </if>
++      <else-if variable="cne-journal-romanized">
++        <text variable="cne-journal-romanized"/>
++      </else-if>
++      <else>
++        <text variable="container-title"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-container-title-select-short">
++    <choose>
++      <if variable="cne-container-title-romanized">
++        <choose>
++          <if variable="cne-container-title-romanized-short">
++            <text variable="cne-container-title-romanized-short"/>
++          </if>
++          <else>
++            <text variable="cne-container-title-romanized"/>
++          </else>
++        </choose>
++      </if>
++      <else-if variable="cne-journal-romanized">
++        <choose>
++          <if variable="cne-journal-romanized-short">
++            <text variable="cne-journal-romanized-short"/>
++          </if>
++          <else>
++            <text variable="cne-journal-romanized"/>
++          </else>
++        </choose>
++      </else-if>
++      <else>
++        <text form="short" variable="container-title"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-container-title-supplements">
++    <choose>
++      <if variable="cne-container-title-romanized">
++        <group delimiter=" ">
++          <text variable="cne-container-title-original"/>
++          <text prefix="[" suffix="]" variable="cne-container-title-english"/>
++        </group>
++      </if>
++      <else-if variable="cne-journal-romanized">
++        <text variable="cne-journal-original"/>
++      </else-if>
++    </choose>
++  </macro>
++  <macro name="cne-publisher-select">
++    <choose>
++      <if variable="cne-publisher-romanized">
++        <text variable="cne-publisher-romanized"/>
++      </if>
++      <else>
++        <text variable="publisher"/>
++      </else>
++    </choose>
++  </macro>
+ </style>

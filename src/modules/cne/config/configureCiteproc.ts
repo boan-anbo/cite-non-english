@@ -80,7 +80,7 @@ export function configureCiteprocForCNE(engine: any, config: CNEConfigOptions): 
     }
 
     // Extract slot mappings (persons, institutions) from config
-    // Exclude romanizedFormatting as it's CNE-specific, not a citeproc field
+    // Exclude nameFormatting as it's CNE-specific, not a citeproc field
     const citeLangPrefs: Record<string, string[]> = {};
     if (config.persons) {
       citeLangPrefs.persons = config.persons;
