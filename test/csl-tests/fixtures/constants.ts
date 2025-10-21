@@ -21,6 +21,7 @@ export const FIXTURE_IDS = {
   ZHCN_BEIJING_AIRUSHENG_2011: 'beijing-airusheng-2011',
   ZHCN_JIA_2010_ERSHISI: 'jia-2010-ershisi',
   ZHCN_DU_2007_DUNHUANG: 'du-2007-dunhuang',
+  ZHCN_DU_2007_DUNHUANG_REV: 'du-2007-dunhuang-rev',  // Same as du-2007 but editors reversed (English first)
   ZHCN_SHA_2014_SHIKU: 'sha-2014-shiku',
 
   // Japanese fixtures (ja)
@@ -34,6 +35,9 @@ export const FIXTURE_IDS = {
   KO_HAN_1991_KYONGHUNG: 'han-1991-kyonghung',
   KO_HA_2000_TONGSAM: 'ha-2000-tongsam',
   KO_CHU_2008_KWANGUPYONG: 'chu-2008-kwangupyong',
+
+  // English fixtures (en) - for testing non-CNE behavior
+  EN_PETRIDES_2004_CONVULSIVE: 'petrides-2004-convulsive',
 } as const;
 
 /**

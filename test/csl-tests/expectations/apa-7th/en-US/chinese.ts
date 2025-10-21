@@ -46,7 +46,7 @@ export const chineseExpectations: Record<string, string> = {
    * Author/Organization. (Year). Title [Translation] [Dataset]. Publisher. URL
    */
   [FIXTURE_IDS.ZHCN_BEIJING_AIRUSHENG_2011]:
-    `Beijing Airusheng shuzihua jishu yanjiu zhongxin. (2011). <i>Zhongguo jiben guji ku</i> [Database of Chinese Classic Ancient Books] [Dataset]. http://server.wenzibase.com/dblist.jsp`,
+    `Beijing Airusheng shuzihua jishu yanjiu zhongxin. (2011). <i>Zhongguo jiben guji ku</i> [Database of Chinese Classic Ancient Books] [Dataset]. Beijing Airusheng shuzihua jishu yanjiu zhongxin. <a href="http://server.wenzibase.com/dblist.jsp">http://server.wenzibase.com/dblist.jsp</a>`,
 
   /**
    * Chinese Film - Jia (2010)
@@ -64,7 +64,7 @@ export const chineseExpectations: Record<string, string> = {
    * Author. (Year). Chapter title [Translation]. In Editor (Ed.), Book title [Translation] (pp. Pages). Publisher.
    */
   [FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG]:
-    `Du, W. (2007). Dunhuang yishu yongzhi gaikuang ji qianxi [An analysis and description of the use of paper in Dunhuang manuscripts]. In Lin, S., &amp; Morrison, A. (Eds.), <i>Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji</i> [Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference] (pp. 67–84). Beijing tushuguan chubanshe.`,
+    `Du, W. (2007). Dunhuang yishu yongzhi gaikuang ji qianxi [An analysis and description of the use of paper in Dunhuang manuscripts]. In Lin S. &amp; A. Morrison (Eds.), <i>Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji</i> [Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference] (pp. 67–84). Beijing tushuguan chubanshe.`,
 
   /**
    * Chinese Newspaper Article - Sha (2014)

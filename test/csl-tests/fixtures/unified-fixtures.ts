@@ -346,4 +346,50 @@ cne-container-title-english: Kaya seen through archaeology`
     extra: `cne-title-romanized: Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan
 cne-title-english: Will suspend the import if mad cow disease attacks in the United States`
   },
+
+  // ============================================================================
+  // English Fixtures (for testing non-CNE behavior)
+  // ============================================================================
+
+  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]: {
+    itemType: 'bookSection',
+    title: 'Convulsive Therapy',
+    bookTitle: 'Catatonia: From Psychopathology to Neurobiology',
+    publisher: 'American Psychiatric Association Publishing',
+    date: '2004',
+    language: 'en',
+    creators: [
+      {
+        firstName: 'Georgios',
+        lastName: 'Petrides',
+        creatorType: 'author'
+      },
+      {
+        firstName: 'Chitra',
+        lastName: 'Malur',
+        creatorType: 'author'
+      },
+      {
+        firstName: 'Max',
+        lastName: 'Fink',
+        creatorType: 'author'
+      },
+      {
+        firstName: 'Stanley N.',
+        lastName: 'Caroff',
+        creatorType: 'editor'
+      },
+      {
+        firstName: 'Stephan C.',
+        lastName: 'Mann',
+        creatorType: 'editor'
+      },
+      {
+        firstName: 'Andrew',
+        lastName: 'Francis',
+        creatorType: 'editor'
+      }
+    ]
+    // No CNE data - all English names, should use default formatting
+  },
 };
