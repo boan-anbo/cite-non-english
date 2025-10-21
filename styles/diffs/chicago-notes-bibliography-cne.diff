@@ -14,7 +14,7 @@
 +    <title>Chicago Manual of Style 18th edition (notes and bibliography) - CNE</title>
 +    <title-short>CMOS CNE</title-short>
 +    <id>http://www.zotero.org/styles/chicago-notes-bibliography-cne</id>
-+    <link href="http://www.zotero.org/styles/chicago-notes-bibliography-cne" rel="self"/>
++    <link href="https://raw.githubusercontent.com/boan-anbo/cite-non-english/main/styles/cne/chicago-notes-bibliography-cne.csl" rel="self"/>
 +    <link href="http://www.zotero.org/styles/chicago-notes-bibliography" rel="template"/>
      <link href="https://www.chicagomanualofstyle.org/" rel="documentation"/>
      <author>
@@ -28,18 +28,19 @@
      <category citation-format="note"/>
      <category field="anthropology"/>
      <category field="communications"/>
-@@ -27,8 +33,8 @@
+@@ -27,8 +33,9 @@
      <category field="social_science"/>
      <category field="sociology"/>
      <category field="theology"/>
 -    <summary>Chicago-style source citations (with Bluebook for legal citations), notes and bibliography system</summary>
 -    <updated>2025-09-07T21:04:41+00:00</updated>
-+    <summary>Chicago-style source citations (with Bluebook for legal citations), notes and bibliography system, with CNE (Cite Non-English) field support for displaying original non-English titles</summary>
-+    <updated>2025-10-14T09:00:00+00:00</updated>
++    <summary>Chicago-style source citations (with Bluebook for legal citations), notes and bibliography system, with CNE (Cite Non-English) field support for displaying original non-English titles
++CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
++    <updated>2025-10-19T00:00:00+00:00</updated>
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
-@@ -926,7 +932,10 @@
+@@ -926,7 +933,10 @@
                  <text form="short" term="sub-verbo"/>
                </if>
              </choose>
@@ -51,7 +52,7 @@
            </else-if>
          </choose>
        </group>
-@@ -1302,7 +1311,10 @@
+@@ -1302,7 +1312,10 @@
            <if match="any" variable="collection-editor compiler editor editorial-director">
              <!-- monographic usage -->
              <!-- notes always open with the primary title -->
@@ -63,7 +64,7 @@
            </if>
            <else>
              <!-- serial usage -->
-@@ -1312,7 +1324,10 @@
+@@ -1312,7 +1325,10 @@
        </else-if>
        <else>
          <!-- notes always open with the primary title -->
@@ -75,7 +76,7 @@
        </else>
      </choose>
    </macro>
-@@ -1372,7 +1387,10 @@
+@@ -1372,7 +1388,10 @@
    </macro>
    <macro name="title-and-part-title-bib">
      <group delimiter=". ">
@@ -87,7 +88,7 @@
        <group delimiter=", ">
          <text macro="label-part-number-capitalized"/>
          <text macro="title-part"/>
-@@ -1381,7 +1399,10 @@
+@@ -1381,7 +1400,10 @@
    </macro>
    <macro name="title-and-part-title-note">
      <group delimiter=", ">
@@ -99,7 +100,7 @@
        <group delimiter=", ">
          <text macro="label-part-number"/>
          <text macro="title-part"/>
-@@ -1393,7 +1414,10 @@
+@@ -1393,7 +1415,10 @@
      <!-- There is no `title-monographic-note` as notes always open with the primary title. -->
      <choose>
        <if variable="container-title">
@@ -111,7 +112,7 @@
        </if>
        <!-- For monographic items without `container-title`, bibliography entries list `part-title` or `volume-title` first if available -->
        <else-if variable="part-title">
-@@ -1403,7 +1427,10 @@
+@@ -1403,7 +1428,10 @@
          <text font-style="italic" text-case="title" variable="volume-title"/>
        </else-if>
        <else>
@@ -123,7 +124,7 @@
        </else>
      </choose>
    </macro>
-@@ -1457,53 +1484,95 @@
+@@ -1457,53 +1485,95 @@
        </else>
      </choose>
    </macro>
@@ -230,7 +231,7 @@
        </else>
      </choose>
    </macro>
-@@ -1511,49 +1580,49 @@
+@@ -1511,49 +1581,49 @@
      <choose>
        <if type="patent">
          <!-- No italics or quotes, sentence case -->
@@ -291,7 +292,7 @@
        </else>
      </choose>
    </macro>
-@@ -2985,7 +3054,10 @@
+@@ -2985,7 +3055,10 @@
              <text macro="label-volume"/>
              <text value="of"/>
              <group delimiter=", ">
@@ -303,7 +304,7 @@
                <names variable="collection-editor">
                  <label form="verb" suffix=" "/>
                  <name and="text"/>
-@@ -3013,7 +3085,10 @@
+@@ -3013,7 +3086,10 @@
                </else-if>
              </choose>
              <group delimiter=", ">

@@ -60,7 +60,11 @@ describe('Global Setup - Batch Item Creation', function() {
     // Install all CNE styles BEFORE initializing Zotero.Styles
     console.log('📝 Installing CNE styles...');
     await installCslStyle('chicago-notes-bibliography-cne.csl');
+    await installCslStyle('chicago-author-date-cne.csl');
     await installCslStyle('apa-7th-cne.csl');
+    await installCslStyle('modern-language-association-8th-cne.csl');
+    await installCslStyle('modern-language-association-9th-in-text-cne.csl');
+    await installCslStyle('modern-language-association-9th-notes-cne.csl');
     console.log('✅ Styles installed');
 
     // Initialize Zotero Styles ONCE for all tests (after styles are installed)

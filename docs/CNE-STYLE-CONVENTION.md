@@ -1,9 +1,9 @@
 # CNE Style Modification Convention
 
-**Version:** 2.1
-**Last Updated:** 2025-10-18
-**Build System:** Style Variant Builder
-**Reference Implementation:** `tools/style-variant-builder/templates/cne-chicago-template.csl`
+**Version:** 2.2
+**Last Updated:** 2025-10-21
+**Build System:** Style Variant Builder (located in `styles/` directory)
+**Reference Implementation:** `styles/diffs/chicago-notes-bibliography-cne.diff`
 
 ## Overview
 
@@ -38,6 +38,106 @@ All CNE variants MUST be managed through the Style Variant Builder workflow loca
 - Always use specific upstream versions (e.g., `apa-7th-2024-07-09.csl`)
 - **Never** use bare templates that lack version-specific features
 - Track upstream version in filenames: `cne-{style}-{edition}-{variant}-{upstream-date}.csl`
+
+## CRITICAL: Actual Build System Location
+
+**⚠️  IMPORTANT UPDATE:** The actual Style Variant Builder implementation is located in `styles/` directory, NOT `tools/style-variant-builder/`.
+
+### Actual Directory Structure
+
+```
+styles/
+├── templates/         # Base upstream templates (NO CNE modifications)
+├── diffs/            # Diff files (SOURCE OF TRUTH for all CNE modifications)
+├── development/      # Generated files (template + diff applied)
+├── output/           # Final variants (development + macro pruning)
+├── cne/              # Production files (manually copied from output/)
+├── upstream/         # Pristine upstream styles
+├── Makefile          # Build automation
+└── README.md         # Workflow documentation
+```
+
+### The Source of Truth: Diff Files
+
+**CRITICAL PRINCIPLE**: The **diff files** (`styles/diffs/*.diff`) contain ALL CNE modifications including:
+- CNE macro **definitions** (all 7 macros)
+- CNE macro **invocations** (wrapping title-primary, etc.)
+- Metadata changes (title, ID, CNE-CONFIG, self-links)
+
+**NEVER manually edit:**
+- ❌ `development/` files (auto-generated from template + diff)
+- ❌ `output/` files (auto-generated with macro pruning)
+
+**Safe to edit:**
+- ✅ `diffs/` files (source of truth)
+- ✅ `templates/` files (upstream bases)
+- ✅ `cne/` files (for minor tweaks like self-links ONLY - then commit immediately)
+
+### Common Mistake to Avoid
+
+**❌ WRONG WORKFLOW:**
+```bash
+# Edit development file directly
+vim styles/development/chicago-notes-bibliography-cne.csl
+
+# Generate diff from modified development file
+make diffs  # ← This OVERWRITES the good diff!
+
+# Build final
+make  # ← Builds from bad diff, loses CNE macros
+
+# Result: CNE macros disappear, tests fail
+```
+
+**✅ CORRECT WORKFLOW:**
+
+**For updating metadata only (like self-links):**
+```bash
+# Option 1: Edit diff file directly with sed
+cd styles/diffs
+sed -i '' 's|old-url|new-url|' chicago-notes-bibliography-cne.diff
+
+# Option 2: Edit final cne/ files directly (for simple changes)
+cd styles/cne
+sed -i '' 's|old-url|new-url|' *.csl
+# Then commit immediately without regenerating!
+```
+
+**For modifying CNE functionality:**
+```bash
+# 1. Edit diff file to add/modify CNE macros
+vim styles/diffs/chicago-notes-bibliography-cne.diff
+
+# 2. Regenerate development from template + diff
+make dev
+
+# 3. Build final with macro pruning
+make
+
+# 4. Copy to production
+cp styles/output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl styles/cne/
+
+# 5. Test
+npm test
+```
+
+### Build Commands
+
+```bash
+cd styles
+
+# Regenerate development files from templates + diffs
+make dev
+
+# Build final output with macro pruning
+make
+
+# Both steps together
+make dev && make
+
+# Clean generated files
+make clean
+```
 
 ## CNE Helper Macros
 

@@ -77,16 +77,112 @@ We encourage contributions for additional languages and welcome feedback from us
 ### Supported Citation Styles
 
 **Currently maintained**:
-- **Chicago Manual of Style** (Notes and Bibliography)
-- **APA** (American Psychological Association)
-- **MLA** (Modern Language Association)
+- **Chicago Manual of Style 18th edition - CNE**
+  - Notes and Bibliography variant
+  - Author-Date variant
+- **APA 7th edition - CNE** (American Psychological Association)
+- **MLA 9th edition - CNE** (Modern Language Association)
+  - In-text citations variant (dated 2025-08-27)
+  - Notes variant (dated 2025-08-27)
 
 These three styles are:
 - The most widely used in English-language academic writing
 - Have the most detailed published requirements for handling non-English sources
 - Particularly important for CJK citation formatting (comprehensive guidelines from major style guides)
 
+**Style Files**:
+All CNE style files are located in `styles/cne/` and follow the naming convention `{style-name}-cne-{date}.csl` for versioned styles.
+
 Additional citation styles will be added based on community needs and contributions.
+
+### MLA Citation Examples
+
+MLA (Modern Language Association) style requires displaying both romanized forms AND original script for non-English sources, along with English translations in brackets.
+
+#### Key Formatting Rules
+
+1. **Name order**: Keep surname-first order for Asian names (no comma reversal)
+   - Correct: `Hao, Chunwen 郝春文`
+   - Wrong: `Hao, Chunwen` (missing original script)
+   - Wrong: `Chunwen, Hao` (reversed)
+
+2. **Original script**: Include after romanization for names and titles
+   - Names: `Abe, Yoshio 阿部善雄`
+   - Titles: `Tōkyō Monogatari 東京物語`
+
+3. **Translations**: English translations in [brackets] after original titles
+   - `[The last "Japanese": Life of Kan'ichi Asakawa]`
+
+4. **Italics**: Apply only to romanized titles, not original script
+   - Correct: `<i>Saigo no "Nihonjin"</i> 最後の「日本人」`
+   - Wrong: `<i>Saigo no "Nihonjin" 最後の「日本人」</i>` (italicizing original script)
+
+#### Chinese Sources
+
+**Book**:
+```
+Hao, Chunwen 郝春文. Tang houqi wudai Songchu Dunhuang sengni de shehui
+shenghuo 唐后期五代宋初敦煌僧尼的社会生活 [The social existence of monks
+and nuns in Dunhuang during the late Tang, Five Dynasties and early Song].
+Zhongguo shehui kexue chubanshe, 1998.
+```
+
+**Journal Article**:
+```
+Hua, Linfu 华林甫. "Qingdai yilai Sanxia diqu shuihan zaihai de chubu
+yanjiu" 清代以来三峡地区水旱灾害的初步研究 [A preliminary study of floods
+and droughts in the Three Gorges region since the Qing dynasty]. Zhongguo
+shehui kexue 中国社会科学 1 (1999): 168–79.
+```
+
+#### Japanese Sources
+
+**Book** (multiple authors):
+```
+Abe, Yoshio 阿部善雄, and Hideo Kaneko 金子英生. Saigo no "Nihonjin":
+Asakawa Kan'Ichi no shōgai 最後の「日本人」: 朝河貫一の生涯 [The last
+"Japanese": Life of Kan'ichi Asakawa]. Iwanami Shoten, 1983.
+```
+
+**Film**:
+```
+Tōkyō Monogatari 東京物語. Directed by Ozu Yasujirō 小津安二郎,
+Shōchiku, 1953.
+```
+
+#### Korean Sources
+
+**Book**:
+```
+Kang, Ubang 姜友邦. Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli
+圓融과 調和: 韓國古代彫刻史의 原理 [Synthesis and harmony: Principles in
+the history of ancient Korean sculpture]. Yŏrhwadang, 1990.
+```
+
+**Book Chapter**:
+```
+Ha, Insu 河仁秀. "Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa"
+東三洞貝塚淨化地域發掘成果 [Result of the excavation on the shell mounds in
+Tongsam-dong purification region]. Kogohak ŭl tonghae pon Kaya 考古學을
+통해 본 加耶 [Kaya seen through archaeology], edited by Han'guk Kogo
+Hakhoe 韓國考古學會, Han'guk Kogo Hakhoe, 2000, pp. 111–133.
+```
+
+#### CNE Field Setup for MLA
+
+To achieve proper MLA formatting, configure your Zotero items with these fields in the Extra field:
+
+```
+cne-creator-0-last-romanized: Hao
+cne-creator-0-first-romanized: Chunwen
+cne-creator-0-last-original: 郝
+cne-creator-0-first-original: 春文
+cne-title-romanized: Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo
+cne-title-original: 唐后期五代宋初敦煌僧尼的社会生活
+cne-title-english: The social existence of monks and nuns in Dunhuang during the late Tang, Five Dynasties and early Song
+```
+
+**Note**: MLA formatting differs from APA and Chicago in how it handles Asian names and scripts. Always consult the [MLA Handbook 9th edition](https://style.mla.org/) or the [Yale University MLA Guide](https://guides.library.yale.edu/c.php?g=296262&p=1974230) for comprehensive guidance.
 
 ## Architecture
 
