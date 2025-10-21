@@ -37,6 +37,7 @@ import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
 import { chineseExpectations } from './expectations/apa-7th/en-US/chinese';
 import { japaneseExpectations } from './expectations/apa-7th/en-US/japanese';
 import { koreanExpectations } from './expectations/apa-7th/en-US/korean';
+import { englishExpectations } from './expectations/apa-7th/en-US/english';
 import { generateBibliography, extractCslEntry } from './test-helpers';
 
 // Configure Chai to show full string diffs (not truncated)
@@ -215,6 +216,30 @@ describe('APA 7th Edition - CNE (en-US)', function() {
   describe('Korean materials', function() {
     // Dynamically generate tests from expectations
     Object.entries(koreanExpectations).forEach(([fixtureId, expected]) => {
+      const hasExpectation = expected && expected.trim();
+      const testFn = hasExpectation ? it : it.skip;
+      const testName = hasExpectation
+        ? `should format ${fixtureId} correctly`
+        : `should format ${fixtureId} correctly - no expectation`;
+
+      testFn(testName, function() {
+        const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
+        assertEqualWithDiff(
+          actual,
+          expected,
+          `CSL entry for ${fixtureId} does not match expected output`
+        );
+      });
+    });
+  });
+
+  // ==========================================================================
+  // English Materials (baseline tests for non-CNE behavior)
+  // ==========================================================================
+
+  describe('English materials', function() {
+    // Dynamically generate tests from expectations
+    Object.entries(englishExpectations).forEach(([fixtureId, expected]) => {
       const hasExpectation = expected && expected.trim();
       const testFn = hasExpectation ? it : it.skip;
       const testName = hasExpectation
