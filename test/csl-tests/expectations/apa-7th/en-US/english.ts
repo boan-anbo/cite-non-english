@@ -20,5 +20,5 @@ export const englishExpectations: Record<string, string> = {
    * NOT inverted: "Caroff, S. N., Mann, S. C., & Francis, A."
    */
   [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]:
-    `Petrides, G., Malur, C., &amp; Fink, M. (2004). Convulsive Therapy. In S. N. Caroff, S. C. Mann, &amp; A. Francis (Eds.), <i>Catatonia: From Psychopathology to Neurobiology</i>. American Psychiatric Association Publishing.`,
+    `Petrides, G., Malur, C., & Fink, M. (2004). Convulsive Therapy. In S. N. Caroff, S. C. Mann, & A. Francis (Eds.), <i>Catatonia: From Psychopathology to Neurobiology</i>. American Psychiatric Association Publishing.`,
 };

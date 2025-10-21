@@ -64,7 +64,7 @@ export const chineseExpectations: Record<string, string> = {
    * Author. (Year). Chapter title [Translation]. In Editor (Ed.), Book title [Translation] (pp. Pages). Publisher.
    */
   [FIXTURE_IDS.ZHCN_DU_2007_DUNHUANG]:
-    `Du, W. (2007). Dunhuang yishu yongzhi gaikuang ji qianxi [An analysis and description of the use of paper in Dunhuang manuscripts]. In Lin S. &amp; A. Morrison (Eds.), <i>Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji</i> [Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference] (pp. 67–84). Beijing tushuguan chubanshe.`,
+    `Du, W. (2007). Dunhuang yishu yongzhi gaikuang ji qianxi [An analysis and description of the use of paper in Dunhuang manuscripts]. In Lin S. & A. Morrison (Eds.), <i>Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji</i> [Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference] (pp. 67–84). Beijing tushuguan chubanshe.`,
 
   /**
    * Chinese Newspaper Article - Sha (2014)

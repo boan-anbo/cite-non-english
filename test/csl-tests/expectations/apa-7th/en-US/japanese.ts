@@ -23,7 +23,7 @@ export const japaneseExpectations: Record<string, string> = {
    * Author. (Year). Title [Translation]. Publisher.
    */
   [FIXTURE_IDS.JA_ABE_1983_SAIGO]:
-    `Abe, Y., & Kaneko, H. (1983). <i>Saigo no "Nihonjin": Asakawa Kan'Ichi no shōgai</i> [The last 'Japanese': Life of Kan'ichi Asakawa]. Iwanami Shoten.`,
+    `Abe, Y., & Kaneko, H. (1983). <i>Saigo no “Nihonjin”: Asakawa Kan’Ichi no shōgai</i> [The last “Japanese”: Life of Kan’ichi Asakawa]. Iwanami Shoten.`,
 
   /**
    * Japanese Journal Article - Kondō (2013)

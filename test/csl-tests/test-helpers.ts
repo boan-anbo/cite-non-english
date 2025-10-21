@@ -408,40 +408,160 @@ export function extractFixtureIdentifiers(fixture: CNETestFixture): {
 }
 
 /**
+ * Parse COinS metadata from a Z3988 span element
+ *
+ * COinS (ContextObjects in Spans) is a standard for embedding citation metadata
+ * in HTML using OpenURL format in the title attribute of a span element.
+ *
+ * @param coinsSpan - The Z3988 span element containing COinS metadata
+ * @returns Parsed metadata object with decoded fields
+ */
+function parseCoinsMetadata(coinsSpan: Element): Record<string, string> {
+  const metadata: Record<string, string> = {};
+
+  const title = coinsSpan.getAttribute('title');
+  if (!title) return metadata;
+
+  // Parse URL-encoded key-value pairs
+  const params = new URLSearchParams(title);
+
+  // Extract and decode common fields
+  for (const [key, value] of params.entries()) {
+    // Decode URL-encoded UTF-8 (handles CJK characters)
+    metadata[key] = decodeURIComponent(value);
+  }
+
+  return metadata;
+}
+
+/**
+ * Match entry using COinS metadata
+ *
+ * COinS provides structured, reliable metadata that is immune to:
+ * - Quote character differences (' vs " vs " vs ")
+ * - Whitespace normalization
+ * - HTML entity encoding
+ *
+ * @param entry - The .csl-entry element (COinS span is its next sibling)
+ * @param fixture - Test fixture to match against
+ * @returns Match score (0 if no match)
+ */
+function matchEntryByCoins(entry: Element, fixture: CNETestFixture): number {
+  // COinS span is the next sibling of the .csl-entry
+  const coinsSpan = entry.nextElementSibling;
+
+  if (!coinsSpan || !coinsSpan.classList.contains('Z3988')) {
+    return 0;
+  }
+
+  const coins = parseCoinsMetadata(coinsSpan);
+  let score = 0;
+
+  // Match by original title (most reliable - exact Unicode match)
+  // COinS stores the original Zotero field, not the formatted version
+  if (fixture.title && coins['rft.btitle'] === fixture.title) {
+    score += 100;
+  }
+  if (fixture.title && coins['rft.atitle'] === fixture.title) {
+    score += 100;
+  }
+
+  // Match by date (year)
+  if (fixture.date && coins['rft.date']?.includes(fixture.date)) {
+    score += 50;
+  }
+
+  // Match by language
+  if (fixture.language && coins['rft.language'] === fixture.language) {
+    score += 30;
+  }
+
+  // Match by author (last name from COinS)
+  if (fixture.creators && fixture.creators.length > 0) {
+    const firstAuthor = fixture.creators[0];
+    if (firstAuthor.lastName && coins['rft.aulast'] === firstAuthor.lastName) {
+      score += 40;
+    }
+  }
+
+  return score;
+}
+
+/**
+ * Decode HTML entities in a string while preserving HTML tags
+ *
+ * Replaces common HTML entities with their character equivalents.
+ * Preserves HTML tags like <i>, <b>, <a>, etc.
+ *
+ * @param html - HTML string with entities
+ * @returns Decoded string with tags preserved
+ */
+function decodeHtmlEntities(html: string): string {
+  return html
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&apos;/g, "'");
+}
+
+/**
  * Extract a specific CSL entry from bibliography HTML
  *
- * Matches entries by finding unique identifiers (original title, romanized title,
- * author names, journal names) in the text content. Uses a scoring system to handle
- * entries with different field combinations.
+ * Uses COinS metadata (structured citation data) for robust matching,
+ * with text-based matching as fallback for compatibility.
+ *
+ * COinS-based matching is immune to quote character differences,
+ * whitespace normalization, and HTML entity encoding issues.
  *
  * @param bibliography - Full bibliography HTML string
  * @param fixture - Test fixture to extract entry for
- * @returns Inner HTML of the matched CSL entry, or null if not found
+ * @returns Inner HTML of the matched CSL entry (with HTML entities decoded), or null if not found
  */
 export function extractCslEntry(
   bibliography: string,
   fixture: CNETestFixture
 ): string | null {
-  // Extract identifiers from fixture
-  const identifiers = extractFixtureIdentifiers(fixture);
-
   // Parse HTML using DOMParser
   const parser = new DOMParser();
   const doc = parser.parseFromString(bibliography, 'text/html');
 
-  // Get all CSL entry elements
-  const entries = doc.querySelectorAll('.csl-entry');
+  // Get all bibliography item divs (contain both .csl-entry and .Z3988)
+  const bibItems = doc.querySelectorAll('.csl-bib-body > .csl-entry');
 
-  if (entries.length === 0) {
+  if (bibItems.length === 0) {
     console.warn('[extractCslEntry] No .csl-entry elements found in bibliography');
     return null;
   }
 
-  // Score each entry based on identifier matches
+  // Try COinS-based matching first (most robust)
   let bestMatch: Element | null = null;
   let bestScore = 0;
 
-  for (const entry of entries) {
+  for (const entry of bibItems) {
+    // Try COinS matching
+    const coinsScore = matchEntryByCoins(entry, fixture);
+
+    if (coinsScore > bestScore) {
+      bestScore = coinsScore;
+      bestMatch = entry;
+    }
+  }
+
+  // If COinS matching found a strong match, use it
+  if (bestMatch && bestScore >= 100) {
+    // Decode HTML entities (e.g., &amp; → &)
+    return decodeHtmlEntities(bestMatch.innerHTML);
+  }
+
+  // Fallback to text-based matching for compatibility
+  console.log('[extractCslEntry] COinS matching weak or failed, using text fallback');
+  const identifiers = extractFixtureIdentifiers(fixture);
+  bestMatch = null;
+  bestScore = 0;
+
+  for (const entry of bibItems) {
     const entryText = entry.textContent || '';
     let score = 0;
 
@@ -455,7 +575,7 @@ export function extractCslEntry(
       score += 80;
     }
 
-    // English title (in brackets)
+    // English title (in brackets) - now less reliable due to quote changes
     if (identifiers.englishTitle && entryText.includes(identifiers.englishTitle)) {
       score += 60;
     }
@@ -485,7 +605,8 @@ export function extractCslEntry(
 
   // Return inner HTML of best match (or null if no good match found)
   if (bestMatch && bestScore > 0) {
-    return bestMatch.innerHTML;
+    // Decode HTML entities (e.g., &amp; → &)
+    return decodeHtmlEntities(bestMatch.innerHTML);
   }
 
   console.warn('[extractCslEntry] No matching entry found for fixture', identifiers);
