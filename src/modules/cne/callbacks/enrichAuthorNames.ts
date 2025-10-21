@@ -195,6 +195,7 @@
 
 import type { CneCreatorData } from "../types";
 import { parseCNEMetadata } from "../metadata-parser";
+import { buildNameVariant, type VariantConfig } from "../utils/nameVariantBuilder";
 
 /**
  * Format original script name
@@ -485,22 +486,30 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       // 2. Create DUAL romanized variants (for 'translit' slot)
       if (cneCreator.lastRomanized || cneCreator.firstRomanized) {
         // Variant 1: NATIVE formatting (no commas) - for Chicago
-        // Inherits item.language, gets romanesque=1, formats as "Family Given"
-        cslCreator.multi._key['en'] = {
-          family: cneCreator.lastRomanized || '',
-          given: cneCreator.firstRomanized || ''
-          // NO multi.main - inherits item.language='ja'/'zh'
-        };
+        // Uses abstraction to determine proper multi.main (always inherits for 'en')
+        cslCreator.multi._key['en'] = buildNameVariant(
+          {
+            variantTag: 'en',
+            creatorRole: key,
+            originalLang: originalLang,
+            hasCNE: true
+          },
+          cneCreator.lastRomanized || '',
+          cneCreator.firstRomanized || ''
+        );
 
-        // Variant 2: WESTERN formatting (commas) - for APA
-        // Sets multi.main='en', gets romanesque=2, respects CSL name-as-sort-order
-        cslCreator.multi._key['en-x-western'] = {
-          family: cneCreator.lastRomanized || '',
-          given: cneCreator.firstRomanized || '',
-          multi: {
-            main: 'en'  // CRITICAL: Forces western formatting with commas
-          }
-        };
+        // Variant 2: WESTERN formatting (with inversion) - for APA
+        // Uses abstraction to handle role-specific multi.main for container creators
+        cslCreator.multi._key['en-x-western'] = buildNameVariant(
+          {
+            variantTag: 'en-x-western',
+            creatorRole: key,
+            originalLang: originalLang,
+            hasCNE: true
+          },
+          cneCreator.lastRomanized || '',
+          cneCreator.firstRomanized || ''
+        );
       }
 
       Zotero.debug(
