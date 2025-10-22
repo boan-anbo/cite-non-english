@@ -88,6 +88,8 @@ export interface FieldConfig {
   l10nKey: string;
   /** Description or help text */
   description?: string;
+  /** Optional: Specific variants to show (if not specified, shows all 4 variants) */
+  variants?: readonly FieldVariant[];
 }
 
 /**
