@@ -196,79 +196,7 @@
 import type { CneCreatorData } from "../types";
 import { parseCNEMetadata } from "../metadata-parser";
 import { buildNameVariant, type VariantConfig } from "../utils/nameVariantBuilder";
-
-/**
- * Format original script name
- *
- * @param author - CNE author metadata with original script names
- * @returns Formatted original name string, or empty string if no original data
- */
-function formatOriginalName(author: CneCreatorData): string {
-  if (!author.lastOriginal && !author.firstOriginal) {
-    return "";
-  }
-
-  const last = author.lastOriginal || "";
-  const first = author.firstOriginal || "";
-
-  // Add space between original names if option is enabled (for Japanese, etc.)
-  if (author.optionsOriginalSpacing && last && first) {
-    return `${last} ${first}`;
-  } else {
-    return `${last}${first}`;
-  }
-}
-
-/**
- * Format romanized name
- *
- * @param author - CNE author metadata with romanized names
- * @returns Formatted romanized name string (e.g., "Hao, Chunwen")
- */
-function formatRomanizedName(author: CneCreatorData): string {
-  if (!author.lastRomanized && !author.firstRomanized) {
-    return "";
-  }
-
-  const last = author.lastRomanized || "";
-  const first = author.firstRomanized || "";
-
-  // Standard Western format: "Last, First"
-  if (last && first) {
-    return `${last}, ${first}`;
-  } else if (last) {
-    return last;
-  } else {
-    return first;
-  }
-}
-
-/**
- * Build complete literal name from CNE author data
- *
- * Combines romanized and original names:
- * - "Hao, Chunwen 郝春文"
- * - "Yamada, Tarō 山田 太郎" (with spacing option)
- *
- * @param author - CNE author metadata
- * @returns Complete formatted name, or empty string if no data
- */
-function buildLiteralName(author: CneCreatorData): string {
-  const romanized = formatRomanizedName(author);
-  const original = formatOriginalName(author);
-
-  if (!romanized && !original) {
-    return "";
-  }
-
-  // Both romanized and original available
-  if (romanized && original) {
-    return `${romanized} ${original}`;
-  }
-
-  // Only one available
-  return romanized || original;
-}
+import { getPref } from "../../../utils/prefs";
 
 /**
  * Enrich creator names in CSL-JSON with CNE metadata
@@ -476,11 +404,34 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       // - APA: romanizedFormatting='western' → uses 'en-x-western' tag → commas
 
       // 1. Set ORIGINAL in main fields (for 'orig' slot)
+      // Apply intelligent spacing for original script names (Japanese auto-spacing)
       if (cneCreator.lastOriginal) {
         cslCreator.family = cneCreator.lastOriginal;
       }
       if (cneCreator.firstOriginal) {
-        cslCreator.given = cneCreator.firstOriginal;
+        // EXTENSIBLE SPACING LOGIC for original names
+        // Read comma-separated language codes from preferences
+        // Example: "ja" or "ja,zh,ko"
+        const spacingLanguagesStr = (getPref('spacingLanguages') as string) || '';
+        const spacingLanguages = spacingLanguagesStr
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
+
+        // Check if originalLang matches any configured language
+        // Uses prefix matching: 'ja' matches 'ja', 'ja-JP', 'ja-Latn'
+        const autoApplySpacing = spacingLanguages.some(lang =>
+          originalLang.startsWith(lang)
+        );
+
+        // Per-author override always wins if explicitly set
+        const shouldSpace = cneCreator.optionsOriginalSpacing ?? autoApplySpacing;
+
+        // If spacing enabled, prepend space to given name for citeproc concatenation
+        // Citeproc will output: family + given = "山田" + " 太郎" = "山田 太郎"
+        cslCreator.given = shouldSpace && cneCreator.lastOriginal
+          ? ` ${cneCreator.firstOriginal}`  // Prepend space: " 太郎"
+          : cneCreator.firstOriginal;        // No space: "小波"
       }
 
       // 2. Create DUAL romanized variants (for 'translit' slot)

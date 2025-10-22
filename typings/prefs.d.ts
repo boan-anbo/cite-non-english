@@ -10,6 +10,7 @@ declare namespace _ZoteroTypes {
       "enable": boolean;
       "input": string;
       "quickLanguages": string;
+      "spacingLanguages": string;
       "enableHardcodedTitles": boolean;
       "hardcodedTitleStyle": string;
       "hardcodedTitlePresets": string;

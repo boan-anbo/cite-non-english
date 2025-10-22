@@ -1,6 +1,7 @@
 pref("enable", true);
 pref("input", "This is input");
 pref("quickLanguages", "zh-CN, zh-TW, ja-JP, ko-KR, ru-RU, ar, de-DE, fr-FR");
+pref("spacingLanguages", "");
 
 // Hard-coded title enrichment preferences
 pref("enableHardcodedTitles", false);
