@@ -201,9 +201,9 @@ function createOptionsSection(index: number, authorData?: CneCreatorData): any {
     children: [
       createCheckboxOption(
         index,
-        "original-spacing",
-        "Space between original names",
-        authorData?.optionsOriginalSpacing,
+        "force-comma",
+        "Force comma between names",
+        authorData?.optionsForceComma,
       ),
     ],
   };
