@@ -39,7 +39,11 @@ export function createTextInput(
       borderRadius: "3px",
       transition: "background-color 0.15s ease",
       fontSize: "13px",
-      lineHeight: "1",
+      lineHeight: "1.4",
+      whiteSpace: "normal",
+      wordWrap: "break-word",
+      overflowWrap: "break-word",
+      minHeight: "24px",
     },
   };
 }
