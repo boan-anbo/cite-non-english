@@ -53,12 +53,6 @@ export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
     l10nKey: "cne-field-journal",
     description: "Journal title",
   },
-  {
-    name: "series",
-    label: "Series",
-    l10nKey: "cne-field-series",
-    description: "Series title",
-  },
 ] as const;
 
 /**
