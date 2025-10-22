@@ -8,6 +8,7 @@ import { getElementId, getL10nKey } from "../constants";
 
 /**
  * Create a text input element with data binding
+ * Uses textarea for multi-line support like native Zotero fields
  * Uses Zotero's native styling: transparent background, gray on hover
  *
  * @param id - Element ID
@@ -21,14 +22,14 @@ export function createTextInput(
   placeholder?: string,
 ): any {
   return {
-    tag: "input",
+    tag: "textarea",
     namespace: "html",
     id,
     attributes: {
       "data-bind": bindKey,
       "data-prop": "value",
-      type: "text",
       placeholder: placeholder || "",
+      rows: "1",
     },
     styles: {
       width: "100%",
@@ -40,11 +41,22 @@ export function createTextInput(
       transition: "background-color 0.15s ease",
       fontSize: "13px",
       lineHeight: "1.4",
-      whiteSpace: "normal",
-      wordWrap: "break-word",
-      overflowWrap: "break-word",
+      resize: "vertical",
       minHeight: "24px",
+      fontFamily: "inherit",
+      overflow: "hidden",
     },
+    listeners: [
+      {
+        type: "input",
+        listener: (e: Event) => {
+          const textarea = e.target as HTMLTextAreaElement;
+          // Auto-resize textarea to fit content
+          textarea.style.height = "auto";
+          textarea.style.height = textarea.scrollHeight + "px";
+        },
+      },
+    ],
   };
 }
 
