@@ -90,7 +90,6 @@ export class CneMetadata {
       "container-title",
       "publisher",
       "journal",
-      "series",
     ];
     for (const fieldName of fields) {
       const fieldData = this.data[fieldName];
@@ -129,7 +128,6 @@ export class CneMetadata {
       "container-title": undefined,
       publisher: undefined,
       journal: undefined,
-      series: undefined,
       originalLanguage: undefined,
     };
   }
@@ -206,7 +204,6 @@ export class CneMetadata {
       "container-title",
       "publisher",
       "journal",
-      "series",
     ];
     return fields.filter((field) => this.hasFieldData(field)).length;
   }
