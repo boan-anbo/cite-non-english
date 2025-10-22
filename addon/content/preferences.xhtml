@@ -34,65 +34,6 @@
       Enter language codes separated by commas (e.g., zh-CN, zh-TW, ja-JP)
     </description>
   </groupbox>
-  <groupbox style="margin-top: 10px">
-    <label value="Hard-coded Title Enrichment (Experimental)" style="font-weight: bold" />
-    <checkbox
-      id="zotero-prefpane-__addonRef__-enableHardcodedTitles"
-      preference="enableHardcodedTitles"
-      label="Enable hard-coded title formatting"
-    />
-    <description style="margin-top: 5px; color: #d97706">
-      ⚠️ Only enable if NOT using CNE-enhanced CSL styles. May conflict with specialized styles.
-    </description>
-    <hbox style="margin-top: 8px; align-items: center">
-      <label value="Preset:" style="margin-right: 8px" />
-      <menulist
-        id="zotero-prefpane-__addonRef__-hardcodedTitleStyle"
-        preference="hardcodedTitleStyle"
-        style="min-width: 200px"
-      >
-        <menupopup id="zotero-prefpane-__addonRef__-hardcodedTitleStyle-popup">
-          <!-- Dynamically populated from preferences -->
-        </menupopup>
-      </menulist>
-      <button
-        id="zotero-prefpane-__addonRef__-deletePreset"
-        label="Delete"
-        style="margin-left: 8px"
-      />
-    </hbox>
-    <groupbox style="margin-top: 8px">
-      <hbox style="align-items: center; margin-bottom: 5px">
-        <label value="Name:" style="width: 80px" />
-        <html:input
-          type="text"
-          id="zotero-prefpane-__addonRef__-presetName"
-          style="flex: 1"
-        />
-      </hbox>
-      <hbox style="align-items: center; margin-bottom: 5px">
-        <label value="Config:" style="width: 80px" />
-        <html:input
-          type="text"
-          id="zotero-prefpane-__addonRef__-presetConfig"
-          placeholder="r*, o, e"
-          style="flex: 1; font-family: monospace"
-        />
-      </hbox>
-      <hbox style="align-items: center">
-        <button
-          id="zotero-prefpane-__addonRef__-savePreset"
-          label="Save"
-        />
-        <description style="margin-left: 10px; font-size: 11px; color: #666">
-          Format: r=romanized, o=original, e=english, *=italic | Examples: r*, o, e | r, e | o, r, e
-        </description>
-      </hbox>
-    </groupbox>
-    <description style="margin-top: 5px; font-size: 11px">
-      Configure custom title formatting presets. Default presets: Chicago, MLA, APA.
-    </description>
-  </groupbox>
 </groupbox>
 <vbox>
   <html:label
