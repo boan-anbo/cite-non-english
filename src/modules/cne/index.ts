@@ -6,7 +6,6 @@
 import { ItemToCSLJSONInterceptor } from "./interceptors";
 import {
   enrichAuthorNames,
-  enrichTitleFields,
   injectCSLVariables,
 } from "./callbacks";
 import { initializeBibLaTeXIntegration } from "./biblatex-export";
@@ -27,11 +26,6 @@ export function initializeCNEInterceptors() {
 
   // Register production callbacks for CSL export
   ItemToCSLJSONInterceptor.register(enrichAuthorNames);
-
-  // Register hard-coded title enrichment
-  // This callback checks the enableHardcodedTitles preference internally
-  // Uses preset-based configuration for flexible title formatting
-  ItemToCSLJSONInterceptor.register(enrichTitleFields);
 
   // Initialize BibLaTeX export integration
   // This intercepts itemToExportFormat for Better BibTeX compatibility
