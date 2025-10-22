@@ -54,13 +54,13 @@ export function buildAuthorFieldGroup(
   // Build input rows: 2 rows for Romanized and Original names (Last | First)
   const authorFieldRows = [
     // Row 1: Romanized names (Last | First) side by side
-    createMultiLineLabel("Last", "(Romanized)", `author-${index}-last-romanized`),
+    createMultiLineLabel("Last", "Romanized", `author-${index}-last-romanized`),
     createInputWithClearButton(
       `author-${index}-last-romanized`,
       `author-${index}.lastRomanized`,
       "e.g., Hao, Yamada",
     ),
-    createMultiLineLabel("First", "(Romanized)", `author-${index}-first-romanized`),
+    createMultiLineLabel("First", "Romanized", `author-${index}-first-romanized`),
     createInputWithClearButton(
       `author-${index}-first-romanized`,
       `author-${index}.firstRomanized`,
@@ -68,13 +68,13 @@ export function buildAuthorFieldGroup(
     ),
 
     // Row 2: Original names (Last | First) side by side
-    createMultiLineLabel("Last", "(Original)", `author-${index}-last-original`),
+    createMultiLineLabel("Last", "Original", `author-${index}-last-original`),
     createInputWithClearButton(
       `author-${index}-last-original`,
       `author-${index}.lastOriginal`,
       "e.g., 郝, 山田",
     ),
-    createMultiLineLabel("First", "(Original)", `author-${index}-first-original`),
+    createMultiLineLabel("First", "Original", `author-${index}-first-original`),
     createInputWithClearButton(
       `author-${index}-first-original`,
       `author-${index}.firstOriginal`,
