@@ -41,7 +41,7 @@ export function createTextInput(
       transition: "background-color 0.15s ease",
       fontSize: "13px",
       lineHeight: "1.4",
-      resize: "vertical",
+      resize: "none",
       minHeight: "24px",
       fontFamily: "inherit",
       overflow: "hidden",
@@ -160,17 +160,17 @@ export function createFieldSection(
   columns: number = 1,
 ): any {
   // Calculate grid template columns based on number of columns
-  // Each column is a label+input pair: 100px (label) + 1fr (input)
+  // Each column is a label+input pair: 60px (label) + 1fr (input)
   let gridTemplateColumns: string;
   if (columns === 1) {
-    gridTemplateColumns = "100px 1fr";
+    gridTemplateColumns = "60px 1fr";
   } else if (columns === 2) {
-    gridTemplateColumns = "100px 1fr 100px 1fr";
+    gridTemplateColumns = "60px 1fr 60px 1fr";
   } else {
     // Fallback for other numbers
     const parts: string[] = [];
     for (let i = 0; i < columns; i++) {
-      parts.push("100px");
+      parts.push("60px");
       parts.push("1fr");
     }
     gridTemplateColumns = parts.join(" ");
