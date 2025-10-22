@@ -487,12 +487,14 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       if (cneCreator.lastRomanized || cneCreator.firstRomanized) {
         // Variant 1: NATIVE formatting (no commas) - for Chicago
         // Uses abstraction to determine proper multi.main (always inherits for 'en')
+        // Comma injection applied if optionsForceComma is enabled
         cslCreator.multi._key['en'] = buildNameVariant(
           {
             variantTag: 'en',
             creatorRole: key,
             originalLang: originalLang,
-            hasCNE: true
+            hasCNE: true,
+            forceComma: cneCreator.optionsForceComma
           },
           cneCreator.lastRomanized || '',
           cneCreator.firstRomanized || ''
@@ -500,12 +502,14 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
 
         // Variant 2: WESTERN formatting (with inversion) - for APA
         // Uses abstraction to handle role-specific multi.main for container creators
+        // Comma injection applied if optionsForceComma is enabled
         cslCreator.multi._key['en-x-western'] = buildNameVariant(
           {
             variantTag: 'en-x-western',
             creatorRole: key,
             originalLang: originalLang,
-            hasCNE: true
+            hasCNE: true,
+            forceComma: cneCreator.optionsForceComma
           },
           cneCreator.lastRomanized || '',
           cneCreator.firstRomanized || ''

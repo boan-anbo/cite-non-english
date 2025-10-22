@@ -36,7 +36,6 @@ cne-creator-0-first-romanized: Chunwen
 cne-title-original: 唐后期五代宋初敦煌僧尼的社会生活
 cne-title-romanized: Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo
 cne-title-english: The social existence of monks and nuns in Dunhuang during the late Tang, Five Dynasties and early Song
-cne-publisher-original: 中国社会科学出版社
 cne-publisher-romanized: Zhongguo shehui kexue chubanshe`
   },
 
@@ -146,7 +145,6 @@ cne-title-english: An analysis and description of the use of paper in Dunhuang m
 cne-container-title-original: 融攝与创新: 国际敦煌项目第六次会议论文集
 cne-container-title-romanized: Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji
 cne-container-title-english: Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference
-cne-publisher-original: 北京图书馆出版社
 cne-publisher-romanized: Beijing tushuguan chubanshe`
   },
 
@@ -278,73 +276,128 @@ cne-container-title-english: Occupying Eyes, Occupying Voices: CIE/USIS Films an
 
   [FIXTURE_IDS.KO_KANG_1990_WONYUNG]: {
     itemType: 'book',
-    title: 'Wŏnyung kwa chohwa: Han\'guk kodae chogaksa ŭi wŏlli',
+    title: '圓融과調和 : 韓國古代彫刻史의原理',
     publisher: 'Yŏrhwadang',
     place: 'Seoul',
     date: '1990',
+    language: 'ko',
     creators: [{
-      firstName: 'U-bang',
-      lastName: 'Kang',
+      firstName: '友邦',
+      lastName: '姜',
       creatorType: 'author'
     }],
-    extra: `cne-title-romanized: Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli
+    extra: `cne-creator-0-last-original: 姜
+cne-creator-0-first-original: 友邦
+cne-creator-0-last-romanized: Kang
+cne-creator-0-first-romanized: U-bang
+cne-title-original: 圓融과調和: 韓國古代彫刻史의原理
+cne-title-romanized: Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli
 cne-title-english: Synthesis and harmony: Principle of the history of ancient Korean sculpture`
   },
 
   [FIXTURE_IDS.KO_HAN_1991_KYONGHUNG]: {
     itemType: 'journalArticle',
-    title: 'Kyŏnghŭng ŭi saengae e kwanhan chae koch\'al',
-    publicationTitle: 'Pulgyo hakpo',
+    title: '憬興 의 生涯 에 관한 재고찰',
+    publicationTitle: '佛敎學報',
     volume: '28',
     issue: '1',
     pages: '187-213',
     date: '1991',
+    language: 'ko',
     creators: [{
-      firstName: 'T\'ae-sik',
-      lastName: 'Han',
+      firstName: '泰植',
+      lastName: '韓',
       creatorType: 'author'
     }],
-    extra: `cne-title-romanized: Kyŏnghŭng ŭi saengae e kwanhan chae koch'al
-cne-title-english: Re-examination of the life of Kyŏnghŭng`
+    extra: `cne-creator-0-last-original: 韓
+cne-creator-0-first-original: 泰植
+cne-creator-0-last-romanized: Han
+cne-creator-0-first-romanized: T'ae-sik
+cne-title-original: 憬興 의 生涯 에 관한 재고찰
+cne-title-romanized: Kyŏnghŭng ŭi saengae e kwanhan chae koch'al
+cne-title-english: Re-examination of the life of Kyŏnghŭng
+cne-journal-original: 佛敎學報
+cne-journal-romanized: Pulgyo hakpo`
   },
 
   [FIXTURE_IDS.KO_HA_2000_TONGSAM]: {
     itemType: 'bookSection',
-    title: 'Tongsam-dong P\'aech\'ong chŏnghwa chiyŏk palgul sŏngkwa',
-    bookTitle: 'Kogohak ŭl tonghae pon Kaya',
-    publisher: 'Han\'guk Kogo Hakhoe',
+    title: '東三洞 貝塚 淨化地域 發掘成果',
+    bookTitle: '考古學을통해본加耶',
+    publisher: '한국 고고 학회',
     place: 'Seoul',
     date: '2000',
     pages: '111-133',
+    language: 'ko',
     creators: [
       {
-        firstName: 'In-su',
-        lastName: 'Ha',
+        firstName: '仁秀',
+        lastName: '河',
         creatorType: 'author'
       },
       {
-        lastName: 'Han\'guk Kogo Hakhoe',
+        lastName: '한국 고고 학회',
         creatorType: 'editor'
       }
     ],
-    extra: `cne-title-romanized: Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa
+    extra: `cne-creator-0-last-original: 河
+cne-creator-0-first-original: 仁秀
+cne-creator-0-last-romanized: Ha
+cne-creator-0-first-romanized: In-su
+cne-creator-1-last-original: 한국 고고 학회
+cne-creator-1-last-romanized: Han'guk Kogo Hakhoe
+cne-title-original: 東三洞 貝塚 淨化地域 發掘成果
+cne-title-romanized: Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa
 cne-title-english: Result of the excavation on the shell mounds in Tongsam-dong purification region
+cne-container-title-original: 考古學을통해본加耶
 cne-container-title-romanized: Kogohak ŭl tonghae pon Kaya
-cne-container-title-english: Kaya seen through archaeology`
+cne-container-title-english: Kaya seen through archaeology
+cne-publisher-romanized: Han'guk Kogo Hakhoe`
   },
 
   [FIXTURE_IDS.KO_CHU_2008_KWANGUPYONG]: {
     itemType: 'newspaperArticle',
-    title: 'Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan',
-    publicationTitle: 'Chosŏn Ilbo',
+    title: '美서 광우병 발생하면 수입 중단',
+    publicationTitle: '朝鮮日報',
     date: '2008-05-08',
+    language: 'ko',
     creators: [{
-      firstName: 'Yong-jung',
-      lastName: 'Chu',
+      firstName: '용중',
+      lastName: '주',
       creatorType: 'author'
     }],
-    extra: `cne-title-romanized: Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan
-cne-title-english: Will suspend the import if mad cow disease attacks in the United States`
+    extra: `cne-creator-0-last-original: 주
+cne-creator-0-first-original: 용중
+cne-creator-0-last-romanized: Chu
+cne-creator-0-first-romanized: Yong-jung
+cne-title-original: 美서 광우병 발생하면 수입 중단
+cne-title-romanized: Mi sŏ kwangupyŏng palsaeng hamyŏn suip chungdan
+cne-title-english: Will suspend the import if mad cow disease attacks in the United States
+cne-journal-original: 朝鮮日報
+cne-journal-romanized: Chosŏn Ilbo`
+  },
+
+  [FIXTURE_IDS.KO_KIM_2020_COMMA]: {
+    itemType: 'book',
+    title: '한국의 전통 건축',
+    publisher: '서울대학교출판부',
+    place: 'Seoul',
+    date: '2020',
+    language: 'ko',
+    creators: [{
+      firstName: '민수',
+      lastName: '김',
+      creatorType: 'author'
+    }],
+    extra: `cne-creator-0-last-original: 김
+cne-creator-0-first-original: 민수
+cne-creator-0-last-romanized: Kim
+cne-creator-0-first-romanized: Minsoo
+cne-creator-0-options-force-comma: true
+cne-title-original: 한국의 전통 건축
+cne-title-romanized: Han'guk ŭi chŏnt'ong kŏnch'uk
+cne-title-english: Traditional Architecture of Korea
+cne-publisher-romanized: Sŏul Taehakkyo Ch'ulp'anbu`
   },
 
   // ============================================================================

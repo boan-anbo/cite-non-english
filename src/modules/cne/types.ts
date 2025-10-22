@@ -19,8 +19,7 @@ export type CneFieldName =
   | "title"
   | "container-title"
   | "publisher"
-  | "journal"
-  | "series";
+  | "journal";
 
 /**
  * Data structure for a single non-English field with its variants
@@ -54,6 +53,8 @@ export interface CneCreatorData {
   firstOriginal?: string;
   /** Add space between original names (for Japanese, etc.) */
   optionsOriginalSpacing?: boolean;
+  /** Force comma separator in romanized name (for CJK names that default to space) */
+  optionsForceComma?: boolean;
 }
 
 /**
@@ -69,8 +70,6 @@ export interface CneMetadataData {
   publisher?: CneFieldData;
   /** Journal title */
   journal?: CneFieldData;
-  /** Series title */
-  series?: CneFieldData;
   /** ISO language code (e.g., zh-CN, ja-JP, ko-KR, ru-RU, ar-SA) */
   originalLanguage?: string;
   /** Creator names with CNE metadata (indexed by position, matches Zotero creators array) */
