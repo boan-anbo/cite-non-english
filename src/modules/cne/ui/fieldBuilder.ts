@@ -14,17 +14,23 @@ import {
 } from "./components";
 
 /**
- * Build a complete field group with all three variants in Zotero's two-column grid layout
- * Each field gets three inputs with clear buttons: original, english, romanized
+ * Build a complete field group with variants in Zotero's two-column grid layout
+ * Each field gets inputs with clear buttons based on configured variants
+ * If no variants specified, uses all 4 variants (original, romanized, romanizedShort, english)
  *
  * @param fieldConfig - Configuration for the field
  * @returns Element configuration object for the complete field group
  */
 export function buildFieldGroup(fieldConfig: FieldConfig): any {
-  const { name, label } = fieldConfig;
+  const { name, label, variants } = fieldConfig;
+
+  // Use custom variants if specified, otherwise use all VARIANT_LABELS
+  const variantsToUse = variants
+    ? VARIANT_LABELS.filter(v => variants.includes(v.variant))
+    : VARIANT_LABELS;
 
   // Create grid rows for each variant (label + input with clear button)
-  const variantRows = VARIANT_LABELS.flatMap((variantConfig) => {
+  const variantRows = variantsToUse.flatMap((variantConfig) => {
     const variant = variantConfig.variant;
     const elementId = getElementId(name, variant);
     const bindKey = `${name}.${variant}`; // e.g., "title.original"

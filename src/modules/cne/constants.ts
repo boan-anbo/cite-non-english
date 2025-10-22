@@ -34,24 +34,28 @@ export const SUPPORTED_FIELDS: readonly FieldConfig[] = [
     label: "Title",
     l10nKey: "cne-field-title",
     description: "Article or book title",
+    // Uses all 4 variants (default)
   },
   {
     name: "container-title",
     label: "Container Title",
     l10nKey: "cne-field-container-title",
     description: "Container title for chapters or articles",
+    // Uses all 4 variants (default)
   },
   {
     name: "publisher",
     label: "Publisher",
     l10nKey: "cne-field-publisher",
     description: "Publisher name",
+    variants: ["original", "romanized"], // Only 2 variants
   },
   {
     name: "journal",
     label: "Journal",
     l10nKey: "cne-field-journal",
     description: "Journal title",
+    variants: ["original", "romanized"], // Only 2 variants
   },
 ] as const;
 
