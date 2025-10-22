@@ -36,6 +36,8 @@ export type FluentMessageId =
   | 'pref-enable'
   | 'pref-help'
   | 'pref-input'
+  | 'pref-japanese-spacing'
+  | 'pref-japanese-spacing-help'
   | 'pref-quick-languages-help'
   | 'pref-title'
   | 'prefs-table-detail'
