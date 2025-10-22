@@ -97,6 +97,9 @@ export interface VariantConfig {
 
   /** Whether this creator has CNE romanization data */
   hasCNE: boolean;
+
+  /** Force comma separator in romanized name (for CJK names that default to space) */
+  forceComma?: boolean;
 }
 
 /**
@@ -139,10 +142,60 @@ export interface VariantConfig {
  * // Returns: 'zh' (romanesque=1 → auto family-first → "Lin S.")
  */
 export function getVariantMultiMain(config: VariantConfig): string | undefined {
-  // 'en' variant: ALWAYS inherit multi.main from main fields
-  // This gives natural ordering for both CJK and English names
+  // ============================================================================
+  // 'en' variant: CJK Romanization Without Commas (Chicago/MLA style)
+  // ============================================================================
+  //
+  // GOAL: Display romanized CJK names in family-first order WITHOUT comma
+  // Examples: "Hao Chunwen", "Abe Yoshio", "Kang U-bang" (not "Hao, Chunwen")
+  //
+  // CITEPROC BUG: Korean romanization gets commas due to incomplete language list
+  //
+  // Background: Citeproc-js _isRomanesque() function (lines 13771-13779) checks
+  // if romanesque names should be downgraded to "mixed content" (romanesque=1)
+  // when item has Asian language code:
+  //
+  //   if (ret == 2) {  // Pure romanesque (Latin characters)
+  //     if (["ja", "zh"].indexOf(top_locale) > -1) {  // ← BUG: 'ko' missing!
+  //       ret = 1;  // Downgrade to mixed content → family-first, no comma
+  //     }
+  //   }
+  //
+  // This causes inconsistent behavior:
+  // - Chinese: multi.main='zh' → downgraded → romanesque=1 → "Hao Chunwen" ✓
+  // - Japanese: multi.main='ja' → downgraded → romanesque=1 → "Abe Yoshio" ✓
+  // - Korean: multi.main='ko' → NOT downgraded → romanesque=2 → "Kang, U-bang" ✗
+  //
+  // WORKAROUND: Use 'zh' for ALL CJK romanized names
+  //
+  // By setting multi.main='zh' for all CJK romanizations (Chinese, Japanese, AND
+  // Korean), we force citeproc to trigger the downgrade mechanism, ensuring
+  // consistent family-first formatting without commas across all CJK languages.
+  //
+  // IMPORTANT DISCLAIMER - Political/Cultural Sensitivity:
+  //
+  // Using 'zh' (Chinese) as the language tag for Korean romanization is
+  // SEMANTICALLY INCORRECT and potentially politically sensitive. This is purely
+  // a technical workaround for a citeproc-js bug, NOT a statement about linguistic
+  // or cultural relationships between languages.
+  //
+  // - For Japanese: More acceptable since Japanese uses Chinese characters (kanji)
+  // - For Korean: Purely technical hack; does NOT imply Korean is "Chinese-based"
+  //
+  // This workaround is necessary for functional correctness (consistent formatting)
+  // but should be removed if citeproc-js is ever fixed to include 'ko' in the
+  // language downgrade list.
+  //
+  // Technical justification: The multi.main value here controls NAME FORMATTING
+  // BEHAVIOR only (comma vs no-comma), not linguistic or cultural classification.
+  // ============================================================================
   if (config.variantTag === 'en') {
-    return undefined;  // Inherit → CJK gets romanesque=1, English gets romanesque=2
+    if (config.hasCNE) {
+      // Use 'zh' for ALL CJK to trigger citeproc's romanesque downgrade
+      // (See detailed explanation above for why this is necessary)
+      return 'zh';  // Force romanesque=1 for all CJK → "Kang U-bang" (no comma)
+    }
+    return 'en';  // Non-CNE creators stay romanesque=2 → "John Smith"
   }
 
   // 'en-x-western' variant: used with separator="comma" (APA-style)
@@ -166,7 +219,29 @@ export function getVariantMultiMain(config: VariantConfig): string | undefined {
 /**
  * Build a name variant object
  *
- * Creates the complete multi._key entry with proper multi.main value.
+ * Creates the complete multi._key entry with proper multi.main value and
+ * optional comma injection for per-author comma control.
+ *
+ * ## Comma Injection Strategy
+ *
+ * Problem: Citeproc-js hardcodes comma behavior based on romanesque level:
+ * - romanesque=1 (multi.main='zh'): family-first, NO comma → "Du Weisheng"
+ * - romanesque=2 (multi.main='en'): CSL-controlled → depends on style
+ *
+ * For CJK names with force-comma option, we need commas across ALL styles
+ * (including Chicago/MLA that lack name-as-sort-order attribute).
+ *
+ * Solution: Inject comma directly into the given name string:
+ * - Normal: { family: "Du", given: "Weisheng" } → "Du Weisheng"
+ * - Force-comma: { family: "Du", given: ", Weisheng" } → "Du, Weisheng"
+ *
+ * This works because:
+ * - We keep romanesque=1 (family-first ordering)
+ * - Comma becomes part of the string data (citeproc just concatenates)
+ * - Works in ALL citation styles (Chicago, MLA, APA, etc.)
+ *
+ * Trade-off: This is a string manipulation hack, but it's the only way to
+ * achieve style-independent comma control without modifying citeproc-js.
  *
  * @param config - Variant configuration
  * @param family - Romanized family name
@@ -180,8 +255,21 @@ export function buildNameVariant(
 ): any {
   const multiMain = getVariantMultiMain(config);
 
+  // COMMA INJECTION: For CJK names with force-comma option
+  //
+  // Inject comma suffix to family name to bypass citeproc's hardcoded
+  // no-comma behavior for romanesque=1 (multi.main='zh'/'ja'/'ko').
+  //
+  // Strategy: Append comma to family name instead of prepending to given.
+  // Citeproc concatenates: family + " " + given
+  // So "Kim," + " " + "Minsoo" = "Kim, Minsoo" ✓
+  let processedFamily = family;
+  if (config.forceComma && family) {
+    processedFamily = `${family},`;  // Append comma to family name
+  }
+
   const variant: any = {
-    family: family || '',
+    family: processedFamily || '',
     given: given || ''
   };
 

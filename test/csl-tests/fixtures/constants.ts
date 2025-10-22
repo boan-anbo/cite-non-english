@@ -35,6 +35,7 @@ export const FIXTURE_IDS = {
   KO_HAN_1991_KYONGHUNG: 'han-1991-kyonghung',
   KO_HA_2000_TONGSAM: 'ha-2000-tongsam',
   KO_CHU_2008_KWANGUPYONG: 'chu-2008-kwangupyong',
+  KO_KIM_2020_COMMA: 'kim-2020-comma',  // Test fixture for force-comma feature
 
   // English fixtures (en) - for testing non-CNE behavior
   EN_PETRIDES_2004_CONVULSIVE: 'petrides-2004-convulsive',

@@ -63,10 +63,12 @@ const CREATOR_FIELD_REGEX = new RegExp(
 /**
  * Regular expression to match creator option fields (flattened)
  * Format: cne-creator-{index}-options-{optionName}: value
- * Example: cne-creator-0-options-original-spacing: true
+ * Examples:
+ *   cne-creator-0-options-original-spacing: true
+ *   cne-creator-0-options-force-comma: true
  */
 const CREATOR_OPTIONS_REGEX = new RegExp(
-  `^${NAMESPACE}-creator-(\\d+)-options-original-spacing:\\s*(.+)$`,
+  `^${NAMESPACE}-creator-(\\d+)-options-(original-spacing|force-comma):\\s*(.+)$`,
   "i",
 );
 
@@ -110,18 +112,25 @@ function parseCreatorFields(lines: string[]): CneCreatorData[] {
       continue;
     }
 
-    // Try to match creator options line (original-spacing only)
+    // Try to match creator options line
     const optionsMatch = trimmedLine.match(CREATOR_OPTIONS_REGEX);
     if (optionsMatch) {
       const index = parseInt(optionsMatch[1], 10);
-      const value = optionsMatch[2].trim();
+      const optionName = optionsMatch[2]; // 'original-spacing' or 'force-comma'
+      const value = optionsMatch[3].trim();
 
       if (!creatorsMap.has(index)) {
         creatorsMap.set(index, {});
       }
 
       const creator = creatorsMap.get(index)!;
-      creator.optionsOriginalSpacing = value === "true";
+      const boolValue = value === "true" || value === "1";
+
+      if (optionName === "original-spacing") {
+        creator.optionsOriginalSpacing = boolValue;
+      } else if (optionName === "force-comma") {
+        creator.optionsForceComma = boolValue;
+      }
     }
   }
 
@@ -182,10 +191,15 @@ function serializeCreatorFields(creators?: CneCreatorData[]): string[] {
       );
     }
 
-    // Serialize original spacing option
+    // Serialize options
     if (creator.optionsOriginalSpacing !== undefined) {
       lines.push(
         `${NAMESPACE}-creator-${index}-options-original-spacing: ${creator.optionsOriginalSpacing}`,
+      );
+    }
+    if (creator.optionsForceComma !== undefined) {
+      lines.push(
+        `${NAMESPACE}-creator-${index}-options-force-comma: ${creator.optionsForceComma}`,
       );
     }
   });
