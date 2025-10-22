@@ -20,7 +20,7 @@
     <category field="humanities"/>
     <category field="literature"/>
     <summary>MLA 8th edition with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English sources.
-CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}</summary>
+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
     <updated>2025-10-21T00:00:00+00:00</updated>
     <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
   </info>

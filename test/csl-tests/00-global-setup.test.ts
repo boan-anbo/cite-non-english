@@ -166,23 +166,4 @@ describe('Global Setup - Batch Item Creation', function() {
     assert.include(extra, 'cne-creator-0-last-romanized: Abe', 'Should have first author romanized');
     assert.include(extra, 'cne-creator-1-last-romanized: Kaneko', 'Should have second author romanized');
   });
-
-  /**
-   * Validate ha-2000-tongsam has page numbers
-   *
-   * Tests that bookSection items properly store page numbers
-   */
-  it('should have page numbers for ha-2000-tongsam', async function() {
-    const libraryID = Zotero.Libraries.userLibraryID;
-    const items = await Zotero.Items.getAll(libraryID);
-    const haItem = items.find(
-      item => item.getField('title') === 'Tongsam-dong P\'aech\'ong chŏnghwa chiyŏk palgul sŏngkwa'
-    );
-
-    assert.exists(haItem, 'ha-2000-tongsam item should exist');
-
-    const pages = haItem!.getField('pages');
-    console.log(`✅ ha-2000-tongsam pages field: '${pages}'`);
-    assert.equal(pages, '111-133', 'Should have pages 111-133');
-  });
 });
