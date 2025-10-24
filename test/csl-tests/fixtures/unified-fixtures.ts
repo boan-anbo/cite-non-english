@@ -254,6 +254,7 @@ cne-title-romanized: Tōkyō Monogatari`
     title: 'もう一つのメディアとしての博覧会: 原子力平和利用博の受容',
     bookTitle: '占領する眼・占領する声: CIE/USIS映画とVOAラジオ',
     publisher: 'Tōkyō Daigaku Shuppan',
+    language: 'ja',
     place: 'Tōkyō',
     date: '2012',
     pages: '291-315',
@@ -267,7 +268,13 @@ cne-title-romanized: Mōhitotsu no media to shite no hakurankai: Genshiryoku Hei
 cne-title-english: Expo as another media: reception of Atoms for Peace
 cne-container-title-original: 占領する眼・占領する声: CIE/USIS映画とVOAラジオ
 cne-container-title-romanized: Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio
-cne-container-title-english: Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War`
+cne-container-title-english: Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War
+cne-creator-0-last-original: 吉見
+cne-creator-0-first-original: 俊哉
+cne-creator-0-last-romanized: Yoshimi
+cne-creator-0-first-romanized: Shun'ya
+cne-original-language: ja`
+
   },
 
   // ============================================================================

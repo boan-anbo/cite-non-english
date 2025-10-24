@@ -122,10 +122,12 @@ function onShutdown(): void {
 
   // Clean up CNE interceptors to prevent stacking on reload
   const { ItemToCSLJSONInterceptor } = require("./modules/cne/interceptors");
+  const { GetCiteProcInterceptor } = require("./modules/cne/interceptors/GetCiteProcInterceptor");
   const { removeBibLaTeXIntegration } = require("./modules/cne/biblatex-export");
 
   ItemToCSLJSONInterceptor.remove();
   ItemToCSLJSONInterceptor.clearCallbacks();
+  GetCiteProcInterceptor.remove();
   removeBibLaTeXIntegration();
 
   ztoolkit.log("[CNE] All interceptors cleaned up");

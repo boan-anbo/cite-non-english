@@ -3,11 +3,6 @@
  */
 
 import type { CNETestFixture } from './fixtures/types';
-import {
-  extractCNEConfigFromStyle,
-  configureCiteprocForCNE,
-  getDefaultCNEConfig,
-} from '../../src/modules/cne/config';
 
 /**
  * Zotero Styles Lifecycle Manager
@@ -246,17 +241,6 @@ export async function generateBibliography(
 
   // Get CiteProc engine with specified locale
   const engine = style.getCiteProc(styleLocale, 'html');
-
-  // Configure engine for CNE multi-slot rendering
-  // Extract CNE-CONFIG from style metadata and apply to engine
-  const cneConfig = extractCNEConfigFromStyle(style);
-  if (cneConfig) {
-    console.log('[Test Helpers] Found CNE-CONFIG, applying to engine:', cneConfig);
-    configureCiteprocForCNE(engine, cneConfig);
-  } else {
-    console.log('[Test Helpers] No CNE-CONFIG found, using default configuration');
-    configureCiteprocForCNE(engine, getDefaultCNEConfig());
-  }
 
   // Register items with engine
   engine.updateItems(items.map(item => item.id));
