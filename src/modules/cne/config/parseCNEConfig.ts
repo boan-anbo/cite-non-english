@@ -523,12 +523,43 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
     // Zotero styles have a getXML() method that returns the style XML
     if (typeof style.getXML === 'function') {
       const styleXml = style.getXML();
-      return extractCNEConfigFromStyleXml(styleXml);
+      const configFromMemory = extractCNEConfigFromStyleXml(styleXml);
+      if (configFromMemory) {
+        return configFromMemory;
+      }
     }
 
     // Fallback: try to access XML directly
     if (style.xml) {
-      return extractCNEConfigFromStyleXml(style.xml);
+      const configFromProperty = extractCNEConfigFromStyleXml(style.xml);
+      if (configFromProperty) {
+        return configFromProperty;
+      }
+    }
+
+    // Final fallback: read the installed style file from disk.
+    // This covers cases where the in-memory style XML lacks the CNE markers
+    // (e.g. temporary Style Editor copies).
+    if (style.path && typeof style.path === 'string') {
+      try {
+        const fileContents = Zotero.File.getContents(style.path);
+        if (fileContents) {
+          const configFromFile = extractCNEConfigFromStyleXml(fileContents);
+          if (configFromFile) {
+            Zotero.debug(
+              '[CNE Config] Loaded configuration from style.path fallback: ' + style.path
+            );
+            return configFromFile;
+          }
+        }
+      } catch (fileError) {
+        Zotero.debug(
+          '[CNE Config] Failed to read style.path fallback (' +
+            style.path +
+            '): ' +
+            fileError
+        );
+      }
     }
 
     Zotero.debug('[CNE Config] Style object has no getXML() method or xml property');

@@ -8,5 +8,5 @@ export const japaneseExpectations: Record<string, string> = {
   [FIXTURE_IDS.JA_OZU_1953_TOKYO]:
     `<i>Tōkyō Monogatari</i> 東京物語. Directed by Ozu Yasujirō 小津安二郎, Shōchiku, 1953.`,
   [FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU]:
-    `Yoshimi, Shun’ya. “Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō” もう一つのメディアとしての博覧会: 原子力平和利用博の受容 [Expo as another media: reception of Atoms for Peace]. <i>Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio</i> 占領する眼・占領する声: CIE/USIS映画とVOAラジオ [Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War], Tōkyō Daigaku Shuppan, 2012, pp. 291–315.`,
+    `Yoshimi Shun’ya 吉見俊哉. “Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō” もう一つのメディアとしての博覧会: 原子力平和利用博の受容 [Expo as another media: reception of Atoms for Peace]. <i>Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio</i> 占領する眼・占領する声: CIE/USIS映画とVOAラジオ [Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War], Tōkyō Daigaku Shuppan, 2012, pp. 291–315.`,
 };

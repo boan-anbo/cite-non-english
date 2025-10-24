@@ -20,4 +20,5 @@ export {
   configureCiteprocForCNE,
   setCiteAffixes,
   setTransliterationTags,
+  installCneLangPrefPatch,
 } from './configureCiteproc';
