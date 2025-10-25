@@ -3,7 +3,7 @@
 [![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
-Cite Non-English (CNE) is a Zotero extension that provides robust support for non-English citations.
+Cite Non-English (CNE) is a Zotero extension that provides all-in-one support for non-English citations which just works.
 
 ---
 
