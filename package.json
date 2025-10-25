@@ -1,7 +1,7 @@
 {
   "name": "cite-non-english",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CNE (Cite Non-English) - Manage non-English citation metadata with parallel titles, romanization, and translation support for Zotero. Supports CJK (Chinese, Japanese, Korean) and other non-English sources",
   "config": {
     "addonName": "CNE (Cite Non-English)",
