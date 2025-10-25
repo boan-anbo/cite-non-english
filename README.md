@@ -13,8 +13,7 @@ Cite Non-English (CNE) is a Zotero extension that provides robust support for no
 
 [Watch the CNE walkthrough video](docs/video/demo.mp4)
 
-<video width="100%" controls>
-  <source src="docs/video/demo.mp4" type="video/mp4">
+<video width="100%" src="https://github.com/boan-anbo/cite-non-english/raw/refs/heads/main/docs/video/demo.mp4">
   Your browser does not support the video tag.
 </video>
 
