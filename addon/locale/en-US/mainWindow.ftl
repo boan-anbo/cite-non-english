@@ -1,4 +1,4 @@
 section-header =
-    .label = Non-English Citation Fields
+    .label = Cite Non-English (CNE)
 section-sidenav-tooltip =
     .tooltiptext = Manage original script, English translation, and romanization for non-English sources
