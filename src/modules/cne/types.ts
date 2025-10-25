@@ -19,7 +19,8 @@ export type CneFieldName =
   | "title"
   | "container-title"
   | "publisher"
-  | "journal";
+  | "journal"
+  | "series";
 
 /**
  * Data structure for a single non-English field with its variants
@@ -70,6 +71,8 @@ export interface CneMetadataData {
   publisher?: CneFieldData;
   /** Journal title */
   journal?: CneFieldData;
+  /** Series title */
+  series?: CneFieldData;
   /** ISO language code (e.g., zh-CN, ja-JP, ko-KR, ru-RU, ar-SA) */
   originalLanguage?: string;
   /** Creator names with CNE metadata (indexed by position, matches Zotero creators array) */

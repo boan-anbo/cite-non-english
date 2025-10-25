@@ -121,16 +121,14 @@ export function createLanguageSelector(
     tag: "select",
     namespace: "html",
     id: "cne-language-dropdown",
+    classList: ["cne-language-select"],
     attributes: {
       "data-bind": "language",
     },
     styles: {
       width: "100%",
       padding: "4px 8px",
-      border: "1px solid #ccc",
-      borderRadius: "3px",
       fontSize: "13px",
-      backgroundColor: "#fff",
       cursor: "pointer",
     },
     children: options,
@@ -171,6 +169,7 @@ export function createLanguageSelector(
       {
         tag: "div",
         namespace: "html",
+        classList: ["cne-language-selector"],
         styles: {
           display: "flex",
           alignItems: "center",
@@ -179,11 +178,11 @@ export function createLanguageSelector(
           {
             tag: "label",
             namespace: "html",
+            classList: ["cne-language-label"],
             attributes: {
               for: "cne-language-dropdown",
             },
             styles: {
-              color: "#666",
               fontSize: "13px",
               fontWeight: "600",
             },
@@ -324,7 +323,7 @@ export function createQuickLanguageButtons(
       return; // Skip invalid codes
     }
 
-    const isActive = code === currentLanguage;
+    const isActive = languageCodesMatch(code, currentLanguage);
 
     buttons.push({
       tag: "button",
@@ -356,4 +355,31 @@ export function createQuickLanguageButtons(
     classList: ["cne-quick-language-buttons"],
     children: buttons,
   };
+}
+
+/**
+ * Determine if two language codes are equivalent or share a base language
+ * e.g., zh vs zh-CN should be treated as a match
+ */
+export function languageCodesMatch(codeA?: string | null, codeB?: string | null): boolean {
+  if (!codeA || !codeB) {
+    return false;
+  }
+  const normalizedA = codeA.trim().toLowerCase();
+  const normalizedB = codeB.trim().toLowerCase();
+  if (!normalizedA || !normalizedB) {
+    return false;
+  }
+  if (normalizedA === normalizedB) {
+    return true;
+  }
+  const splitA = normalizedA.split("-");
+  const splitB = normalizedB.split("-");
+  if (splitA.length === 1 && splitB.length > 1) {
+    return splitB[0] === splitA[0];
+  }
+  if (splitB.length === 1 && splitA.length > 1) {
+    return splitA[0] === splitB[0];
+  }
+  return false;
 }

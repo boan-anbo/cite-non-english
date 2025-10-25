@@ -5,51 +5,101 @@
 
 import { ItemToCSLJSONInterceptor } from "./interceptors";
 import { GetCiteProcInterceptor } from "./interceptors/GetCiteProcInterceptor";
+import { enrichAuthorNames, injectCSLVariables } from "./callbacks";
 import {
-  enrichAuthorNames,
-  injectCSLVariables,
-} from "./callbacks";
-import { initializeBibLaTeXIntegration } from "./biblatex-export";
+  initializeBibLaTeXIntegration,
+  removeBibLaTeXIntegration,
+} from "./biblatex-export";
+import { getPref } from "../../utils/prefs";
+import { config } from "../../../package.json";
+import { getString } from "../../utils/locale";
 
-/**
- * Initialize CNE interceptors and callbacks
- * Should be called once at plugin startup
- */
-export function initializeCNEInterceptors() {
-  // MARKER: This proves we're running the NEW bundle
-  Zotero.debug('[CNE] ========== MARKER: NEW BUNDLE 11:05 ==========');
+let cneProcessingActive = false;
+let prefObserverID: symbol | undefined;
 
-  // Install the itemToCSLJSON interceptor for CSL export (preview, Word, etc.)
+function installCneProcessing() {
+  Zotero.debug("[CNE] ========== MARKER: NEW BUNDLE 11:05 ==========");
+
   ItemToCSLJSONInterceptor.intercept();
-
-  // CRITICAL: Register CSL variable injection FIRST
-  // This works around Zotero's built-in Extra field parser bug where title fields
-  // are not parsed when they appear after author fields. Our robust parser handles
-  // any field ordering and directly injects CSL variables for the CSL style to use.
+  ItemToCSLJSONInterceptor.clearCallbacks();
   ItemToCSLJSONInterceptor.register(injectCSLVariables);
-
-  // Register production callbacks for CSL export
   ItemToCSLJSONInterceptor.register(enrichAuthorNames);
 
-  // Initialize BibLaTeX export integration
-  // This intercepts itemToExportFormat for Better BibTeX compatibility
   initializeBibLaTeXIntegration();
 
-  // MARKER: Did we get past BibLaTeX?
-  Zotero.debug('[CNE] ========== MARKER: AFTER BibLaTeX ==========');
+  Zotero.debug("[CNE] ========== MARKER: AFTER BibLaTeX ==========");
+  Zotero.debug("[CNE] === DIAGNOSTIC: Installing GetCiteProc interceptor ===");
 
-  // DIAGNOSTIC: Install getCiteProc interceptor with explicit error throwing
-  Zotero.debug('[CNE] === DIAGNOSTIC: Installing GetCiteProc interceptor ===');
   try {
     GetCiteProcInterceptor.intercept();
-    Zotero.debug('[CNE] === DIAGNOSTIC: GetCiteProc interceptor installation completed ===');
+    Zotero.debug(
+      "[CNE] === DIAGNOSTIC: GetCiteProc interceptor installation completed ===",
+    );
   } catch (error) {
-    // Re-throw to make failure visible in logs
-    Zotero.debug('[CNE] === DIAGNOSTIC: FATAL ERROR during interceptor installation ===');
-    Zotero.debug('[CNE] Error: ' + error);
-    Zotero.debug('[CNE] Stack: ' + (error as Error).stack);
+    Zotero.debug(
+      "[CNE] === DIAGNOSTIC: FATAL ERROR during interceptor installation ===",
+    );
+    Zotero.debug("[CNE] Error: " + error);
+    Zotero.debug("[CNE] Stack: " + (error as Error).stack);
     throw error;
   }
+}
+
+function uninstallCneProcessing() {
+  ItemToCSLJSONInterceptor.remove();
+  ItemToCSLJSONInterceptor.clearCallbacks();
+  GetCiteProcInterceptor.remove();
+  removeBibLaTeXIntegration();
+}
+
+export function setCneProcessingEnabled(enabled: boolean) {
+  if (enabled && !cneProcessingActive) {
+    installCneProcessing();
+    cneProcessingActive = true;
+    ztoolkit.log("[CNE] Processing interceptors enabled");
+  } else if (!enabled && cneProcessingActive) {
+    uninstallCneProcessing();
+    cneProcessingActive = false;
+    ztoolkit.log("[CNE] Processing interceptors disabled");
+  }
+}
+
+export function isCneProcessingEnabled() {
+  return cneProcessingActive;
+}
+
+export function watchCneProcessingPreference() {
+  if (prefObserverID) {
+    return prefObserverID;
+  }
+
+  const prefName = `${config.prefsPrefix}.enable`;
+  prefObserverID = Zotero.Prefs.registerObserver(prefName, () => {
+    const enabled = getPref("enable");
+    setCneProcessingEnabled(enabled !== false);
+  });
+
+  return prefObserverID;
+}
+
+export function unwatchCneProcessingPreference() {
+  if (!prefObserverID) {
+    return;
+  }
+  Zotero.Prefs.unregisterObserver(prefObserverID);
+  prefObserverID = undefined;
+}
+
+/**
+ * Register the CNE preferences pane with Zotero's preferences UI.
+ */
+export function registerCnePrefs() {
+  Zotero.PreferencePanes.register({
+    pluginID: addon.data.config.addonID,
+    src: rootURI + "content/preferences.xhtml",
+    label: getString("prefs-title"),
+    image: `chrome://${addon.data.config.addonRef}/content/icons/cne-20.svg`,
+  });
 }
 
 // Section registration

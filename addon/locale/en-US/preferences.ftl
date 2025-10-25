@@ -1,6 +1,9 @@
 pref-title = CNE Settings
 pref-enable =
-    .label = Enable
-pref-input = Input
+    .label = Enable CNE Processing
+pref-enable-help = When off, exports skip CNE processing even for CNE styles, but CNE UI panels and metadata tools stay available.
+pref-japanese-spacing =
+    .label = Enable spacing for Japanese names
+pref-japanese-spacing-help = Recommended when bibliographic styles require spacing between family and given names.
 pref-quick-languages-help = Enter language codes separated by commas (e.g., zh-CN, zh-TW, ja-JP). These will appear as quick action buttons below the language dropdown.
 pref-help = { $name } Build { $version } { $time }

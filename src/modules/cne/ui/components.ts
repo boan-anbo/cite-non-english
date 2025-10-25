@@ -188,12 +188,12 @@ export function createFieldSection(
       {
         tag: "h3",
         namespace: "html",
+        classList: ["cne-section-title"],
         properties: { innerHTML: title },
         styles: {
           margin: "0 0 3px 0",
           fontSize: "13px",
           fontWeight: "600",
-          color: "#222",
         },
       },
       {
@@ -229,11 +229,11 @@ export function createMultiLineLabel(
   return {
     tag: "label",
     namespace: "html",
+    classList: ["cne-field-label"],
     attributes: {
       for: htmlFor,
     },
     styles: {
-      color: "#666",
       fontSize: "13px",
       lineHeight: "1.3",
       textAlign: "right",
@@ -339,41 +339,21 @@ export function createLivePreview(metadata: any): any {
   return {
     tag: "details",
     namespace: "html",
-    styles: {
-      marginTop: "8px",
-      padding: "8px",
-      backgroundColor: "#f5f5f5",
-      border: "1px solid #ddd",
-      borderRadius: "4px",
-    },
+    classList: ["cne-live-preview"],
     children: [
       {
         tag: "summary",
         namespace: "html",
+        classList: ["cne-live-preview__summary"],
         properties: { innerHTML: "📋 Data Preview (In Memory)" },
-        styles: {
-          cursor: "pointer",
-          fontWeight: "600",
-          marginBottom: "8px",
-        },
       },
       {
         tag: "pre",
         namespace: "html",
         id: "cjk-data-preview",
+        classList: ["cne-live-preview__body"],
         properties: {
           innerHTML: JSON.stringify(metadata.toJSON(), null, 2),
-        },
-        styles: {
-          fontSize: "11px",
-          fontFamily: "monospace",
-          margin: "0",
-          padding: "8px",
-          backgroundColor: "#fff",
-          border: "1px solid #e0e0e0",
-          borderRadius: "3px",
-          overflow: "auto",
-          maxHeight: "300px",
         },
       },
     ],
@@ -394,9 +374,9 @@ export function createFieldCounter(metadata: any): any {
     tag: "div",
     namespace: "html",
     id: "cjk-field-counter",
+    classList: ["cne-field-counter"],
     styles: {
       fontSize: "12px",
-      color: "#666",
       marginBottom: "4px",
     },
     properties: {

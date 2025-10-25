@@ -10,17 +10,10 @@
     preference="enable"
     data-l10n-id="pref-enable"
   />
-  <hbox>
-    <html:label
-      for="zotero-prefpane-__addonRef__-input"
-      data-l10n-id="pref-input"
-    ></html:label>
-    <html:input
-      type="text"
-      id="zotero-prefpane-__addonRef__-input"
-      preference="input"
-    ></html:input>
-  </hbox>
+  <description
+    style="margin: 4px 0 0; max-width: 45em; font-style: italic;"
+    data-l10n-id="pref-enable-help"
+  ></description>
   <groupbox style="margin-top: 10px">
     <label value="Quick Language Buttons" style="font-weight: bold" />
     <html:textarea
@@ -40,11 +33,13 @@
       id="zotero-prefpane-__addonRef__-enable-japanese-spacing"
       data-l10n-id="pref-japanese-spacing"
     />
-    <description style="margin-top: 5px" data-l10n-id="pref-japanese-spacing-help">
-      Enable for bibliographic styles that require spacing between family and given names
-    </description>
+    <description
+      style="margin: 4px 0 0; max-width: 45em; font-style: italic;"
+      data-l10n-id="pref-japanese-spacing-help"
+    ></description>
   </groupbox>
 </groupbox>
+<spacer style="height: 24px;" />
 <vbox>
   <html:label
     data-l10n-id="pref-help"

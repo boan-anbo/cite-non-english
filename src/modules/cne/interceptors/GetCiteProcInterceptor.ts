@@ -47,4 +47,8 @@ export class GetCiteProcInterceptor {
     this.intercepted = false;
     this.originalGetCiteProc = null;
   }
+
+  static isIntercepted() {
+    return this.intercepted;
+  }
 }
