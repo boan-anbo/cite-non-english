@@ -259,7 +259,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
         <names variable="translator"/>
         <choose>
           <if type="software">
-            <text variable="publisher"/>
+            <text macro="cne-publisher-select"/>
           </if>
           <else-if type="standard">
             <text variable="authority"/>
@@ -431,6 +431,45 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
           <text prefix="[" suffix="]" variable="cne-title-english"/>
         </group>
       </if>
+    </choose>
+  </macro>
+  <macro name="cne-container-title-select">
+    <choose>
+      <if variable="cne-container-title-romanized">
+        <text variable="cne-container-title-romanized"/>
+      </if>
+      <else-if variable="cne-journal-romanized">
+        <text variable="cne-journal-romanized"/>
+      </else-if>
+      <else>
+        <text variable="container-title"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-container-title-supplements">
+    <choose>
+      <if variable="cne-container-title-romanized">
+        <group delimiter=" ">
+          <text variable="cne-container-title-original"/>
+          <text prefix="[" suffix="]" variable="cne-container-title-english"/>
+        </group>
+      </if>
+      <else-if variable="cne-journal-romanized">
+        <group delimiter=" ">
+          <text variable="cne-journal-original"/>
+          <text prefix="[" suffix="]" variable="cne-journal-english"/>
+        </group>
+      </else-if>
+    </choose>
+  </macro>
+  <macro name="cne-publisher-select">
+    <choose>
+      <if variable="cne-publisher-romanized">
+        <text variable="cne-publisher-romanized"/>
+      </if>
+      <else>
+        <text variable="publisher"/>
+      </else>
     </choose>
   </macro>
   <macro name="title-primary">
@@ -713,7 +752,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
             <text value="of"/>
           </else-if>
         </choose>
-        <text font-style="italic" text-case="title" variable="container-title"/>
+        <group delimiter=" ">
+          <text macro="cne-container-title-select"/>
+          <text macro="cne-container-title-supplements"/>
+        </group>
         <text prefix="[" suffix="]" variable="publisher-place"/>
       </group>
     </group>
@@ -727,7 +769,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
         <text font-style="italic" text-case="title" variable="volume-title"/>
       </else-if>
       <else>
-        <text font-style="italic" text-case="title" variable="container-title"/>
+        <group delimiter=" ">
+          <text macro="cne-container-title-select"/>
+          <text macro="cne-container-title-supplements"/>
+        </group>
       </else>
     </choose>
   </macro>
@@ -877,7 +922,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="container1-publisher-or-place">
     <choose>
       <if variable="publisher">
-        <text variable="publisher"/>
+        <text macro="cne-publisher-select"/>
       </if>
       <else>
         <!-- use place of publication as fallback (cf. MLA 5.67) -->
@@ -1084,7 +1129,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
     <choose>
       <if type="thesis">
         <group delimiter=", ">
-          <text variable="publisher"/>
+          <text macro="cne-publisher-select"/>
           <text variable="genre"/>
         </group>
       </if>
@@ -1182,7 +1227,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
             <group delimiter=", ">
               <choose>
                 <if variable="container-title">
-                  <text font-style="italic" text-case="title" variable="container-title"/>
+                  <group delimiter=" ">
+                    <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+                    <text macro="cne-container-title-supplements"/>
+                  </group>
                 </if>
                 <else>
                   <text macro="title-primary"/>
@@ -1217,7 +1265,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
             <group delimiter=", ">
               <choose>
                 <if variable="container-title">
-                  <text font-style="italic" text-case="title" variable="container-title"/>
+                  <group delimiter=" ">
+                    <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+                    <text macro="cne-container-title-supplements"/>
+                  </group>
                 </if>
                 <else>
                   <text macro="title-primary"/>
