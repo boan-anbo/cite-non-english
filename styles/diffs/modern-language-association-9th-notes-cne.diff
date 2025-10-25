@@ -39,6 +39,15 @@
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
+@@ -251,7 +258,7 @@
+         <names variable="translator"/>
+         <choose>
+           <if type="software">
+-            <text variable="publisher"/>
++            <text macro="cne-publisher-select"/>
+           </if>
+           <else-if type="standard">
+             <text variable="authority"/>
 @@ -404,37 +411,118 @@
        </else>
      </choose>
@@ -165,3 +174,69 @@
        </else>
      </choose>
    </macro>
+@@ -663,7 +751,10 @@
+             <text value="of"/>
+           </else-if>
+         </choose>
+-        <text font-style="italic" text-case="title" variable="container-title"/>
++        <group delimiter=" ">
++          <text macro="cne-container-title-select"/>
++          <text macro="cne-container-title-supplements"/>
++        </group>
+         <text prefix="[" suffix="]" variable="publisher-place"/>
+       </group>
+     </group>
+@@ -677,7 +768,10 @@
+         <text font-style="italic" text-case="title" variable="volume-title"/>
+       </else-if>
+       <else>
+-        <text font-style="italic" text-case="title" variable="container-title"/>
++        <group delimiter=" ">
++          <text macro="cne-container-title-select"/>
++          <text macro="cne-container-title-supplements"/>
++        </group>
+       </else>
+     </choose>
+   </macro>
+@@ -827,7 +921,7 @@
+   <macro name="container1-publisher-or-place">
+     <choose>
+       <if variable="publisher">
+-        <text variable="publisher"/>
++        <text macro="cne-publisher-select"/>
+       </if>
+       <else>
+         <!-- use place of publication as fallback (cf. MLA 5.67) -->
+@@ -1034,7 +1128,7 @@
+     <choose>
+       <if type="thesis">
+         <group delimiter=", ">
+-          <text variable="publisher"/>
++          <text macro="cne-publisher-select"/>
+           <text variable="genre"/>
+         </group>
+       </if>
+@@ -1132,7 +1226,10 @@
+             <group delimiter=", ">
+               <choose>
+                 <if variable="container-title">
+-                  <text font-style="italic" text-case="title" variable="container-title"/>
++                  <group delimiter=" ">
++                    <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
++                    <text macro="cne-container-title-supplements"/>
++                  </group>
+                 </if>
+                 <else>
+                   <text macro="title-primary"/>
+@@ -1167,7 +1264,10 @@
+             <group delimiter=", ">
+               <choose>
+                 <if variable="container-title">
+-                  <text font-style="italic" text-case="title" variable="container-title"/>
++                  <group delimiter=" ">
++                    <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
++                    <text macro="cne-container-title-supplements"/>
++                  </group>
+                 </if>
+                 <else>
+                   <text macro="title-primary"/>
