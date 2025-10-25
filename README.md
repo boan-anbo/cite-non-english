@@ -9,11 +9,9 @@ Cite Non-English (CNE) is a Zotero extension that provides robust support for no
 
 ## I. Core Concepts
 
-### Demo Video
+### CNE Demo
 
-[Watch the CNE walkthrough video](docs/video/demo.mp4)
-
-https://github.com/boan-anbo/cite-non-english/raw/refs/heads/main/docs/video/demo.mp4
+https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6
 
 ### Overview
 
