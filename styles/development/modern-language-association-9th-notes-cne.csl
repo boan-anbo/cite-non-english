@@ -435,10 +435,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="cne-container-title-select">
     <choose>
       <if variable="cne-container-title-romanized">
-        <text font-style="italic" text-case="title" variable="cne-container-title-romanized"/>
+        <text font-style="italic" variable="cne-container-title-romanized"/>
       </if>
       <else-if variable="cne-journal-romanized">
-        <text font-style="italic" text-case="title" variable="cne-journal-romanized"/>
+        <text font-style="italic" variable="cne-journal-romanized"/>
       </else-if>
       <else>
         <text font-style="italic" text-case="title" variable="container-title"/>
