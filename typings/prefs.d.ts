@@ -8,7 +8,6 @@ declare namespace _ZoteroTypes {
   interface Prefs {
     PluginPrefsMap: {
       "enable": boolean;
-      "input": string;
       "quickLanguages": string;
       "spacingLanguages": string;
       "enableHardcodedTitles": boolean;

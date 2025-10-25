@@ -68,8 +68,8 @@ export const LANGUAGE_NAMES: Record<string, [string, string]> = {
   "tr-TR": ["Türkçe", "Turkish"],
   "uk-UA": ["Українська", "Ukrainian"],
   "vi-VN": ["Tiếng Việt", "Vietnamese"],
-  "zh-CN": ["中文 (中国大陆)", "Chinese (PRC)"],
-  "zh-TW": ["中文 (台灣)", "Chinese (Taiwan)"],
+  "zh-CN": ["简体中文", "Chinese (Simplified)"],
+  "zh-TW": ["繁體中文", "Chinese (Traditional)"],
 };
 
 /**
@@ -91,7 +91,20 @@ export function getLanguageName(
  * @returns true if the code is recognized
  */
 export function isKnownLanguage(code: string): boolean {
-  return code in LANGUAGE_NAMES;
+  if (!code) {
+    return false;
+  }
+  if (code in LANGUAGE_NAMES) {
+    return true;
+  }
+  const normalized = code.toLowerCase();
+  const base = normalized.split("-")[0];
+  if (!base) {
+    return false;
+  }
+  return Object.keys(LANGUAGE_NAMES).some((existing) =>
+    existing.toLowerCase().startsWith(`${base}-`),
+  );
 }
 
 /**

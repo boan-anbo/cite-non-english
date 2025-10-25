@@ -542,7 +542,9 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
     // (e.g. temporary Style Editor copies).
     if (style.path && typeof style.path === 'string') {
       try {
-        const fileContents = Zotero.File.getContents(style.path);
+        const fileContents = (Zotero.File as any).getContents
+          ? (Zotero.File as any).getContents(style.path)
+          : undefined;
         if (fileContents) {
           const configFromFile = extractCNEConfigFromStyleXml(fileContents);
           if (configFromFile) {

@@ -1,6 +1,9 @@
 pref-title = CNE 设置
 pref-enable =
-    .label = 开启
-pref-input = 输入
+    .label = 启用 CNE 处理
+pref-enable-help = 关闭后，导出流程将跳过 CNE 处理（即使使用 CNE 样式），但 CNE 侧栏与元数据工具仍可使用。
+pref-japanese-spacing =
+    .label = 为日文姓名启用空格
+pref-japanese-spacing-help = 当引文样式要求姓与名之间留空格时建议启用。
 pref-quick-languages-help = 输入以逗号分隔的语言代码（例如：zh-CN, zh-TW, ja-JP）。这些将显示为语言下拉框下方的快捷按钮。
 pref-help = { $name } Build { $version } { $time }

@@ -8,6 +8,16 @@
  */
 
 import type { CneMetadata } from "../../model/CneMetadata";
+import {
+  languageCodesMatch,
+  updateDropdownOptions,
+  updateWarningIcon,
+} from "../../ui/languageSelector";
+import { checkCreatorsChanged } from "./creatorChangeDetector";
+import { refreshAuthorFields } from "../renderer";
+
+// Debounce timeout for creator changes to avoid refreshing while user is typing
+let creatorsRefreshTimeout: number | null = null;
 
 /**
  * Helper function to update quick button active states
@@ -19,7 +29,7 @@ function updateQuickButtonStates(container: HTMLElement, languageCode: string): 
   const quickButtons = container.querySelectorAll(".cne-quick-btn");
   quickButtons.forEach((btn: Element) => {
     const btnCode = btn.getAttribute("data-language-code");
-    if (btnCode === languageCode) {
+    if (languageCodesMatch(btnCode, languageCode)) {
       btn.classList.add("active");
     } else {
       btn.classList.remove("active");
@@ -47,9 +57,6 @@ export function setupLanguageBinding(
     ztoolkit.log("[CNE] Language dropdown not found");
     return;
   }
-
-  // Import helper functions
-  const { updateWarningIcon, updateDropdownOptions } = require("../../ui/languageSelector");
 
   // Initialize button states based on current language
   try {
@@ -101,6 +108,7 @@ export function setupLanguageBinding(
           numericIds.includes(item.id)
         ) {
           try {
+            // ========== Language Field Synchronization ==========
             const newLanguage = item.getField("language") || "";
             const currentValue = dropdown.value;
 
@@ -126,8 +134,24 @@ export function setupLanguageBinding(
                 `[CNE] Language dropdown synced to: ${newLanguage || "(empty)"}`,
               );
             }
+
+            // ========== Creators Change Detection (with debounce) ==========
+            if (checkCreatorsChanged(container, item)) {
+              // Clear any pending refresh
+              if (creatorsRefreshTimeout !== null) {
+                clearTimeout(creatorsRefreshTimeout);
+              }
+
+              // Debounce: wait 300ms after last change before refreshing
+              // This gives users time to finish typing creator names
+              creatorsRefreshTimeout = setTimeout(async () => {
+                ztoolkit.log("[CNE] Creators changed (debounced), refreshing author fields");
+                await refreshAuthorFields(container, item, metadata);
+                creatorsRefreshTimeout = null;
+              }, 300) as any;
+            }
           } catch (e) {
-            ztoolkit.log("[CNE] Error syncing language dropdown:", e);
+            ztoolkit.log("[CNE] Error in item change handler:", e);
           }
         }
       },
@@ -146,11 +170,10 @@ export function setupLanguageBinding(
       const languageCode = button.getAttribute("data-language-code");
       if (!languageCode) return;
 
-      // Check if button is already active (toggle behavior)
-      const isActive = button.classList.contains("active");
+      // Only treat as active if the stored language exactly matches the button code
+      const isExactSelection = dropdown.value === languageCode;
 
-      // Update dropdown value (empty if deselecting, language code if selecting)
-      dropdown.value = isActive ? "" : languageCode;
+      dropdown.value = isExactSelection ? "" : languageCode;
 
       // Trigger dropdown change event (reuses all sync logic including button states)
       // Use document.createEvent for Zotero compatibility
@@ -160,7 +183,9 @@ export function setupLanguageBinding(
       changeEvent.initEvent("change", true, false);
       dropdown.dispatchEvent(changeEvent);
 
-      ztoolkit.log(`[CNE] Quick language button ${isActive ? "deselected" : "selected"}: ${languageCode}`);
+      ztoolkit.log(
+        `[CNE] Quick language button ${isExactSelection ? "deselected" : "selected"}: ${languageCode}`,
+      );
     });
   });
 
@@ -190,6 +215,13 @@ export function setupLanguageBinding(
  * @param container - Container element
  */
 export function cleanupLanguageBinding(container: HTMLElement): void {
+  // Clear any pending creator refresh timeout
+  if (creatorsRefreshTimeout !== null) {
+    clearTimeout(creatorsRefreshTimeout);
+    creatorsRefreshTimeout = null;
+  }
+
+  // Unregister notifier
   const notifierID = (container as any)._languageNotifierID;
   if (notifierID) {
     Zotero.Notifier.unregisterObserver(notifierID);

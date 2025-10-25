@@ -1,7 +1,6 @@
 import { assert } from 'chai';
 import { stylesManager } from './test-helpers';
 import { extractCNEConfigFromStyle } from '../../src/modules/cne/config/parseCNEConfig';
-
 /**
  * Regression guard for the Style Editor flow.
  *

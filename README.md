@@ -3,848 +3,326 @@
 [![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
-An all-in-one Zotero plugin for citing non-English materials in academic writing, with comprehensive support for parallel titles, romanization, translations, and locale-aware formatting.
+Cite Non-English (CNE) is a Zotero extension to support non-English citations — that just works.
 
-## The Problem
+---
 
-Citing CNE (Cite Non-English) sources in academic work requires handling multiple parallel fields:
+## I. Core Concepts
 
-- **Original script**: Native characters (汉字, 漢字, かな, 한글)
-- **Romanization**: Pinyin, Romaji, Revised Romanization
-- **Translation**: English or other language translations
-- **Proper casing**: Preventing incorrect English auto-capitalization
+### Demo Video
 
-Previously, this required [Juris-M](https://juris-m.github.io/) (a modified Zotero fork), which pioneered multilingual citation support but faces significant limitations:
-- **Declining maintenance**: Development has slowed considerably, with decreasing update frequency
-- **Dual installation burden**: Requires maintaining a completely separate Zotero installation
-- **Library synchronization complexity**: Managing two different Zotero instances is inconvenient for most users
-- **Limited compatibility**: Update cycles lag behind official Zotero releases
+_A short walkthrough video will appear here once it is recorded._
 
-## The Solution
+### Overview
 
-**Cite Non-English (CNE)** provides an all-in-one solution that works directly with standard Zotero:
+CNE keeps all representations of a non-English source—original script (汉字, 漢字, かな, 한글), romanization, translations, and locale-aware formatting—together inside Zotero while hiding the complexity of CSL styles, citation processors, and Zotero internals from users. It bundles the moving parts into a coherent extension with a stable API, so scholars can rely on a single tool that continues to work even as Zotero evolves.
 
-1. **Internal data model**: Store all CNE (Cite Non-English) metadata in a structured format using Zotero's Extra field
-2. **Custom UI panel**: User-friendly interface in the item pane for managing CNE (Cite Non-English) fields
-3. **Output adaptation**: Transform stored data for different workflows:
-   - **LaTeX users**: Export via Better BibTeX with proper `titleaddon`, `booktitleaddon` fields
-   - **Word/LibreOffice users**: Compatible CSL styles with proper language handling
-4. **Long-term maintenance**: Focused scope, doing one thing well
+Under the hood CNE does the hard work of coordinating styles, citeproc engines, and export flows so researchers can simply cite their sources, and the project is committed to maintaining that experience until native non-English citation support arrives in Zotero. The current focus is on CJK languages where style guides make parallel scripts mandatory, but the infrastructure is language-agnostic and designed to grow as the community contributes requirements and examples.
 
-## Implementation Approach
+### Rationale
 
-CNE employs two complementary strategies to overcome limitations in Zotero's citation processing:
+English-language citation guides (especially in the humanities and social sciences) often require both transliteration/romanization and the original script when citing non-English materials. For example, consider the same sources rendered by Zotero alone versus Zotero with the CNE version of Chicago 18th Notes & Bibliography:
 
-### 1. Interceptors and Monkey Patching
+#### Zotero native Chicago style
 
-CNE intercepts Zotero's citation generation pipeline to work around fundamental limitations in the CSL (Citation Style Language) processor. This approach is necessary because:
-- **Name formatting challenges**: CSL cannot handle per-author customization (e.g., mixing romanized-first and original-first formats in a single bibliography)
-- **Character spacing**: Adding appropriate spacing for Japanese names requires pre-processing
-- **Locale-aware display**: Formatting creator names based on language context (e.g., CJK "LastFirst" vs. Western "Last, First")
+- 华林甫. “清代以来三峡地区水旱灾害的初步研究.” 中国社会科学 1 (1999): 168–79.
+- 姜友邦. 圓融과調和: 韓國古代彫刻史의原理. Yŏrhwadang, 1990.
+- 阿部善雄, and 金子英生. 最後の「日本人」: 朝河貫一の生涯. 岩波书店, 1983.
 
-The interceptors modify CSL-JSON data before it reaches the CSL processor, enabling sophisticated formatting that would be impossible to achieve through CSL alone.
+#### CNE version of Chicago 18th Notes & Bibliography
 
-### 2. Maintained CSL Styles
+- Hua Linfu 华林甫. “Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu” 清代以来三峡地区水旱灾害的初步研究 [A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty]. _Zhongguo shehui kexue_ 中国社会科学 1 (1999): 168–79.
+- Kang U-bang 姜友邦. _Wŏnyung kwa chohwa: Han’guk kodae chogaksa ŭi wŏlli_ 圓融과調和: 韓國古代彫刻史의原理 [Synthesis and harmony: Principle of the history of ancient Korean sculpture]. Yŏrhwadang, 1990.
+- Abe Yoshio 阿部善雄, and Kaneko Hideo 金子英生. _Saigo no “Nihonjin”: Asakawa Kan’Ichi no shōgai_ 最後の「日本人」: 朝河貫一の生涯 [The last “Japanese”: Life of Kan’ichi Asakawa]. Iwanami Shoten, 1983.
 
-CNE provides and maintains custom CSL style files in two categories:
+For more examples, see the [bibliography snapshots for all curated styles](https://github.com/boan-anbo/cite-non-english/tree/main/snapshots).
 
-**Enhanced English styles**: Modified versions of standard citation styles (Chicago, APA, MLA) with proper support for citing non-English materials within English-language writing. These styles handle:
-- Parallel titles (original, romanized, translated)
-- Proper punctuation and formatting for multilingual bibliographies
-- Language-specific formatting rules
+Historically Zotero’s native Chicago style offered no built-in way to render both scripts, so scholars often turned to [Juris-M](https://juris-m.github.io/), a forked version of Zotero with multilingual infrastructure. That approach brought trade-offs:
 
-**Non-English styles**: Native-language citation styles for academic writing in other languages (e.g., Japanese APA, Chinese GB/T standards).
+- Maintaining Juris-M means keeping two independent Zotero databases in sync, because the two applications cannot share a single profile.
+- Juris-M has effectively ceased active maintenance in recent years, leaving users without an up-to-date path for English-style citations of non-English sources.
 
-We actively welcome community contributions of additional CSL styles to expand language and discipline coverage.
+CNE addresses these issues by bringing robust non-English citation support back to standard Zotero, eliminating the dual-install burden and providing a maintained path forward. At the same time, the project stands on the shoulders of Juris-M and its creator—the groundwork they laid makes CNE possible today. Readers looking for the technical details of how the plugin bridges these gaps can jump to the explanations in the Detailed Guides section below.
 
-## Current Language and Style Support
+The current focus is on CJK sources because their style guides place the heaviest demands on parallel scripts. The infrastructure is intentionally language-agnostic, and I plan to expand coverage to additional languages as community contributors share requirements, examples, and tests.
 
-### Supported Languages
+### Features
 
-**Primary focus**: CJK languages
-- Chinese (Simplified, Traditional): zh-CN, zh-TW, zh-HK, zh-SG
-- Japanese: ja-JP
-- Korean: ko-KR
+- Dedicated fields in the sidebar for creators, titles, publisher, journal, series, and other metadata, with original-script and romanized variants stored together.
+- Curated CSL styles (Chicago 18th, APA 7th, MLA 9th) tailored for multilingual output, keeping romanized, original, and translated forms aligned.
+- Per-item overrides for punctuation, spacing, and name ordering so specialized style requirements are met without manual editing.
+- All CNE metadata is stored inside the Zotero item (Extra + CNE panel), so your library stays portable and sync-friendly (no external files required).
 
-While CNE currently prioritizes CJK languages due to their unique citation requirements, the plugin is designed with a **generic, extensible architecture** to support any non-English language. The data model, UI components, and processing pipeline are language-agnostic, making it straightforward to add support for:
-- Cyrillic scripts (Russian, Ukrainian, Bulgarian, etc.)
-- Arabic and Hebrew (RTL languages)
-- South Asian languages (Hindi, Bengali, Tamil, etc.)
-- European languages with special characters
+---
 
-We encourage contributions for additional languages and welcome feedback from users working with non-CJK materials.
+## II. Quick Guide
 
-### Supported Citation Styles
+### How to Use CNE
 
-**Currently maintained**:
-- **Chicago Manual of Style 18th edition - CNE**
-  - Notes and Bibliography variant
-  - Author-Date variant
-- **APA 7th edition - CNE** (American Psychological Association)
-- **MLA 9th edition - CNE** (Modern Language Association)
-  - In-text citations variant (dated 2025-08-27)
-  - Notes variant (dated 2025-08-27)
+> _Placeholder screenshots — will be replaced with actual captures._
 
-These three styles are:
-- The most widely used in English-language academic writing
-- Have the most detailed published requirements for handling non-English sources
-- Particularly important for CJK citation formatting (comprehensive guidelines from major style guides)
+1. Download the latest release from the [CNE GitHub releases page](https://github.com/boan-anbo/cite-non-english/releases) and install the XPI in Zotero (Tools → Add-ons → Install Add-on From File…).
+![Download and install CNE](docs/images/howto-download.png)
+2. For each item, open the **CNE Citation Fields** panel in Zotero’s item sidebar and enter the original-script, romanized, and translated information you need.
+![Enter CNE citation fields](docs/images/howto-sidebar.png)
+3. In the CNE Citation Fields panel choose the item’s language (use “Original language” for CJK; leave “English” if you do not want CNE processing).
+![Select language](docs/images/howto-language.png)
+4. When citing, choose the curated CNE versions of the CSL styles (e.g., “Chicago 18th CNE”) so the parallel fields render automatically.
+![Select CNE styles](docs/images/howto-style.png)
 
-**Style Files**:
-All CNE style files are located in `styles/cne/` and follow the naming convention `{style-name}-cne-{date}.csl` for versioned styles.
+> **Note:** If you need a style that CNE hasn't curated yet, you can
+>
+> 1) open an issue requesting support, or
+> 2) follow the instructions in the Detailed Guides below to adapt the infrastructure and create a CNE-compatible style yourself.
 
-Additional citation styles will be added based on community needs and contributions.
+---
 
-### MLA Citation Examples
+## III. Detailed Guides
 
-MLA (Modern Language Association) style requires displaying both romanized forms AND original script for non-English sources, along with English translations in brackets.
+### How Zotero Handles Citations
 
-#### Key Formatting Rules
+Zotero keeps every item’s native fields together with the literal text stored in the Extra field. Whenever that data needs to become CSL-JSON, core code invokes two different conversion functions:
 
-1. **Name order**: Keep surname-first order for Asian names (no comma reversal)
-   - Correct: `Hao, Chunwen 郝春文`
-   - Wrong: `Hao, Chunwen` (missing original script)
-   - Wrong: `Chunwen, Hao` (reversed)
+- `Zotero.Utilities.Item.itemToCSLJSON()` – used by preview panes, quick copy, the note editor, and the Word/LibreOffice connectors. Once the JSON is assembled, `Zotero.Style.prototype.getCiteProc()` spins up a citeproc-js or citeproc-rs engine to render it.
+- `Zotero.Utilities.Translate.prototype.itemToCSLJSON()` – assigned once at application start by copying the direct function onto each translator prototype. Export translators (CSL JSON, Better BibTeX, BibLaTeX, etc.) call this copy inside their sandboxes, so hot-patching the first function alone never reaches them.
 
-2. **Original script**: Include after romanization for names and titles
-   - Names: `Abe, Yoshio 阿部善雄`
-   - Titles: `Tōkyō Monogatari 東京物語`
+```mermaid
+flowchart TB
+  Item["Zotero item<br/>(native fields + Extra)"]
+  Direct["`Zotero.Utilities.Item.itemToCSLJSON()`"]
+  Translator["`Zotero.Utilities.Translate.prototype.itemToCSLJSON()`"]
+  Engine["CSL engine<br/>(citeproc-js / citeproc-rs)"]
+  Preview["Preview & style editor"]
+  WP["Word / LibreOffice integration"]
+  QuickCopy["Quick Copy & API previews"]
+  Exporters["Export translators<br/>(CSL JSON, Better BibTeX, …)"]
+  Files["External files<br/>(BibTeX, CSL JSON, LaTeX)"]
 
-3. **Translations**: English translations in [brackets] after original titles
-   - `[The last "Japanese": Life of Kan'ichi Asakawa]`
-
-4. **Italics**: Apply only to romanized titles, not original script
-   - Correct: `<i>Saigo no "Nihonjin"</i> 最後の「日本人」`
-   - Wrong: `<i>Saigo no "Nihonjin" 最後の「日本人」</i>` (italicizing original script)
-
-#### Chinese Sources
-
-**Book**:
-```
-Hao, Chunwen 郝春文. Tang houqi wudai Songchu Dunhuang sengni de shehui
-shenghuo 唐后期五代宋初敦煌僧尼的社会生活 [The social existence of monks
-and nuns in Dunhuang during the late Tang, Five Dynasties and early Song].
-Zhongguo shehui kexue chubanshe, 1998.
+  Item --> Direct
+  Item --> Translator
+  Direct --> Engine
+  Engine --> Preview
+  Engine --> WP
+  Engine --> QuickCopy
+  Translator --> Exporters
+  Exporters --> Files
 ```
 
-**Journal Article**:
-```
-Hua, Linfu 华林甫. "Qingdai yilai Sanxia diqu shuihan zaihai de chubu
-yanjiu" 清代以来三峡地区水旱灾害的初步研究 [A preliminary study of floods
-and droughts in the Three Gorges region since the Qing dynasty]. Zhongguo
-shehui kexue 中国社会科学 1 (1999): 168–79.
-```
+The direct branch feeds everything rendered inside Zotero itself. The translator branch produces the data that every exporter consumes—built-in CSL JSON, Zotero’s own BibLaTeX/BibTeX translators, and third-party translators such as Better BibTeX all run inside the same sandbox. Their `ZU.itemToCSLJSON()` helper is defined once at startup by copying `Zotero.Utilities.Item.itemToCSLJSON` onto `Zotero.Utilities.Translate.prototype.itemToCSLJSON` (see `reference/zotero/chrome/content/zotero/xpcom/translate/src/utilities_translate.js:58`), and when they need the full item payload they call `Zotero.Utilities.Internal.itemToExportFormat` before serialising to BibTeX, BibLaTeX, LaTeX aux files, and so on (`reference/zotero/chrome/content/zotero/xpcom/translation/translate_item.js:1162-1188`). Because the prototype copy is made before any plugin code loads, CNE has to patch both entry points (and the citeproc engine constructor) to guarantee that every workflow sees the same enriched metadata.
 
-#### Japanese Sources
+**Node references in Zotero’s codebase:**
 
-**Book** (multiple authors):
-```
-Abe, Yoshio 阿部善雄, and Hideo Kaneko 金子英生. Saigo no "Nihonjin":
-Asakawa Kan'Ichi no shōgai 最後の「日本人」: 朝河貫一の生涯 [The last
-"Japanese": Life of Kan'ichi Asakawa]. Iwanami Shoten, 1983.
-```
+- `Zotero.Utilities.Item.itemToCSLJSON()` – `reference/zotero/chrome/content/zotero/xpcom/utilities/utilities_item.js:34-210`
+- `Zotero.Utilities.Translate.prototype.itemToCSLJSON()` – `reference/zotero/chrome/content/zotero/xpcom/translate/src/utilities_translate.js:37-70`
+- citeproc engine creation (`style.getCiteProc`) – `reference/zotero/chrome/content/zotero/xpcom/style.js:705-897`, invoked from Quick Copy (`reference/zotero/chrome/content/zotero/xpcom/quickCopy.js:281-396`), document integration (`reference/zotero/chrome/content/zotero/xpcom/integration.js:1890-3340`), and API/preview paths (`reference/zotero/chrome/content/zotero/xpcom/server/server_localAPI.js:960-1010`)
+- Export translators & Better BibTeX pipeline – `reference/zotero/chrome/content/zotero/xpcom/translation/translate_item.js:1100-1400` plus the shared helpers in `reference/zotero/chrome/content/zotero/xpcom/utilities_internal.js:869-1110`
 
-**Film**:
-```
-Tōkyō Monogatari 東京物語. Directed by Ozu Yasujirō 小津安二郎,
-Shōchiku, 1953.
-```
+### Challenges for Citing Non-English Sources
 
-#### Korean Sources
+The pain points come from two directions: Zotero’s runtime model and style-guide expectations.
 
-**Book**:
-```
-Kang, Ubang 姜友邦. Wŏnyung kwa chohwa: Han'guk kodae chogaksa ŭi wŏlli
-圓融과 調和: 韓國古代彫刻史의 原理 [Synthesis and harmony: Principles in
-the history of ancient Korean sculpture]. Yŏrhwadang, 1990.
-```
+#### From Zotero
 
-**Book Chapter**:
-```
-Ha, Insu 河仁秀. "Tongsam-dong P'aech'ong chŏnghwa chiyŏk palgul sŏngkwa"
-東三洞貝塚淨化地域發掘成果 [Result of the excavation on the shell mounds in
-Tongsam-dong purification region]. Kogohak ŭl tonghae pon Kaya 考古學을
-통해 본 加耶 [Kaya seen through archaeology], edited by Han'guk Kogo
-Hakhoe 韓國考古學會, Han'guk Kogo Hakhoe, 2000, pp. 111–133.
-```
+- **Duplicated conversion functions** – The translator copy of `itemToCSLJSON` is frozen at start-up. Without patching both versions, enhanced data never reaches exporters (see `docs/ENGINE-INTEGRATION-POINTS.md`).
+- **Engine caching** – citeproc engines persist between runs; name overrides must mark engines so rerenders do not double-apply (documented in `docs/cne-citeproc-override.md`).
+- **Preference toggles** – Users need "Enable CNE Processing" to short-circuit wrappers when they work on English-only datasets (`docs/CNE-STYLE-CONVENTION.md`).
+- **Extensibility surface** – Additional exporters (Better BibTeX, JSON, CSL) expect unmodified fields unless CNE provides a transformation layer (`docs/biblatex-integration.md`).
+- **Opaque name processing** – The citeproc engine makes numerous formatting decisions internally without exposing configuration options to users. For example, it includes hardcoded handling for Japanese and Chinese names but omits Korean, leaving users unable to override or extend these behaviors.
+- **Limited multilingual infrastructure** – CSL's name-handling system lacks robust support for per-author formatting rules, forcing plugins like CNE to inject pre-formatted literal names rather than leveraging CSL's native name-part system (see `docs/author-name-architecture.md`).
 
-#### CNE Field Setup for MLA
+#### From style requirements
 
-To achieve proper MLA formatting, configure your Zotero items with these fields in the Extra field:
+- **Parallel scripts, romanization, and English translation** – Humanities guides (Chicago, MLA, APA) demand romanized text, original script, and English translations all within the same citation.
 
-```
-cne-creator-0-last-romanized: Hao
-cne-creator-0-first-romanized: Chunwen
-cne-creator-0-last-original: 郝
-cne-creator-0-first-original: 春文
-cne-title-romanized: Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo
-cne-title-original: 唐后期五代宋初敦煌僧尼的社会生活
-cne-title-english: The social existence of monks and nuns in Dunhuang during the late Tang, Five Dynasties and early Song
-```
+  _Example:_ A Chinese journal article title must appear as:
+  > "Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu" 清代以来三峡地区水旱灾害的初步研究 [A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty]
 
-**Note**: MLA formatting differs from APA and Chicago in how it handles Asian names and scripts. Always consult the [MLA Handbook 9th edition](https://style.mla.org/) or the [Yale University MLA Guide](https://guides.library.yale.edu/c.php?g=296262&p=1974230) for comprehensive guidance.
+  showing romanization (Pinyin), original script (simplified Chinese), and English translation in brackets.
 
-## Architecture
+- **Evolving Asian name conventions** – Recent style guides increasingly require East Asian names to appear in their native order (family name first) without commas, reflecting a shift toward linguistically respectful formatting. Traditionally, names were formatted with Western-style comma separation:
 
-### Internal Data Model
+  > Hua, Linfu (Chinese, Pinyin)
+  > Ch'ien, Mu (Chinese, Wade-Giles)
+  > Kang, U-bang (Korean)
+  > Abe, Yoshio (Japanese)
 
-Cite CNE (Cite Non-English) maintains a canonical data model stored in Zotero's Extra field using the `cne-*` namespace (hyphenated format required for CSL compatibility):
+  Modern guidelines (Chicago 18th edition, §11.89-11.99) now recommend the no-comma format followed by original script for scholars based in Asia:
 
-```
-cne-title-original: 日本仏教綜合研究
-cne-title-english: Japanese Buddhist Comprehensive Research
-cne-title-romanized: Nihon Bukkyō Sōgō Kenkyū
-cne-original-language: ja-JP
-```
+  > Hua Linfu 华林甫
+  > Ch'ien Mu 钱穆
+  > Kang U-bang 姜友邦
+  > Abe Yoshio 阿部善雄
 
-#### Field Naming Convention
+  While well-intentioned, this convention adds further complexity for non-English citations: some styles (e.g., Chicago) even recommend per-author overrides where certain names still need commas despite the general no-comma rule. For instance, Korean persons living in the West (referred to in text as "Chang-rae Lee") may still require comma separation (Chicago 17th edition, §16.82):
 
-For each relevant field, we store three variants:
+  > Lee, Chang-rae
 
-- `{field}-original`: Original script (汉字, 漢字, かな, 한글)
-- `{field}-english`: English translation
-- `{field}-romanized`: Romanization (Pinyin, Romaji, etc.)
+  Additionally, specialized formatting such as spacing within Japanese names (with space between family and given name in the original script) demands granular control that standard CSL cannot provide:
 
-Plus one metadata field:
+  > Abe Yoshio 阿部 善雄
+- **Locale-sensitive typography** – Italics, quotation marks, and brackets change by language (Japanese APA vs. English APA; see `docs/apa-vs-apa-ja-comparison.md`).
+- **Mixed workflows** – Scholars export to LaTeX, word processors, and snapshots simultaneously; the metadata must survive every path.
 
-- `original-language`: ISO language code (zh-CN, ja-JP, ko-KR)
+### CNE Solutions
 
-#### Supported Fields
+CNE provides a stable, non-invasive solution that "just works" by separating concerns between data storage and output formatting.
 
-Based on APA, MLA, and Chicago style requirements for CNE (Cite Non-English) citations:
+#### CNE's Own Architecture
 
-- `title`: Article/book title
-- `booktitle`: Container title (for chapters, articles)
-- `author`: Author names
-- `publisher`: Publisher name
-- `journal`: Journal title
-- `series`: Series title
-- _(More fields to be added based on community feedback)_
+**Stable Data Model**
 
-#### Why Store `-original` When Zotero Has Native Fields?
+- All CNE metadata stored in Zotero's Extra field (no external files)
+- Dedicated UI panel for entering original script, romanization, and translations
+- **Key design principle**: Complete independence from Zotero's native fields
+  - Users can freely choose to fill Title/Author fields with romanized, English, or original script
+  - CNE output remains stable regardless of native field content
+  - No conflicts between CNE and standard Zotero workflows
 
-**Stability and reliability:**
-- Users often modify native fields while troubleshooting citations
-- WorldCat and other databases may provide English titles for CNE (Cite Non-English) sources
-- Preserves authoritative source data as a stable reference point
+**Output via Custom CSL Styles**
 
-### Interceptor Architecture: Author Name Handling
+- CNE relies on curated CSL styles (Chicago 18th CNE, APA 7th CNE, MLA 9th CNE)
+- While citeproc has some multilingual support, it's inflexible and insufficient
+- Custom CSL is the most elegant and explicit approach, and surprisingly simple
+- Detailed CSL creation guides available upon request (open an issue)
 
-#### The Challenge: CSL Limitations
+**Name Processing with Interceptors**
 
-Citation Style Language (CSL) processors cannot handle per-author customization because:
+- Combines citeproc capabilities with custom interceptors
+- Injects pre-formatted literal names for per-author control
+- See `docs/author-name-architecture.md` for technical details
 
-1. **No index accessor**: CSL lacks syntax to refer to individual authors (can't write `author[0]` vs `author[1]`)
-2. **Uniform formatting**: `<name-part>` affixes apply to ALL authors identically
-3. **No conditional formatting**: Cannot format individual names differently within a single citation
+#### CNE Integration with Zotero
 
-This makes it impossible to render mixed scripts properly using CSL alone. For example, you cannot show:
-- Author 1: "Hao, Chunwen 郝春文" (romanized-first)
-- Author 2: "山田太郎 Yamada Tarō" (original-first)
+CNE touches every stage of the pipeline so the metadata you enter in the sidebar survives previews, exports, and citeproc resets:
 
-#### The Solution: CSL-JSON Interception
+```mermaid
+flowchart TB
+  subgraph DataEntry["**Data entry & storage**"]
+    Panel["CNE sidebar UI<br/>(addon/content)"] --> Extra["Zotero Extra field<br/>cne-* metadata"]
+    Extra --> Parser["Parse cne-* lines<br/>(parseCNEMetadata)"]
+  end
 
-Instead of modifying CSL stylesheets (which is not viable), we **intercept Zotero's CSL-JSON conversion** before it reaches the CSL processor.
+  subgraph Conversion["**itemToCSLJSON interception**"]
+    Item["Zotero item<br/>(native creators + titles)"] --> ItemFn["Zotero.Utilities.Item.itemToCSLJSON()"]
+    Item --> TranslateFn["Zotero.Utilities.Translate.prototype.itemToCSLJSON()"]
+    Parser --> Callbacks["Intercept + inject CSL vars<br/>(ItemToCSLJSONInterceptor)"]
+    ItemFn --> Callbacks
+    TranslateFn --> Callbacks
+    Callbacks --> CSL["CSL-JSON enriched with<br/>cne-* variables"]
+  end
 
-##### How It Works
+  subgraph Citeproc["**Citeproc configuration**"]
+    CSL --> CiteprocEngine["Citeproc engine<br/>(citeproc-js / citeproc-rs)"]
+    CiteprocEngine --> Preview["Preview & style editor"]
+    CiteprocEngine --> WP["Word / LibreOffice integration"]
+    CiteprocEngine --> QuickCopy["Quick Copy & API previews"]
+  end
 
-```
-Zotero Item → [INTERCEPTOR] → Enhanced CSL-JSON → CSL Processor → Citation
-                    ↑
-            Inject literal names
-            based on CNE metadata
-```
+  subgraph StyleConfig["**Style-driven config**"]
+    Style["CNE CSL style<br/>(CNE-CONFIG)"] --> Configure["configureCiteprocForCNE()"]
+  end
+  Configure --> CiteprocEngine
 
-**Key Components:**
+  subgraph Exports["**Export path**"]
+    CSL --> Translators["Export translators<br/>(CSL JSON, Better BibTeX, …)"]
+    Translators --> Bib["BibLaTeX interceptor<br/>itemToExportFormat"]
+    Translators --> Files["External files<br/>(BibTeX, CSL JSON, LaTeX)"]
+  end
 
-1. **ItemToCSLJSONInterceptor** - Monkey patches Zotero's `itemToCSLJSON()` function
-2. **EnrichAuthorNames Callback** - Transforms author names from CNE metadata
-3. **Dual-Path Interception** - Catches BOTH code paths (see below)
+  Extra --> Bib
+  Bib --> Files
 
-##### Dual-Path Interception (Critical)
-
-Zotero has **TWO separate code paths** for CSL-JSON conversion:
-
-**Path 1: Direct Usage** (`Zotero.Utilities.Item.itemToCSLJSON`)
-- Used by: Citation preview, bibliography generation, Word/LibreOffice integration
-- Call sites: cite.js, editorInstance.js, integration.js
-
-**Path 2: Translator Sandbox** (`Zotero.Utilities.Translate.prototype.itemToCSLJSON`)
-- Used by: Export translators (CSL JSON, Better BibTeX, etc.)
-- Copied at Zotero startup from Path 1
-
-**Why both must be intercepted:**
-
-The translator's version is copied **once** at Zotero startup. Patching only Path 1 after plugin load means:
-- ✅ Path 1 (direct usage) sees the patched version
-- ❌ Path 2 (translators) still uses the OLD reference
-
-**Solution:** Patch BOTH paths simultaneously:
-```javascript
-// Path 1: Direct usage
-Zotero.Utilities.Item.itemToCSLJSON = interceptorWrapper;
-
-// Path 2: Translator sandbox (MUST be separate!)
-Zotero.Utilities.Translate.prototype.itemToCSLJSON = interceptorWrapper;
+  classDef cne fill:#fde6d4,stroke:#d25c1b,color:#1f140f;
+  class Panel,Extra,Parser,Callbacks,CSL,Style,Configure,Bib cne;
 ```
 
-##### Literal Name Format
-
-The interceptor converts structured names to **literal names**:
-
-**Standard CSL-JSON (structured)**:
-```json
-{
-  "author": [
-    {
-      "family": "Hao",
-      "given": "Chunwen"
-    }
-  ]
-}
-```
-
-**CNE-Enhanced (literal)**:
-```json
-{
-  "author": [
-    {
-      "literal": "Hao, Chunwen 郝春文"
-    }
-  ]
-}
-```
-
-The literal format bypasses CSL's name parsing entirely, rendering the string as-is. This gives complete control over individual author formatting.
+Nodes shaded in orange represent CNE-specific additions layered on top of Zotero’s native pipeline, while the unshaded nodes correspond directly to the core architecture shown in the previous diagram.
 
-##### Flexible Formatting Options
+**How it works:**
 
-Each author can have independent formatting options stored in Extra:
+- `ItemToCSLJSONInterceptor` (`src/modules/cne/interceptors/ItemToCSLJSONInterceptor.ts`) patches both conversion functions shown above, installs callback slots, and is toggled by `setCneProcessingEnabled`, which follows the `extensions.cne.enable` preference.
+- `injectCSLVariables` (`src/modules/cne/callbacks/injectCSLVariables.ts`) reads the Extra field via `parseCNEMetadata` and writes canonical `cne-*` variables (`cne-title-romanized`, `cne-journal-original`, etc.) directly into the CSL-JSON object so curated CSL styles can read them even when Zotero’s parser skips those lines.
+- `enrichAuthorNames` (`src/modules/cne/callbacks/enrichAuthorNames.ts`) matches indexed `cne-creator-N-*` lines back to the CSL creator arrays, fills the romanized `family`/`given` slots, and sets `multi.main` / `multi._key` so citeproc renders both scripts with predictable ordering.
+- `GetCiteProcInterceptor` (`src/modules/cne/interceptors/GetCiteProcInterceptor.ts`) wraps `Zotero.Style.prototype.getCiteProc()`, extracts the style’s `CNE-CONFIG` block, and runs `configureCiteprocForCNE` so citeproc-js and citeproc-rs keep the requested `cite-lang-prefs` (e.g., `['translit', 'orig']`) even after the engine resets.
+- `initializeBibLaTeXIntegration` (`src/modules/cne/biblatex-export.ts`) intercepts `Zotero.Utilities.Internal.itemToExportFormat`, injects `biblatex.*` lines into the export copy’s Extra field, and lets Better BibTeX consume them without altering the stored item.
 
-```
-cne-author-0-last-original: 郝
-cne-author-0-first-original: 春文
-cne-author-0-last-romanized: Hao
-cne-author-0-first-romanized: Chunwen
-cne-author-0-options: {"spacing":"comma","order":"romanized-first"}
-```
+**Node references in the CNE source tree:**
 
-**Spacing Options:**
-- `comma`: "Hao, Chunwen 郝春文" (Western style)
-- `space`: "Hao Chunwen 郝春文" (Space-separated)
-- `none`: "HaoChunwen 郝春文" (No separator)
-
-**Order Options:**
-- `romanized-first`: "Hao, Chunwen 郝春文"
-- `original-first`: "郝春文 Hao, Chunwen"
-
-**Examples:**
+- Sidebar UI & Extra storage – `addon/content/pane/*` provides the UI that records `cne-*` metadata; saved values surface via the item’s `extra` field.
+- Metadata parser – `parseCNEMetadata()` and helpers in `src/modules/cne/metadata-parser.ts:1-230`.
+- Interceptor stack – `src/modules/cne/interceptors/ItemToCSLJSONInterceptor.ts:59-210` plus callbacks `src/modules/cne/callbacks/injectCSLVariables.ts` and `src/modules/cne/callbacks/enrichAuthorNames.ts`.
+- Citeproc configuration – `src/modules/cne/interceptors/GetCiteProcInterceptor.ts` + `src/modules/cne/config/parseCNEConfig.ts` + `src/modules/cne/config/configureCiteproc.ts`.
+- Export integration – `src/modules/cne/biblatex-export.ts` with mappings in `src/modules/cne/biblatex-mapper.ts`.
+- `watchCneProcessingPreference()` (in `src/modules/cne/index.ts`, called from `src/hooks.ts`) keeps the runtime install/uninstall cycle in sync with the preference so toggling “Enable CNE Processing” in the UI immediately removes or reinstalls every interceptor.
 
-| Language | Options | Output |
-|----------|---------|--------|
-| Chinese | `{"spacing":"comma","order":"romanized-first"}` | Hao, Chunwen 郝春文 |
-| Japanese | `{"spacing":"space","order":"original-first"}` | 山田太郎 Yamada Tarō |
-| Korean | `{"spacing":"comma","order":"romanized-first"}` | Kang, U-bang 강우방 |
-| Russian | `{"spacing":"space","order":"romanized-first"}` | Ivanov Ivan Иванов Иван |
+### Known Issues
 
-##### Testing Both Paths
+- Only curated CSL styles receive enhanced behaviour; others fall back to Zotero's native formatting.
+- Items must have the correct language selected in the CNE sidebar—choosing "English" intentionally bypasses CNE processing.
+- Export formats beyond CSL/BibLaTeX currently receive unmodified data.
+- Translators that cache citeproc engines may require a Zotero restart after toggling "Enable CNE Processing."
 
-To verify the interceptor works:
+---
 
-1. **Test Path 1**: Right-click item → "Create Bibliography from Item" ✅
-2. **Test Path 2**: Right-click item → "Export Item..." → CSL JSON ✅
+## IV. Development
 
-Both should show literal names in output. See `test/csl-tests/TESTING-AUTHORS.md` for comprehensive testing guide.
+### Building on CNE
 
-### Output Adaptation Layer
+#### Project Layout & Key Modules
 
-The plugin transforms the internal model for different output formats:
+- `src/modules/cne/` – interceptors, callbacks, BibLaTeX integration, preference helpers.
+- `addon/content/` – sidebar UI, localisation, preference panel.
+- `test/csl-tests/` – Mocha specs, fixtures, snapshots.
 
-#### For LaTeX (BibLaTeX Chicago)
+#### Extending CSL Styles
 
-BibLaTeX Chicago provides native support for CJK (Chinese/Japanese/Korean) citations through extended author and title fields.
+1. Copy an existing style from `styles/cne/`.
+2. Wire new CSL macros or variables to the `cne-*` fields produced by the interceptors (see `docs/citation-styles/`).
+3. Add expectations under `test/csl-tests/expectations/` and regenerate snapshots with `npm test`.
 
-**CNE Metadata Mapping:**
+### Testing
 
-The plugin exports CNE metadata to BibLaTeX format compatible with biblatex-chicago:
+The output of all curated styles is consolidated with thorough testing. Run `npm test` to execute Mocha specs and update snapshots under `snapshots/`.
 
-| CNE Field | BibLaTeX Field | Example |
-|-----------|---------------|---------|
-| Author (romanized) | `author = {family=..., given=...}` | `family=Hao, given=Chunwen` |
-| Author (original) | `cjk=\textzh{...}` | `cjk=\textzh{郝春文}` |
-| Title (romanized) | `title = {...}` | `Tang houqi wudai Songchu...` |
-| Title (original) | `titleaddon = {\textzh{...}}` | `\textzh{唐後期五代宋初...}` |
-| Title (translation) | `usere = {...}` | `The social existence of...` |
-| Journal (romanized) | `journaltitle = {...}` | `Zhongguo shehui kexue` |
-| Journal (original) | `journaltitleaddon = {\textzh{...}}` | `\textzh{中國社會科學}` |
+### Contributing
 
-**Example BibLaTeX Entry:**
+High-impact areas include new CSL styles, language-specific formatting rules, regression tests, documentation, and localisation. Fork the repository, create a feature branch, run the tests, and open a pull request. When requesting a new style, open an issue with examples and references to the relevant style manual.
 
-```bibtex
-@Article{hua:cms,
-  author     = {family=Hua, given=Linfu, cjk=\textzh{華林甫}},
-  title      = {Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu},
-  titleaddon = {\textzh{清代以來三峽地區水旱災害的初步研究}},
-  options    = {ctitleaddon=space,nametemplates=cjk},
-  usere      = {A preliminary study of floods and droughts in the
-               Three Gorges region since the Qing dynasty},
-  journaltitle = {Zhongguo shehui kexue},
-  journaltitleaddon = {\textzh{中國社會科學}},
-  volume = 1,
-  date   = {1999},
-  pages  = {168--179},
-}
-```
+---
 
-**Key Options:**
-- `ctitleaddon=space` - No punctuation between title and titleaddon
-- `nametemplates=cjk` - Use CJK name order (family first)
-- `\textzh{...}` - Mark text as Chinese (requires babel or similar)
+## V. FAQ
 
-**Rendered Output (Chicago Notes):**
-> Hua Linfu 華林甫, "Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu 清代以來三峽地區水旱災害的初步研究 [A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty]," *Zhongguo shehui kexue* 中國社會科學 1 (1999): 168–179.
+**Q: What if I need a style that CNE hasn't curated yet?**
 
-See `reference/biblatex-chicago-cjk-example.bib` for more examples.
+A: Open an issue with your request, or follow the Detailed Guides (III.3) to adapt the infrastructure and create a CNE-compatible style yourself.
 
-#### For Word/LibreOffice (CSL)
+**Q: What if I need integration with other Zotero plugins?**
 
-- Sets Zotero's Language field (e.g., `ja-JP`) to prevent incorrect English casing
-- Provides or recommends CSL styles that support CNE (Cite Non-English) citations
-- May embed custom CSL styles if needed
+A: Please open an issue describing your integration needs. I'm happy to work with other plugin developers to ensure compatibility.
 
-## Features
+---
 
-### Comprehensive Metadata Management
-
-CNE extends Zotero's native fields to capture all variants of non-English bibliographic information:
-
-#### Supported Fields
-
-Each field can store three variants:
-
-- **Original script**: Preserve titles, names, and publisher information in native script (汉字, 漢字, かな, 한글, Кириллица, etc.)
-- **Romanized form**: Store transliterated versions (Pinyin, Romaji, Revised Romanization, etc.)
-- **English translation**: Add English translations for accessibility
-
-**Currently supported fields**:
-- **Title**: Book/article titles with full tri-variant support
-- **Book title**: Container titles for chapters and articles
-- **Journal**: Journal names with original and romanized variants
-- **Publisher**: Publisher names with translation support
-- **Series**: Series titles
-- **Authors/Creators**: Multi-variant name support with flexible formatting options
-
-All CNE metadata is stored in Zotero's `Extra` field using a structured namespace (`cne-*`), ensuring:
-- No interference with Zotero's native functionality
-- Full compatibility with Zotero sync and backup
-- Easy migration and portability
-
-### Advanced Name Formatting
-
-CNE provides sophisticated control over creator name formatting:
-
-#### Japanese Name Spacing
-Add appropriate spacing between Japanese names (e.g., `山田太郎` → `山田 太郎`)
-
-#### Parallel Name Display
-Support multiple display formats:
-- **Romanized-first**: `Hao, Chunwen 郝春文` (standard for English-language citations)
-- **Original-first**: `郝春文 Hao, Chunwen` (sometimes preferred for East Asian publications)
-- **Spacing options**: Control comma/space/no-separator between romanized and original forms
-
-#### Per-Author Customization
-Each author can have independent formatting rules, allowing mixed bibliographies with appropriate formatting for each name's origin.
-
-### User Interface Features
-
-#### Custom Item Pane Section
-
-A dedicated CNE section in Zotero's item pane provides:
-- **Input fields** for all metadata variants (original, romanized, English)
-- **Language dropdown** with quick-access buttons for frequently used languages
-- **Real-time preview** of citation formatting
-- **Field counter** to track metadata completeness
-- **Clear buttons** for easy field management
-
-#### Quick Language Selection
-
-Customizable quick-access buttons below the language dropdown for instant selection of common languages. Defaults:
-- zh-CN, zh-TW (Chinese Simplified/Traditional)
-- ja-JP (Japanese)
-- ko-KR (Korean)
-- ru-RU (Russian)
-- ar (Arabic)
-- de-DE, fr-FR (German, French)
-
-Fully customizable via plugin preferences (comma-separated list).
-
-#### Locale-Aware "Creators Full" Column
-
-Custom column for Zotero's item list with intelligent name formatting:
-- **CJK languages**: `姓名` format (no comma, no space) - e.g., `王小波`
-- **Western languages**: `Last, First` format - e.g., `Orwell, George`
-
-Language detection uses multiple signals:
-1. Zotero's language field
-2. CNE metadata
-3. Character-based detection (Unicode ranges)
-
-### Export Features
-
-#### CSL JSON Export
-Export items with complete CNE metadata in CSL-JSON format for:
-- Citation style development and testing
-- Debugging formatting issues
-- Sharing with collaborators
-
-#### Citation Preview
-Preview how citations will appear in different styles before inserting into documents, ensuring proper formatting.
-
-## Understanding Locale in Citations
-
-### How Locale Affects Citation Formatting
-
-Zotero and CSL use the item's `language` field to determine locale-specific formatting. However, locale handling has important nuances that can cause confusion:
-
-#### The Locale Problem: Example with APA
-
-When you set an item's language to Japanese (`ja-JP`):
-- CSL automatically uses **Japanese localization** for standard terms
-  - "editor" becomes 編者
-  - "edition" becomes 版
-  - "volume" becomes 巻
-- **However**: The citation still follows **English APA format rules**
-- This creates a **hybrid output** that mixes Japanese terms with English structure
-
-**Example of problematic output**:
-> Yamada, T. (2020). Book title. (2 版). Publisher名.
-
-This mixing of Japanese and English is often not what you want - it's neither proper Japanese APA nor proper English APA.
-
-#### The Solution
-
-**For English-language writing citing Japanese sources**:
-Use CNE's enhanced English citation styles, which:
-- Keep English terms (editor, edition, volume)
-- Properly format non-English titles and names
-- Add parallel information (romanized/original) as needed
-
-**For Japanese-language writing**:
-Use proper Japanese citation styles (Japanese APA, Japanese Chicago) where all elements follow Japanese conventions.
-
-### CNE's Approach to Locale
-
-CNE handles the language field intelligently:
-
-1. **Language field determines formatting rules**: The `language` field tells CNE which language-specific formatting to apply (name order, spacing, etc.)
-
-2. **Interceptors apply formatting before CSL**: CNE's interceptors format names and add parallel information before the CSL processor runs, ensuring clean output
-
-3. **Style-appropriate term selection**: When using English citation styles, CNE ensures English terms are used, while when using non-English styles, appropriate localization applies
-
-**Current status**: The separation between Zotero's native `language` field and CNE's metadata handling works well without conflicts. A separate "CNE locale" field may be added in future versions if edge cases require it, but current testing shows this is not necessary.
-
-## Features (Planned)
-
-### Phase 1: Core Functionality ✅
-- ✅ Project setup and infrastructure
-- ✅ CSL testing infrastructure with automated tests
-- ✅ Custom item pane section with UI for managing CNE fields
-- ✅ Parse/generate Extra field with `cne-*` namespace
-- ✅ Support for title, booktitle, author, journal, publisher, and series fields
-- ✅ Language dropdown with customizable quick-access buttons
-- ✅ Locale-aware "Creators Full" column
-- ✅ CSL-JSON export with CNE metadata
-- ✅ Citation preview dialog
-- ✅ Interceptor architecture for author name formatting
-
-### Phase 2: Better BibTeX Integration (In Progress)
-- ✅ BibLaTeX export integration (itemToExportFormat interceptor)
-- ✅ Documentation and examples for LaTeX workflow
-- [ ] Comprehensive testing with common LaTeX citation styles
-- [ ] User-configurable BibLaTeX field mappings
-
-### Phase 3: CSL Style Support (In Progress)
-- ✅ CSL style repository structure (`styles/cne/`, `styles/upstream/`)
-- ✅ Git submodule integration for upstream CSL styles
-- [ ] Complete CNE-enhanced versions of Chicago, APA, MLA
-- [ ] Language field auto-configuration
-- [ ] Comprehensive testing with Word/LibreOffice output
-- [ ] Style distribution and auto-update mechanism
-
-### Phase 4: Advanced Features
-- [ ] Batch operations (add CNE (Cite Non-English) fields to multiple items)
-- [ ] Import helpers for CNE (Cite Non-English) databases (CNKI, CiNii, RISS)
-- [ ] Romanization helpers (auto-generate pinyin/romaji)
-- [ ] Validation and completeness warnings
-- [ ] Multi-language UI (English, non-English)
-
-## Installation
-
-### Requirements
-
-- Zotero 7 or later
-- (Optional) [Better BibTeX](https://retorque.re/zotero-better-bibtex/) for LaTeX workflows
-
-### Install from GitHub Releases
-
-1. Download the latest `.xpi` file from [Releases](https://github.com/boan-anbo/cne/releases)
-2. In Zotero, go to Tools → Add-ons
-3. Click the gear icon, select "Install Add-on From File"
-4. Select the downloaded `.xpi` file
-
-### Manual Installation (Development)
-
-See [Development Setup](#development-setup) below.
-
-## Usage
-
-### Basic Workflow
-
-1. **Add CNE (Cite Non-English) metadata to your items:**
-   - Select an item in your Zotero library
-   - Open the "Cite CNE (Cite Non-English)" panel in the right sidebar (alongside Info, Notes, Tags, etc.)
-   - Enter original, romanized, and English variants of titles and authors
-   - Select the original language from the dropdown
-
-2. **For LaTeX users:**
-   - Export your library using Better BibTeX
-   - The `titleaddon` and `booktitleaddon` fields will be populated automatically
-   - Use with your preferred BibLaTeX styles
-
-3. **For Word/LibreOffice users:**
-   - Use recommended CNE (Cite Non-English)-compatible CSL styles
-   - The plugin automatically sets language fields to prevent incorrect casing
-   - Insert citations normally through Zotero
-
-### Examples
-
-_Coming soon: Screenshots and step-by-step examples_
-
-## Development Setup
-
-### Prerequisites
-
-1. Install [Zotero 7 Beta](https://www.zotero.org/support/beta_builds)
-2. Install [Node.js](https://nodejs.org/) (LTS version) and [Git](https://git-scm.com/)
-
-### Clone and Build
-
-```bash
-git clone https://github.com/boan-anbo/cne.git
-cd cne
-npm install
-```
-
-### Configure Development Environment
-
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` and configure paths:
-   ```env
-   ZOTERO_PLUGIN_ZOTERO_BIN_PATH = /Applications/Zotero.app/Contents/MacOS/zotero
-   ZOTERO_PLUGIN_PROFILE_PATH = /path/to/your/dev/profile
-   ```
-
-   Create a development profile:
-   ```bash
-   /Applications/Zotero.app/Contents/MacOS/zotero -p
-   ```
-
-### Start Development
-
-```bash
-npm start
-```
-
-This will:
-- Build the plugin in development mode
-- Launch Zotero with the plugin loaded
-- Watch for file changes and automatically reload
-
-### Build for Production
-
-```bash
-npm run build
-```
-
-The XPI file will be in `.scaffold/build/`.
-
-### CSL Style Testing
-
-Test custom CSL styles programmatically using the included citeproc-js-server:
-
-1. **First time setup**:
-   ```bash
-   cd tools/citeproc-js-server
-   npm install
-   ```
-
-2. **Start citeproc server** (in one terminal):
-   ```bash
-   cd tools/citeproc-js-server && npm start
-   ```
-
-3. **Run CSL tests** (in another terminal):
-   ```bash
-   npm run test:csl
-   ```
-
-See `test/csl-tests/README.md` for detailed testing guide.
-
-## Maintaining Template Updates
-
-This project is based on [windingwind/zotero-plugin-template](https://github.com/windingwind/zotero-plugin-template) and maintains a reference to the upstream template for updates.
-
-### Pulling Template Updates
-
-The repository has an `upstream-template` branch that tracks the original template:
-
-```bash
-# Fetch latest changes from upstream
-git fetch upstream
-
-# View what changed in the template
-git log upstream-template..upstream/main
-
-# Merge template updates into your local tracking branch
-git checkout upstream-template
-git merge upstream/main
-
-# Selectively merge updates into main
-git checkout main
-git merge upstream-template
-# Or cherry-pick specific commits:
-git cherry-pick <commit-hash>
-```
-
-### Remote Configuration
-
-- `origin`: Your fork at `https://github.com/boan-anbo/cne.git`
-- `upstream`: Template at `https://github.com/windingwind/zotero-plugin-template.git`
-- `upstream-template`: Local branch tracking `upstream/main`
-
-## Contributing
-
-Contributions are welcome! CNE aims to be a community-driven, long-term maintained solution for non-English citations in Zotero.
-
-### Priority Contribution Areas
-
-#### CSL Styles (Most Needed!)
-
-We actively seek contributions for:
-
-**Enhanced English-language styles**:
-- Modified versions of standard styles (Chicago, APA, MLA, etc.) with proper non-English source handling
-- Discipline-specific styles with multilingual support
-- Regional style variants (e.g., Chicago for East Asian studies)
-
-**Non-English citation styles**:
-- Native-language styles (Japanese APA, Chinese GB/T 7714, Korean standards, etc.)
-- Academic styles from non-English-speaking countries
-- Journal-specific citation requirements
-
-See `styles/README.md` for style contribution guidelines and testing procedures.
-
-#### Language Support
-
-- **Formatting rules**: Contribute language-specific name formatting, spacing rules, and punctuation conventions
-- **Character detection**: Help improve Unicode range detection for new scripts
-- **Locale data**: Provide language codes and regional variants
-- **Examples and test cases**: Submit real-world citation examples for your language
-
-#### Testing and Feedback
-
-- Test with real non-English sources across different languages and scripts
-- Report compatibility issues with specific citation styles or workflows
-- Validate output against published style guides (Chicago Manual, APA Publication Manual, etc.)
-- Share edge cases and challenging citation scenarios
-
-#### Documentation and Localization
-
-- **UI translations**: Translate plugin interface to additional languages
-- **Workflow guides**: Document best practices for specific disciplines or languages
-- **Tutorial videos**: Create visual guides for common tasks
-- **Citation examples**: Contribute annotated examples of properly formatted citations
-
-### Feature Requests
-
-Suggest new fields, formatting options, or features based on your citation needs. We prioritize features that:
-- Solve real problems encountered in academic writing
-- Benefit multiple languages/disciplines (generic solutions preferred)
-- Align with published citation style requirements
-
-### Development Guidelines
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/my-feature`
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
-
-## Resources
-
-### CNE (Cite Non-English) Citation Guidelines
+## VI. Resources
 
 - [UBC Library: CNE (Cite Non-English) Citation Guide](https://guides.library.ubc.ca/c.php?g=707463&p=5291936)
-- [Yale: Citation Style for Chinese, Japanese and Korean Sources](https://guides.library.yale.edu/c.php?g=296262)
-- [How to Easily Handle Non-English Citation Information in Zotero](https://jdavidstark.com/how-to-easily-handle-non-english-citation-information-in-zotero/)
-
-### CSL and Citation Processing
-
-- [Customizing Chicago 17 for Japanese and Chinese Citations](https://gist.github.com/tom-newhall/88557892c6646b8cfda9e8963c2b733d) - Tom Newhall's exploration of CSL customization for CJK names
-- [CSL Discussion: Rendering Japanese Author Names](https://discourse.citationstyles.org/t/is-it-possible-to-render-name-part-affixes-in-japanese-author-names/1828/18) - Community discussion on CSL limitations for per-author formatting
-
-### Zotero Plugin Development
-
+- [Yale CJK Citation Styles](https://guides.library.yale.edu/c.php?g=296262)
+- [Handling Non-English Metadata in Zotero](https://jdavidstark.com/how-to-easily-handle-non-english-citation-information-in-zotero/)
+- [Customizing Chicago 17 for Japanese/Chinese](https://gist.github.com/tom-newhall/88557892c6646b8cfda9e8963c2b733d)
+- [CSL Forum: Rendering Japanese Author Names](https://discourse.citationstyles.org/t/is-it-possible-to-render-name-part-affixes-in-japanese-author-names/1828/18)
 - [Zotero 7 Developer Documentation](https://www.zotero.org/support/dev/zotero_7_for_developers)
 - [Zotero Plugin Toolkit](https://github.com/windingwind/zotero-plugin-toolkit)
 - [Zotero Types](https://github.com/windingwind/zotero-types)
-
-### Better BibTeX
-
 - [Better BibTeX Documentation](https://retorque.re/zotero-better-bibtex/)
-- [Extra Fields Syntax](https://retorque.re/zotero-better-bibtex/exporting/extra-fields/)
 
-## Roadmap
+---
 
-### Version 0.1.0 (MVP)
-- Basic UI panel for title and author fields
-- Extra field parser/generator
-- Better BibTeX export for `titleaddon`
+## VII. License
 
-### Version 0.2.0
-- Support for all major fields (publisher, journal, series)
-- Batch operations
-- Validation and warnings
+AGPL-3.0-or-later. Built using the [Zotero Plugin Template](https://github.com/windingwind/zotero-plugin-template) by windingwind.
 
-### Version 0.3.0
-- CSL style integration
-- Language auto-configuration
-- Import helpers
+---
 
-### Version 1.0.0
-- Stable API
-- Complete documentation
-- Multi-language UI
-- Comprehensive test coverage
+## Support & Acknowledgments
 
-## License
-
-AGPL-3.0-or-later
-
-This project is built on the [Zotero Plugin Template](https://github.com/windingwind/zotero-plugin-template) by windingwind.
-
-## Support
-
-- [Report issues](https://github.com/boan-anbo/cne/issues)
-- [Discussions](https://github.com/boan-anbo/cne/discussions)
-
-## Acknowledgments
-
-- [windingwind](https://github.com/windingwind) for the excellent Zotero Plugin Template
-- The Zotero team for creating an extensible research tool
-- The CNE (Cite Non-English) research community for feedback and requirements
+- File issues or start discussions on GitHub (`Issues` / `Discussions` tabs).
+- Thanks to the Zotero community, the CNE research group, and contributors expanding multilingual citation support.

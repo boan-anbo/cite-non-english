@@ -1,19 +1,18 @@
-import {
-  BasicExampleFactory,
-  HelperExampleFactory,
-  KeyExampleFactory,
-  PromptExampleFactory,
-  UIExampleFactory,
-} from "./modules/examples";
-import { getString, initLocale } from "./utils/locale";
+import { initLocale } from "./utils/locale";
+import { getPref } from "./utils/prefs";
 import { registerPrefsScripts } from "./modules/preferenceScript";
 import { createZToolkit } from "./utils/ztoolkit";
+import { installCuratedStylesSilently } from "./modules/cne/styles/installCuratedStyles";
+
 import {
   registerCneSection,
   registerCreatorColumn,
   CneUIFactory,
   CnePreviewFactory,
-  initializeCNEInterceptors,
+  registerCnePrefs,
+  setCneProcessingEnabled,
+  watchCneProcessingPreference,
+  unwatchCneProcessingPreference,
 } from "./modules/cne";
 
 async function onStartup() {
@@ -25,28 +24,26 @@ async function onStartup() {
 
   initLocale();
 
-  // Initialize CNE interceptors for itemToCSLJSON
-  initializeCNEInterceptors();
+  try {
+    await installCuratedStylesSilently();
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    Zotero.logError(err);
+  }
 
-  BasicExampleFactory.registerPrefs();
+  // Initialize CNE processing interceptors based on preference
+  const enablePref = getPref("enable");
+  const processingPrefEnabled = enablePref === undefined ? true : Boolean(enablePref);
+  setCneProcessingEnabled(processingPrefEnabled);
+  watchCneProcessingPreference();
 
-  BasicExampleFactory.registerNotifier();
-
-  KeyExampleFactory.registerShortcuts();
-
-  await UIExampleFactory.registerExtraColumn();
-
-  await UIExampleFactory.registerExtraColumnWithCustomCell();
+  registerCnePrefs();
 
   // Register Creator (CNE) column for locale-aware name display
   await registerCreatorColumn();
 
-  UIExampleFactory.registerItemPaneCustomInfoRow();
-
   // Register CJK citation section (replaces example section)
   registerCneSection();
-
-  UIExampleFactory.registerReaderItemPaneSection();
 
   await Promise.all(
     Zotero.getMainWindows().map((win) => onMainWindowLoad(win)),
@@ -65,50 +62,13 @@ async function onMainWindowLoad(win: _ZoteroTypes.MainWindow): Promise<void> {
     `${addon.data.config.addonRef}-mainWindow.ftl`,
   );
 
-  const popupWin = new ztoolkit.ProgressWindow(addon.data.config.addonName, {
-    closeOnClick: true,
-    closeTime: -1,
-  })
-    .createLine({
-      text: getString("startup-begin"),
-      type: "default",
-      progress: 0,
-    })
-    .show();
-
-  await Zotero.Promise.delay(1000);
-  popupWin.changeLine({
-    progress: 30,
-    text: `[30%] ${getString("startup-begin")}`,
-  });
-
-  UIExampleFactory.registerStyleSheet(win);
-
-  UIExampleFactory.registerRightClickMenuItem();
-
-  UIExampleFactory.registerRightClickMenuPopup(win);
-
-  UIExampleFactory.registerWindowMenuWithSeparator();
-
   // Register CNE UI features
-  CneUIFactory.registerCSLExportMenuItem();
-  CnePreviewFactory.registerPreviewMenuItem();
+  // Removed for now - can be re-enabled in future:
+  // CneUIFactory.registerCSLExportMenuItem();
+  // CnePreviewFactory.registerPreviewMenuItem();
 
-  PromptExampleFactory.registerNormalCommandExample();
-
-  PromptExampleFactory.registerAnonymousCommandExample(win);
-
-  PromptExampleFactory.registerConditionalCommandExample();
-
-  await Zotero.Promise.delay(1000);
-
-  popupWin.changeLine({
-    progress: 100,
-    text: `[100%] ${getString("startup-finish")}`,
-  });
-  popupWin.startCloseTimer(5000);
-
-  addon.hooks.onDialogEvents("dialogExample");
+  // New menu item for clearing CNE metadata
+  CneUIFactory.registerClearMetadataMenuItem();
 }
 
 async function onMainWindowUnload(win: Window): Promise<void> {
@@ -120,15 +80,9 @@ function onShutdown(): void {
   ztoolkit.unregisterAll();
   addon.data.dialog?.window?.close();
 
-  // Clean up CNE interceptors to prevent stacking on reload
-  const { ItemToCSLJSONInterceptor } = require("./modules/cne/interceptors");
-  const { GetCiteProcInterceptor } = require("./modules/cne/interceptors/GetCiteProcInterceptor");
-  const { removeBibLaTeXIntegration } = require("./modules/cne/biblatex-export");
-
-  ItemToCSLJSONInterceptor.remove();
-  ItemToCSLJSONInterceptor.clearCallbacks();
-  GetCiteProcInterceptor.remove();
-  removeBibLaTeXIntegration();
+  // Clean up CNE processing interceptors and observers
+  setCneProcessingEnabled(false);
+  unwatchCneProcessingPreference();
 
   ztoolkit.log("[CNE] All interceptors cleaned up");
 
@@ -138,27 +92,14 @@ function onShutdown(): void {
   delete Zotero[addon.data.config.addonInstance];
 }
 
-/**
- * This function is just an example of dispatcher for Notify events.
- * Any operations should be placed in a function to keep this funcion clear.
- */
 async function onNotify(
   event: string,
   type: string,
   ids: Array<string | number>,
   extraData: { [key: string]: any },
 ) {
-  // You can add your code to the corresponding notify type
+  // Reserved for future CNE notifier handling
   ztoolkit.log("notify", event, type, ids, extraData);
-  if (
-    event == "select" &&
-    type == "tab" &&
-    extraData[ids[0]].type == "reader"
-  ) {
-    BasicExampleFactory.exampleNotifierCallback();
-  } else {
-    return;
-  }
 }
 
 /**
@@ -177,41 +118,16 @@ async function onPrefsEvent(type: string, data: { [key: string]: any }) {
   }
 }
 
-function onShortcuts(type: string) {
-  switch (type) {
-    case "larger":
-      KeyExampleFactory.exampleShortcutLargerCallback();
-      break;
-    case "smaller":
-      KeyExampleFactory.exampleShortcutSmallerCallback();
-      break;
-    default:
-      break;
-  }
-}
-
 function onDialogEvents(type: string) {
   switch (type) {
-    case "dialogExample":
-      HelperExampleFactory.dialogExample();
-      break;
-    case "clipboardExample":
-      HelperExampleFactory.clipboardExample();
-      break;
-    case "filePickerExample":
-      HelperExampleFactory.filePickerExample();
-      break;
-    case "progressWindowExample":
-      HelperExampleFactory.progressWindowExample();
-      break;
-    case "vtableExample":
-      HelperExampleFactory.vtableExample();
-      break;
     case "cslJsonExport":
       CneUIFactory.cslJsonExportDialog();
       break;
     case "cnePreview":
       CnePreviewFactory.showPreviewDialog();
+      break;
+    case "clearCNEMetadata":
+      CneUIFactory.clearCNEMetadata();
       break;
     default:
       break;
@@ -229,6 +145,5 @@ export default {
   onMainWindowUnload,
   onNotify,
   onPrefsEvent,
-  onShortcuts,
   onDialogEvents,
 };

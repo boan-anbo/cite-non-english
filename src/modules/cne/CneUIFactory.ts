@@ -31,6 +31,124 @@ function example(
 
 export class CneUIFactory {
   /**
+   * Register right-click menu item for clearing CNE metadata
+   */
+  @example
+  static registerClearMetadataMenuItem() {
+    // Add separator before CNE menu items
+    ztoolkit.Menu.register("item", {
+      tag: "menuseparator",
+      id: "zotero-itemmenu-cne-separator",
+    });
+
+    // Register the clear metadata menu item
+    ztoolkit.Menu.register("item", {
+      tag: "menuitem",
+      id: "zotero-itemmenu-cne-clear-metadata",
+      label: getString("menuitem-clear-metadata"),
+      commandListener: (ev) => addon.hooks.onDialogEvents("clearCNEMetadata"),
+    });
+  }
+
+  /**
+   * Clear all CNE metadata from selected items
+   * Shows confirmation dialog before proceeding
+   */
+  @example
+  static async clearCNEMetadata() {
+    // Get selected items
+    const items = ztoolkit.getGlobal("ZoteroPane").getSelectedItems();
+
+    if (!items || items.length === 0) {
+      new ztoolkit.ProgressWindow(addon.data.config.addonName)
+        .createLine({
+          text: getString("no-items-selected"),
+          type: "fail",
+          progress: 100,
+        })
+        .show();
+      return;
+    }
+
+    // Show confirmation dialog
+    const window = ztoolkit.getGlobal("window");
+    const confirmed = Services.prompt.confirm(
+      window,
+      getString("clear-metadata-confirm-title"),
+      getString("clear-metadata-confirm-message", {
+        args: { count: items.length.toString() },
+      })
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    let clearedCount = 0;
+    let errorCount = 0;
+
+    for (const item of items) {
+      try {
+        const extra = item.getField("extra") as string;
+        if (!extra) {
+          continue;
+        }
+
+        // Remove all lines starting with "cne-"
+        const lines = extra.split("\n");
+        const filteredLines = lines.filter(
+          (line) => !line.trim().toLowerCase().startsWith("cne-")
+        );
+
+        // Only update if something was removed
+        if (filteredLines.length < lines.length) {
+          const newExtra = filteredLines.join("\n").trim();
+          item.setField("extra", newExtra);
+          await item.saveTx();
+          clearedCount++;
+        }
+      } catch (error) {
+        ztoolkit.log(`Error clearing metadata for item ${item.id}:`, error);
+        errorCount++;
+      }
+    }
+
+    // Show result
+    if (errorCount > 0) {
+      new ztoolkit.ProgressWindow(addon.data.config.addonName)
+        .createLine({
+          text: getString("clear-metadata-partial", {
+            args: {
+              cleared: clearedCount.toString(),
+              errors: errorCount.toString(),
+            },
+          }),
+          type: "default",
+          progress: 100,
+        })
+        .show();
+    } else if (clearedCount > 0) {
+      new ztoolkit.ProgressWindow(addon.data.config.addonName)
+        .createLine({
+          text: getString("clear-metadata-success", {
+            args: { count: clearedCount.toString() },
+          }),
+          type: "success",
+          progress: 100,
+        })
+        .show();
+    } else {
+      new ztoolkit.ProgressWindow(addon.data.config.addonName)
+        .createLine({
+          text: getString("clear-metadata-none"),
+          type: "default",
+          progress: 100,
+        })
+        .show();
+    }
+  }
+
+  /**
    * Register right-click menu item for exporting CSL-JSON
    * This is useful for creating test fixtures from real Zotero items
    */
