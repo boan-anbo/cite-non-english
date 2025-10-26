@@ -42,7 +42,7 @@ For more examples, see the [bibliography snapshots for all curated styles](https
 Historically **Zotero’s native item data structure and official CSLs offered no built-in way to render formats like this for non-English sources**, so scholars often turned to [Juris-M](https://juris-m.github.io/), a forked version of Zotero with multilingual infrastructure. That approach has trade-offs:
 
 - Maintaining Juris-M means keeping two independent Zotero/Juris-M databases.
-- Juris-M has effectively ceased active maintenance in the last two years, leaving users without an up-to-date path for English-style citations of non-English sources.
+- Juris-M has effectively ceased active maintenance in the last two years, leaving users without an up-to-date path for English-style citations of non-English sources. (Correction: Juris-M is currently being updated by Frank Bennett to support Zotero 7.0 and beyond as of October 2025. Please visit its [Discord server](https://discord.gg/4a2N2XDC) for updates.)
 
 CNE addresses these issues by **bringing robust non-English citation support back to standard Zotero**, eliminating the dual-install burden and providing a maintained path forward. At the same time, **the project stands on the shoulders of Juris-M and its creator**—the groundwork they laid makes CNE possible today. Readers looking for the technical details of how the plugin bridges these gaps can jump to the explanations in the [Detailed Guides](#iii-detailed-guides) section below.
 
