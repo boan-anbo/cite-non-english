@@ -56,6 +56,11 @@ CNE addresses these issues by **bringing robust non-English citation support bac
 
 The **current development focus** is on CJK sources. The infrastructure is intentionally language-agnostic, and the project plans to expand coverage to additional languages as community contributors share requirements, examples, and tests. **If you are interested in contributing to CNE, please [open an issue](https://github.com/boan-anbo/cite-non-english/issues/new) or submit a Pull Request**.
 
+### Roadmap
+
+- [ ] Consolidate the support for Better BibTeX's export to BibLaTeX and, possibly, BibTeX to make CNE work seamlessly with LaTeX with tests.
+- [ ] Adding a import feature to allow importing from AI generated structured input for translation, romanization etc.
+
 ---
 
 ## II. Quick Guide
