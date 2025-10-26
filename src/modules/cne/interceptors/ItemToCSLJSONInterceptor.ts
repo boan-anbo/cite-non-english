@@ -55,9 +55,11 @@
  */
 
 type CSLJSONCallback = (zoteroItem: any, cslItem: any) => void;
+type PreConversionCallback = (zoteroItem: any) => void;
 
 export class ItemToCSLJSONInterceptor {
   private static callbacks: CSLJSONCallback[] = [];
+  private static preConversionCallbacks: PreConversionCallback[] = [];
   private static intercepted = false;
   private static originalFunction: any = null;
 
@@ -94,6 +96,10 @@ export class ItemToCSLJSONInterceptor {
     // IMPORTANT: Use rest parameters to future-proof against API changes.
     // This captures ALL arguments and passes them through unchanged.
     const interceptorWrapper = function (this: any, zoteroItem: any, ...args: any[]) {
+      // EXPERIMENTAL: Apply pre-conversion callbacks to modify Zotero item
+      // This allows us to populate multi structures before CSL conversion
+      ItemToCSLJSONInterceptor.applyPreConversionCallbacks(zoteroItem);
+
       // Call original Zotero function to get base CSL-JSON
       // Pass through all arguments - future-proof!
       const cslItem = ItemToCSLJSONInterceptor.originalFunction.call(
@@ -153,6 +159,19 @@ export class ItemToCSLJSONInterceptor {
   }
 
   /**
+   * Register a pre-conversion callback function
+   *
+   * EXPERIMENTAL: These callbacks run BEFORE itemToCSLJSON conversion
+   * and can modify the Zotero item (e.g., populate multi structures).
+   *
+   * @param callback - Function that modifies the Zotero item before conversion
+   */
+  static registerPreConversion(callback: PreConversionCallback) {
+    this.preConversionCallbacks.push(callback);
+    ztoolkit.log(`[CNE-JURIS-M] Registered pre-conversion callback, total: ${this.preConversionCallbacks.length}`);
+  }
+
+  /**
    * Execute all registered callbacks
    *
    * Each callback is wrapped in try-catch to prevent one callback from
@@ -164,6 +183,22 @@ export class ItemToCSLJSONInterceptor {
         this.callbacks[i](zoteroItem, cslItem);
       } catch (e) {
         ztoolkit.log(`[CNE] Callback ${i} error: ${e}`, "error");
+      }
+    }
+  }
+
+  /**
+   * Execute all registered pre-conversion callbacks
+   *
+   * EXPERIMENTAL: These callbacks modify the Zotero item before CSL conversion.
+   * Each callback is wrapped in try-catch to prevent one callback from breaking others.
+   */
+  private static applyPreConversionCallbacks(zoteroItem: any) {
+    for (let i = 0; i < this.preConversionCallbacks.length; i++) {
+      try {
+        this.preConversionCallbacks[i](zoteroItem);
+      } catch (e) {
+        ztoolkit.log(`[CNE-JURIS-M] Pre-conversion callback ${i} error: ${e}`, "error");
       }
     }
   }
@@ -200,7 +235,8 @@ export class ItemToCSLJSONInterceptor {
    */
   static clearCallbacks() {
     this.callbacks = [];
-    ztoolkit.log("[CNE] Cleared all callbacks");
+    this.preConversionCallbacks = [];
+    ztoolkit.log("[CNE] Cleared all callbacks and pre-conversion callbacks");
   }
 
   /**
@@ -210,6 +246,7 @@ export class ItemToCSLJSONInterceptor {
     return {
       intercepted: this.intercepted,
       callbackCount: this.callbacks.length,
+      preConversionCallbackCount: this.preConversionCallbacks.length,
     };
   }
 }

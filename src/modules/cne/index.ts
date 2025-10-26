@@ -5,7 +5,7 @@
 
 import { ItemToCSLJSONInterceptor } from "./interceptors";
 import { GetCiteProcInterceptor } from "./interceptors/GetCiteProcInterceptor";
-import { enrichAuthorNames, injectCSLVariables } from "./callbacks";
+import { enrichAuthorNames, injectCSLVariables, populateMultiStructures } from "./callbacks";
 import {
   initializeBibLaTeXIntegration,
   removeBibLaTeXIntegration,
@@ -22,6 +22,13 @@ function installCneProcessing() {
 
   ItemToCSLJSONInterceptor.intercept();
   ItemToCSLJSONInterceptor.clearCallbacks();
+
+  // EXPERIMENTAL: Register pre-conversion callback to populate multi structures
+  // This runs BEFORE itemToCSLJSON to inject Juris-M style multilingual data
+  ItemToCSLJSONInterceptor.registerPreConversion(populateMultiStructures);
+  ztoolkit.log("[CNE-JURIS-M] Registered populateMultiStructures pre-conversion callback");
+
+  // Regular callbacks that run AFTER conversion
   ItemToCSLJSONInterceptor.register(injectCSLVariables);
   ItemToCSLJSONInterceptor.register(enrichAuthorNames);
 
