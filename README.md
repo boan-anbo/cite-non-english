@@ -11,7 +11,7 @@ Cite Non-English (CNE) is a Zotero extension to provide all-in-one support for n
 
 ### CNE Demo
 
-https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6
+<https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6>
 
 _Download the demo video_: [CNE Demo](https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6)
 
@@ -58,8 +58,8 @@ The **current development focus** is on CJK sources. The infrastructure is inten
 
 ### Roadmap
 
-- [ ] Consolidate the support for Better BibTeX's export to BibLaTeX and, possibly, BibTeX to make CNE work seamlessly with LaTeX with tests.
-- [ ] Adding a import feature to allow importing from AI generated structured input for translation, romanization etc.
+- [ ] Consolidate the support for Better BibTeX's export to BibLaTeX and, possibly, BibTeX with extensive testing to make CNE work seamlessly with LaTeX.
+- [ ] Adding an import feature to allow taking in from AI generated structured input for translation, romanization etc.
 
 ---
 
