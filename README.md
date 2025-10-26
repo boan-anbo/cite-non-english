@@ -3,21 +3,23 @@
 [![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
-Cite Non-English (CNE) is a Zotero extension that provides all-in-one support for non-English citations which just works.
+Cite Non-English (CNE) is a Zotero extension to provide all-in-one support for non-English citations that just works.
 
 ---
 
-## I. Core Concepts
+## I. Overview
 
 ### CNE Demo
 
 https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6
 
+_Download the demo video_: [CNE Demo](https://github.com/user-attachments/assets/50c3e7eb-a79a-41bb-8eb6-774a9f80b3a6)
+
 ### Overview
 
-CNE enables you to manage metadata for non-English sources and output correctly formatted citations—all inside Zotero. It bundles the moving parts into a coherent extension with a stable API, so you can rely on a single tool that continues to work even as Zotero evolves.
+CNE enables you to manage metadata for non-English sources and output correctly formatted citations—all inside Zotero. It bridges the moving parts into a coherent extension with a stable API, so you can rely on a single tool that continues to work even as Zotero evolves.
 
-Under the hood CNE does the hard work of coordinating Zotero internals, citation styles, citeproc engines, and export workflows so you can simply cite your sources without worrying about the details. The project is committed to maintaining that experience until native non-English citation support is built into Zotero.
+Under the hood CNE does the hard work of coordinating Zotero internals, citation styles, citeproc engines, and export workflows so you can simply cite your sources without worrying about the technical details. The project is committed to maintaining that experience until native non-English citation support is built into Zotero.
 
 ### Rationale
 
@@ -37,7 +39,7 @@ English-language citation guides (especially in the humanities and social scienc
 
 For more examples, see the [bibliography snapshots for all curated styles](https://github.com/boan-anbo/cite-non-english/tree/main/snapshots).
 
-Historically **Zotero’s native item data structure and official CSLs offered no built-in way to render non-English sources**, so scholars often turned to [Juris-M](https://juris-m.github.io/), a forked version of Zotero with multilingual infrastructure. That approach has trade-offs:
+Historically **Zotero’s native item data structure and official CSLs offered no built-in way to render formats like this for non-English sources**, so scholars often turned to [Juris-M](https://juris-m.github.io/), a forked version of Zotero with multilingual infrastructure. That approach has trade-offs:
 
 - Maintaining Juris-M means keeping two independent Zotero/Juris-M databases.
 - Juris-M has effectively ceased active maintenance in the last two years, leaving users without an up-to-date path for English-style citations of non-English sources.
@@ -148,15 +150,21 @@ For example, `citeproc-js` has hardcoded special handling for "Asian names" but 
 - **Evolving Asian name conventions** – Recent style guides increasingly require East Asian names to appear in their native order (family name first) without commas, reflecting a shift toward linguistically respectful formatting. Traditionally, names were formatted with Western-style comma separation:
 
   > Hua, Linfu (Chinese, Pinyin)
+
   > Ch'ien, Mu (Chinese, Wade-Giles)
+
   > Kang, U-bang (Korean)
+
   > Abe, Yoshio (Japanese)
 
   Modern guidelines (Chicago 18th edition, §11.89-11.99) now recommend the no-comma format followed by original script for scholars based in Asia:
 
   > Hua Linfu 华林甫
+
   > Ch'ien Mu 钱穆
+
   > Kang U-bang 姜友邦
+
   > Abe Yoshio 阿部善雄
 
   While well-intentioned, this convention adds further complexity for non-English citations. Additionally, some styles (e.g., Chicago) even recommend "exceptions to exceptions" such as per-author overrides where certain names still need commas despite the general no-comma rule for CJK names. For instance, Korean persons living in the West (referred to in text as "Chang-rae Lee") may still require comma separation (Chicago 17th edition, §16.82):
