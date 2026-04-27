@@ -14,6 +14,7 @@ tsconfig.tsbuildinfo
 .scaffold
 build
 logs
+dist/
 
 # Development tools - ignore node_modules only
 test-debug.txt
