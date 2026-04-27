@@ -53,7 +53,7 @@ export function setupAuthorFieldBinding(
   const fieldKey = keys[1]; // e.g., "lastOriginal", "optionsSpacing"
 
   // Get initial value
-  let initialValue = (author as any)[fieldKey] || "";
+  const initialValue = (author as any)[fieldKey] || "";
 
   // Set initial value
   // Use duck typing instead of instanceof (HTMLInputElement not available in Zotero context)

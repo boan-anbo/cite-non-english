@@ -8,7 +8,7 @@
  * @see /docs/citeproc-multilingual-infrastructure.md
  */
 
-import type { CNEConfigOptions } from './parseCNEConfig';
+import type { CNEConfigOptions } from "./parseCNEConfig";
 
 type CiteprocEngine = any;
 
@@ -22,14 +22,17 @@ export function installCneLangPrefPatch(): void {
   // engine updates (citeproc-js or citeproc-rs) should rerun these tests to
   // ensure `setLangPrefsForCites` still behaves as expected.
   try {
-    if (typeof CSL !== 'undefined' && CSL?.Engine && !originalJsSetLangPrefs) {
+    if (typeof CSL !== "undefined" && CSL?.Engine && !originalJsSetLangPrefs) {
       originalJsSetLangPrefs = CSL.Engine.prototype.setLangPrefsForCites;
-      CSL.Engine.prototype.setLangPrefsForCites = function (obj: any, conv?: any) {
+      CSL.Engine.prototype.setLangPrefsForCites = function (
+        obj: any,
+        conv?: any,
+      ) {
         originalJsSetLangPrefs!.call(this, obj, conv);
         try {
           (this as any)._cneLangOverride?.();
         } catch (err) {
-          Zotero?.debug?.('[CNE Config] Error in JS lang override: ' + err);
+          Zotero?.debug?.("[CNE Config] Error in JS lang override: " + err);
         }
       };
     }
@@ -37,32 +40,43 @@ export function installCneLangPrefPatch(): void {
     const RsEngine = (Zotero as any)?.CiteprocRs?.Engine;
     if (RsEngine && !originalRsSetLangPrefs) {
       originalRsSetLangPrefs = RsEngine.prototype.setLangPrefsForCites;
-      RsEngine.prototype.setLangPrefsForCites = function (obj: any, conv?: any) {
+      RsEngine.prototype.setLangPrefsForCites = function (
+        obj: any,
+        conv?: any,
+      ) {
         originalRsSetLangPrefs!.call(this, obj, conv);
         try {
           (this as any)._cneLangOverride?.();
         } catch (err) {
-          Zotero?.debug?.('[CNE Config] Error in RS lang override: ' + err);
+          Zotero?.debug?.("[CNE Config] Error in RS lang override: " + err);
         }
       };
-      Object.defineProperty(RsEngine.prototype, '_cnePatched', { value: true, configurable: true });
+      Object.defineProperty(RsEngine.prototype, "_cnePatched", {
+        value: true,
+        configurable: true,
+      });
     }
   } catch (err) {
-    Zotero?.debug?.('[CNE Config] Error installing lang pref patch: ' + err);
+    Zotero?.debug?.("[CNE Config] Error installing lang pref patch: " + err);
   }
 }
 
-export function configureCiteprocForCNE(engine: CiteprocEngine, config: CNEConfigOptions): void {
+export function configureCiteprocForCNE(
+  engine: CiteprocEngine,
+  config: CNEConfigOptions,
+): void {
   try {
     installCneLangPrefPatch();
 
-    if (!engine || typeof engine.setLangPrefsForCites !== 'function') {
-      Zotero.debug('[CNE Config] Engine missing setLangPrefsForCites method, skipping');
+    if (!engine || typeof engine.setLangPrefsForCites !== "function") {
+      Zotero.debug(
+        "[CNE Config] Engine missing setLangPrefsForCites method, skipping",
+      );
       return;
     }
 
-    if (!config || typeof config !== 'object') {
-      Zotero.debug('[CNE Config] Invalid configuration object, skipping');
+    if (!config || typeof config !== "object") {
+      Zotero.debug("[CNE Config] Invalid configuration object, skipping");
       return;
     }
 
@@ -74,8 +88,11 @@ export function configureCiteprocForCNE(engine: CiteprocEngine, config: CNEConfi
     if (citeLangPrefs.persons) {
       const personsSnapshot = [...citeLangPrefs.persons];
       (engine as any)._cneLangOverride = () => {
-        enforcePersonsArray(engine.opt?.['cite-lang-prefs'], personsSnapshot);
-        enforcePersonsArray(engine.state?.opt?.['cite-lang-prefs'], personsSnapshot);
+        enforcePersonsArray(engine.opt?.["cite-lang-prefs"], personsSnapshot);
+        enforcePersonsArray(
+          engine.state?.opt?.["cite-lang-prefs"],
+          personsSnapshot,
+        );
       };
     } else {
       (engine as any)._cneLangOverride = undefined;
@@ -85,23 +102,31 @@ export function configureCiteprocForCNE(engine: CiteprocEngine, config: CNEConfi
     (engine as any)._cneLangOverride?.();
 
     if (citeLangPrefs.persons) {
-      enforcePersonsArray(engine.opt?.['cite-lang-prefs'], citeLangPrefs.persons);
-      enforcePersonsArray(engine.state?.opt?.['cite-lang-prefs'], citeLangPrefs.persons);
+      enforcePersonsArray(
+        engine.opt?.["cite-lang-prefs"],
+        citeLangPrefs.persons,
+      );
+      enforcePersonsArray(
+        engine.state?.opt?.["cite-lang-prefs"],
+        citeLangPrefs.persons,
+      );
     }
 
     const romanizedCJK = config.nameFormatting?.romanizedCJK;
-    const separator = romanizedCJK?.separator || 'space';
-    const translitTags = separator === 'comma' ? ['en-x-western'] : ['en'];
+    const separator = romanizedCJK?.separator || "space";
+    const translitTags = separator === "comma" ? ["en-x-western"] : ["en"];
 
     try {
       engine.setLangTagsForCslTransliteration(translitTags);
     } catch (err) {
-      Zotero.debug('[CNE Config] Error calling setLangTagsForCslTransliteration: ' + err);
+      Zotero.debug(
+        "[CNE Config] Error calling setLangTagsForCslTransliteration: " + err,
+      );
     }
 
-    Zotero.debug('[CNE Config] Successfully configured citeproc engine');
+    Zotero.debug("[CNE Config] Successfully configured citeproc engine");
   } catch (error) {
-    Zotero.debug('[CNE Config] Error configuring citeproc engine: ' + error);
+    Zotero.debug("[CNE Config] Error configuring citeproc engine: " + error);
   }
 }
 
@@ -110,33 +135,45 @@ function enforcePersonsArray(target: any, values: string[]) {
     return;
   }
 
-  const arr = Array.isArray(target.persons) ? target.persons : (target.persons = []);
+  const arr = Array.isArray(target.persons)
+    ? target.persons
+    : (target.persons = []);
   arr.length = 0;
   arr.push(...values);
 }
 
-export function setCiteAffixes(engine: any, affixes: Array<{ prefix?: string; suffix?: string }>): void {
+export function setCiteAffixes(
+  engine: any,
+  affixes: Array<{ prefix?: string; suffix?: string }>,
+): void {
   try {
-    if (!engine || typeof engine.setLangPrefsForCiteAffixes !== 'function') {
-      Zotero.debug('[CNE Config] Engine missing setLangPrefsForCiteAffixes method');
+    if (!engine || typeof engine.setLangPrefsForCiteAffixes !== "function") {
+      Zotero.debug(
+        "[CNE Config] Engine missing setLangPrefsForCiteAffixes method",
+      );
       return;
     }
 
     engine.setLangPrefsForCiteAffixes(affixes);
   } catch (error) {
-    Zotero.debug('[CNE Config] Error setting cite affixes: ' + error);
+    Zotero.debug("[CNE Config] Error setting cite affixes: " + error);
   }
 }
 
 export function setTransliterationTags(engine: any, tags: string[]): void {
   try {
-    if (!engine || typeof engine.setLangTagsForCslTransliteration !== 'function') {
-      Zotero.debug('[CNE Config] Engine missing setLangTagsForCslTransliteration method');
+    if (
+      !engine ||
+      typeof engine.setLangTagsForCslTransliteration !== "function"
+    ) {
+      Zotero.debug(
+        "[CNE Config] Engine missing setLangTagsForCslTransliteration method",
+      );
       return;
     }
 
     engine.setLangTagsForCslTransliteration(tags);
   } catch (error) {
-    Zotero.debug('[CNE Config] Error setting transliteration tags: ' + error);
+    Zotero.debug("[CNE Config] Error setting transliteration tags: " + error);
   }
 }

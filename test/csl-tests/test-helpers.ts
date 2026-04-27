@@ -2,7 +2,7 @@
  * Helper utilities for CSL testing
  */
 
-import type { CNETestFixture } from './fixtures/types';
+import type { CNETestFixture } from "./fixtures/types";
 
 /**
  * Zotero Styles Lifecycle Manager
@@ -23,7 +23,8 @@ import type { CNETestFixture } from './fixtures/types';
  * ```
  */
 class StylesLifecycleManager {
-  private state: 'uninitialized' | 'initializing' | 'ready' | 'failed' = 'uninitialized';
+  private state: "uninitialized" | "initializing" | "ready" | "failed" =
+    "uninitialized";
   private initError: Error | null = null;
   private initPromise: Promise<void> | null = null;
 
@@ -40,26 +41,29 @@ class StylesLifecycleManager {
    */
   async ensureInitialized(): Promise<void> {
     // Already ready
-    if (this.state === 'ready') {
-      console.log('ℹ️  Zotero.Styles already initialized');
+    if (this.state === "ready") {
+      console.log("ℹ️  Zotero.Styles already initialized");
       return;
     }
 
     // Previously failed - throw the original error
-    if (this.state === 'failed') {
-      console.error('❌ Zotero.Styles initialization previously failed');
-      throw this.initError || new Error('Styles initialization failed (unknown error)');
+    if (this.state === "failed") {
+      console.error("❌ Zotero.Styles initialization previously failed");
+      throw (
+        this.initError ||
+        new Error("Styles initialization failed (unknown error)")
+      );
     }
 
     // Currently initializing - wait for it
-    if (this.state === 'initializing' && this.initPromise) {
-      console.log('⏳ Waiting for in-progress initialization...');
+    if (this.state === "initializing" && this.initPromise) {
+      console.log("⏳ Waiting for in-progress initialization...");
       return this.initPromise;
     }
 
     // First call - perform initialization
-    this.state = 'initializing';
-    console.log('🎨 Initializing Zotero.Styles...');
+    this.state = "initializing";
+    console.log("🎨 Initializing Zotero.Styles...");
 
     this.initPromise = this._performInit();
     return this.initPromise;
@@ -71,15 +75,19 @@ class StylesLifecycleManager {
   private async _performInit(): Promise<void> {
     try {
       await Zotero.Styles.init();
-      this.state = 'ready';
-      console.log('✅ Zotero.Styles initialized successfully');
+      this.state = "ready";
+      console.log("✅ Zotero.Styles initialized successfully");
     } catch (error) {
-      this.state = 'failed';
-      this.initError = error instanceof Error ? error : new Error(String(error));
+      this.state = "failed";
+      this.initError =
+        error instanceof Error ? error : new Error(String(error));
 
-      console.error('❌ Failed to initialize Zotero.Styles:', this.initError.message);
+      console.error(
+        "❌ Failed to initialize Zotero.Styles:",
+        this.initError.message,
+      );
       if (this.initError.stack) {
-        console.error('Stack trace:', this.initError.stack);
+        console.error("Stack trace:", this.initError.stack);
       }
 
       throw this.initError;
@@ -92,7 +100,7 @@ class StylesLifecycleManager {
    * @returns true if initialized and ready to use
    */
   isReady(): boolean {
-    return this.state === 'ready';
+    return this.state === "ready";
   }
 
   /**
@@ -120,10 +128,12 @@ class StylesLifecycleManager {
    * In normal test execution, styles should be initialized once.
    */
   _reset(): void {
-    this.state = 'uninitialized';
+    this.state = "uninitialized";
     this.initError = null;
     this.initPromise = null;
-    console.warn('⚠️  StylesLifecycleManager reset - this should rarely be needed');
+    console.warn(
+      "⚠️  StylesLifecycleManager reset - this should rarely be needed",
+    );
   }
 }
 
@@ -136,7 +146,7 @@ export const stylesManager = new StylesLifecycleManager();
  * @param styleFilename - Name of the style file (e.g., 'chicago-notes-bibliography-cne.csl')
  */
 export async function installCslStyle(styleFilename: string): Promise<void> {
-  const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, 'styles');
+  const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, "styles");
   await IOUtils.makeDirectory(stylesDir, { ignoreExisting: true });
 
   // Navigate from test/data -> parent -> parent -> cite-non-english
@@ -145,7 +155,7 @@ export async function installCslStyle(styleFilename: string): Promise<void> {
   const scaffold = PathUtils.parent(test);
   const root = PathUtils.parent(scaffold);
 
-  const sourcePath = PathUtils.join(root, 'styles', 'cne', styleFilename);
+  const sourcePath = PathUtils.join(root, "styles", "cne", styleFilename);
   const destPath = PathUtils.join(stylesDir, styleFilename);
 
   await IOUtils.copy(sourcePath, destPath, { noOverwrite: false });
@@ -162,7 +172,7 @@ export async function installCslStyle(styleFilename: string): Promise<void> {
  * @returns Created Zotero item
  */
 export async function createZoteroItemFromTestCase(
-  fixture: CNETestFixture
+  fixture: CNETestFixture,
 ): Promise<Zotero.Item> {
   const item = new Zotero.Item();
 
@@ -177,23 +187,30 @@ export async function createZoteroItemFromTestCase(
   // Iterate through all properties in the fixture
   for (const [key, value] of Object.entries(fixture)) {
     // Skip special properties
-    if (key === 'itemType' || key === 'creators' || key === 'id' || key === 'description') {
+    if (
+      key === "itemType" ||
+      key === "creators" ||
+      key === "id" ||
+      key === "description"
+    ) {
       continue;
     }
 
     // Handle 'extra' field
-    if (key === 'extra' && typeof value === 'string') {
-      item.setField('extra', value);
+    if (key === "extra" && typeof value === "string") {
+      item.setField("extra", value);
       continue;
     }
 
     // Set regular fields (only if value is defined and is a string)
-    if (value !== undefined && value !== null && typeof value === 'string') {
+    if (value !== undefined && value !== null && typeof value === "string") {
       try {
         item.setField(key, value);
       } catch (error) {
         // Log errors for debugging (some fields might not exist for certain item types)
-        console.log(`[createItem] Could not set field '${key}' = '${value}': ${error}`);
+        console.log(
+          `[createItem] Could not set field '${key}' = '${value}': ${error}`,
+        );
       }
     }
   }
@@ -205,11 +222,11 @@ export async function createZoteroItemFromTestCase(
       item.setCreator(
         i,
         {
-          firstName: creator.firstName || '',
-          lastName: creator.lastName || '',
-          creatorType: creator.creatorType
+          firstName: creator.firstName || "",
+          lastName: creator.lastName || "",
+          creatorType: creator.creatorType,
         },
-        i
+        i,
       );
     }
   }
@@ -231,7 +248,7 @@ export async function createZoteroItemFromTestCase(
 export async function generateBibliography(
   items: Zotero.Item[],
   styleId: string,
-  styleLocale: string = 'en-US'
+  styleLocale: string = "en-US",
 ): Promise<string> {
   // Get style
   const style = Zotero.Styles.get(styleId);
@@ -240,16 +257,16 @@ export async function generateBibliography(
   }
 
   // Get CiteProc engine with specified locale
-  const engine = style.getCiteProc(styleLocale, 'html');
+  const engine = style.getCiteProc(styleLocale, "html");
 
   // Register items with engine
-  engine.updateItems(items.map(item => item.id));
+  engine.updateItems(items.map((item) => item.id));
 
   // Generate bibliography
-  const output = Zotero.Cite.makeFormattedBibliography(engine, 'html');
+  const output = Zotero.Cite.makeFormattedBibliography(engine, "html");
 
   if (!output) {
-    throw new Error('Bibliography generation returned empty result');
+    throw new Error("Bibliography generation returned empty result");
   }
 
   return output;
@@ -266,7 +283,7 @@ export async function generateBibliography(
 export async function generateCitations(
   items: Zotero.Item[],
   styleId: string,
-  styleLocale: string = 'en-US'
+  styleLocale: string = "en-US",
 ): Promise<string> {
   // Get style
   const style = Zotero.Styles.get(styleId);
@@ -275,18 +292,18 @@ export async function generateCitations(
   }
 
   // Get CiteProc engine with specified locale
-  const engine = style.getCiteProc(styleLocale, 'html');
+  const engine = style.getCiteProc(styleLocale, "html");
 
   // Generate citations as numbered list (asCitationList=true)
   const output = Zotero.Cite.makeFormattedBibliographyOrCitationList(
     engine,
     items,
-    'html',
-    true  // asCitationList parameter triggers notes/citations mode
+    "html",
+    true, // asCitationList parameter triggers notes/citations mode
   );
 
   if (!output) {
-    throw new Error('Citations generation returned empty result');
+    throw new Error("Citations generation returned empty result");
   }
 
   return output;
@@ -298,7 +315,10 @@ export async function generateCitations(
  * @param relativePath - Path relative to project root directory
  * @param content - Content to write
  */
-export async function saveSnapshot(relativePath: string, content: string): Promise<void> {
+export async function saveSnapshot(
+  relativePath: string,
+  content: string,
+): Promise<void> {
   try {
     const dataDir = Zotero.DataDirectory.dir;
     console.log(`[saveSnapshot] dataDir: ${dataDir}`);
@@ -312,7 +332,7 @@ export async function saveSnapshot(relativePath: string, content: string): Promi
 
     // Build path step by step
     // relativePath is like "snapshots/chicago-18th/en-US/all-languages.html"
-    const pathParts = relativePath.split('/');
+    const pathParts = relativePath.split("/");
     let fullPath = projectRoot;
     for (const part of pathParts) {
       fullPath = PathUtils.join(fullPath, part);
@@ -324,7 +344,9 @@ export async function saveSnapshot(relativePath: string, content: string): Promi
     console.log(`[saveSnapshot] Creating directory: ${dir}`);
     await IOUtils.makeDirectory(dir, { ignoreExisting: true });
 
-    console.log(`[saveSnapshot] Writing ${content.length} bytes to ${fullPath}`);
+    console.log(
+      `[saveSnapshot] Writing ${content.length} bytes to ${fullPath}`,
+    );
     await IOUtils.writeUTF8(fullPath, content);
     console.log(`[saveSnapshot] Successfully wrote snapshot`);
   } catch (error) {
@@ -356,7 +378,7 @@ export function extractFixtureIdentifiers(fixture: CNETestFixture): {
 
   // Parse Extra field for CNE metadata
   if (fixture.extra) {
-    const lines = fixture.extra.split('\n');
+    const lines = fixture.extra.split("\n");
     for (const line of lines) {
       const match = line.match(/^([^:]+):\s*(.+)$/);
       if (match) {
@@ -364,19 +386,25 @@ export function extractFixtureIdentifiers(fixture: CNETestFixture): {
         const value = match[2].trim();
 
         // Map CNE fields to identifiers
-        if (key === 'cne-title-original') {
+        if (key === "cne-title-original") {
           identifiers.originalTitle = value;
-        } else if (key === 'cne-title-romanized') {
+        } else if (key === "cne-title-romanized") {
           identifiers.romanizedTitle = value;
-        } else if (key === 'cne-title-english') {
+        } else if (key === "cne-title-english") {
           identifiers.englishTitle = value;
-        } else if (key === 'cne-author-0-last-original' || key === 'cne-director-0-last-original') {
+        } else if (
+          key === "cne-author-0-last-original" ||
+          key === "cne-director-0-last-original"
+        ) {
           identifiers.originalAuthor = value;
-        } else if (key === 'cne-author-0-last-romanized' || key === 'cne-director-0-last-romanized') {
+        } else if (
+          key === "cne-author-0-last-romanized" ||
+          key === "cne-director-0-last-romanized"
+        ) {
           identifiers.romanizedAuthor = value;
-        } else if (key === 'cne-journal-original') {
+        } else if (key === "cne-journal-original") {
           identifiers.originalJournal = value;
-        } else if (key === 'cne-journal-romanized') {
+        } else if (key === "cne-journal-romanized") {
           identifiers.romanizedJournal = value;
         }
       }
@@ -403,7 +431,7 @@ export function extractFixtureIdentifiers(fixture: CNETestFixture): {
 function parseCoinsMetadata(coinsSpan: Element): Record<string, string> {
   const metadata: Record<string, string> = {};
 
-  const title = coinsSpan.getAttribute('title');
+  const title = coinsSpan.getAttribute("title");
   if (!title) return metadata;
 
   // Parse URL-encoded key-value pairs
@@ -434,7 +462,7 @@ function matchEntryByCoins(entry: Element, fixture: CNETestFixture): number {
   // COinS span is the next sibling of the .csl-entry
   const coinsSpan = entry.nextElementSibling;
 
-  if (!coinsSpan || !coinsSpan.classList.contains('Z3988')) {
+  if (!coinsSpan || !coinsSpan.classList.contains("Z3988")) {
     return 0;
   }
 
@@ -443,27 +471,27 @@ function matchEntryByCoins(entry: Element, fixture: CNETestFixture): number {
 
   // Match by original title (most reliable - exact Unicode match)
   // COinS stores the original Zotero field, not the formatted version
-  if (fixture.title && coins['rft.btitle'] === fixture.title) {
+  if (fixture.title && coins["rft.btitle"] === fixture.title) {
     score += 100;
   }
-  if (fixture.title && coins['rft.atitle'] === fixture.title) {
+  if (fixture.title && coins["rft.atitle"] === fixture.title) {
     score += 100;
   }
 
   // Match by date (year)
-  if (fixture.date && coins['rft.date']?.includes(fixture.date)) {
+  if (fixture.date && coins["rft.date"]?.includes(fixture.date)) {
     score += 50;
   }
 
   // Match by language
-  if (fixture.language && coins['rft.language'] === fixture.language) {
+  if (fixture.language && coins["rft.language"] === fixture.language) {
     score += 30;
   }
 
   // Match by author (last name from COinS)
   if (fixture.creators && fixture.creators.length > 0) {
     const firstAuthor = fixture.creators[0];
-    if (firstAuthor.lastName && coins['rft.aulast'] === firstAuthor.lastName) {
+    if (firstAuthor.lastName && coins["rft.aulast"] === firstAuthor.lastName) {
       score += 40;
     }
   }
@@ -482,9 +510,9 @@ function matchEntryByCoins(entry: Element, fixture: CNETestFixture): number {
  */
 function decodeHtmlEntities(html: string): string {
   return html
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
     .replace(/&apos;/g, "'");
@@ -505,17 +533,19 @@ function decodeHtmlEntities(html: string): string {
  */
 export function extractCslEntry(
   bibliography: string,
-  fixture: CNETestFixture
+  fixture: CNETestFixture,
 ): string | null {
   // Parse HTML using DOMParser
   const parser = new DOMParser();
-  const doc = parser.parseFromString(bibliography, 'text/html');
+  const doc = parser.parseFromString(bibliography, "text/html");
 
   // Get all bibliography item divs (contain both .csl-entry and .Z3988)
-  const bibItems = doc.querySelectorAll('.csl-bib-body > .csl-entry');
+  const bibItems = doc.querySelectorAll(".csl-bib-body > .csl-entry");
 
   if (bibItems.length === 0) {
-    console.warn('[extractCslEntry] No .csl-entry elements found in bibliography');
+    console.warn(
+      "[extractCslEntry] No .csl-entry elements found in bibliography",
+    );
     return null;
   }
 
@@ -540,43 +570,66 @@ export function extractCslEntry(
   }
 
   // Fallback to text-based matching for compatibility
-  console.log('[extractCslEntry] COinS matching weak or failed, using text fallback');
+  console.log(
+    "[extractCslEntry] COinS matching weak or failed, using text fallback",
+  );
   const identifiers = extractFixtureIdentifiers(fixture);
   bestMatch = null;
   bestScore = 0;
 
   for (const entry of bibItems) {
-    const entryText = entry.textContent || '';
+    const entryText = entry.textContent || "";
     let score = 0;
 
     // Original title is the strongest identifier (most unique)
-    if (identifiers.originalTitle && entryText.includes(identifiers.originalTitle)) {
+    if (
+      identifiers.originalTitle &&
+      entryText.includes(identifiers.originalTitle)
+    ) {
       score += 100;
     }
 
     // Romanized title is also very strong
-    if (identifiers.romanizedTitle && entryText.includes(identifiers.romanizedTitle)) {
+    if (
+      identifiers.romanizedTitle &&
+      entryText.includes(identifiers.romanizedTitle)
+    ) {
       score += 80;
     }
 
     // English title (in brackets) - now less reliable due to quote changes
-    if (identifiers.englishTitle && entryText.includes(identifiers.englishTitle)) {
+    if (
+      identifiers.englishTitle &&
+      entryText.includes(identifiers.englishTitle)
+    ) {
       score += 60;
     }
 
     // Journal titles
-    if (identifiers.originalJournal && entryText.includes(identifiers.originalJournal)) {
+    if (
+      identifiers.originalJournal &&
+      entryText.includes(identifiers.originalJournal)
+    ) {
       score += 40;
     }
-    if (identifiers.romanizedJournal && entryText.includes(identifiers.romanizedJournal)) {
+    if (
+      identifiers.romanizedJournal &&
+      entryText.includes(identifiers.romanizedJournal)
+    ) {
       score += 40;
     }
 
     // Author names (weaker identifiers as they may be common)
-    if (identifiers.originalAuthor && entryText.includes(identifiers.originalAuthor)) {
+    if (
+      identifiers.originalAuthor &&
+      entryText.includes(identifiers.originalAuthor)
+    ) {
       score += 20;
     }
-    if (identifiers.romanizedAuthor && entryText.includes(identifiers.romanizedAuthor)) {
+    if (
+      identifiers.romanizedAuthor &&
+      entryText.includes(identifiers.romanizedAuthor)
+    ) {
       score += 20;
     }
 
@@ -593,6 +646,9 @@ export function extractCslEntry(
     return decodeHtmlEntities(bestMatch.innerHTML);
   }
 
-  console.warn('[extractCslEntry] No matching entry found for fixture', identifiers);
+  console.warn(
+    "[extractCslEntry] No matching entry found for fixture",
+    identifiers,
+  );
   return null;
 }

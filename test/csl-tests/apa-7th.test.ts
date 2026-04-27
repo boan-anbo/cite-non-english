@@ -30,15 +30,15 @@
  * Expectations are defined in TypeScript files (e.g., expectations/apa-7th/en-US/chinese.ts)
  */
 
-import { assert } from 'chai';
-import * as chai from 'chai';
-import * as Diff from 'diff';
-import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
-import { chineseExpectations } from './expectations/apa-7th/en-US/chinese';
-import { japaneseExpectations } from './expectations/apa-7th/en-US/japanese';
-import { koreanExpectations } from './expectations/apa-7th/en-US/korean';
-import { englishExpectations } from './expectations/apa-7th/en-US/english';
-import { generateBibliography, extractCslEntry } from './test-helpers';
+import { assert } from "chai";
+import * as chai from "chai";
+import * as Diff from "diff";
+import { ALL_FIXTURES, FIXTURE_IDS } from "./fixtures";
+import { chineseExpectations } from "./expectations/apa-7th/en-US/chinese";
+import { japaneseExpectations } from "./expectations/apa-7th/en-US/japanese";
+import { koreanExpectations } from "./expectations/apa-7th/en-US/korean";
+import { englishExpectations } from "./expectations/apa-7th/en-US/english";
+import { generateBibliography, extractCslEntry } from "./test-helpers";
 
 // Configure Chai to show full string diffs (not truncated)
 chai.config.truncateThreshold = 0;
@@ -51,33 +51,45 @@ chai.config.showDiff = true;
  * For large comparisons (like snapshots), suppresses full string output
  * and only shows the diff analysis to keep output readable.
  */
-function assertEqualWithDiff(actual: string | null | undefined, expected: string, message: string): void {
-  const actualTrimmed = actual?.trim() || '';
+function assertEqualWithDiff(
+  actual: string | null | undefined,
+  expected: string,
+  message: string,
+): void {
+  const actualTrimmed = actual?.trim() || "";
   const expectedTrimmed = expected.trim();
 
   if (actualTrimmed !== expectedTrimmed) {
     // Generate character-level diff
     const diffResult = Diff.diffChars(expectedTrimmed, actualTrimmed);
 
-    let diffOutput = '\n\n📊 Diff Analysis:\n';
+    let diffOutput = "\n\n📊 Diff Analysis:\n";
 
     // Collect all differences with their positions
     let position = 0;
-    const differences: Array<{pos: number; expected: string; actual: string; context: string}> = [];
-    let currentContext = '';
+    const differences: Array<{
+      pos: number;
+      expected: string;
+      actual: string;
+      context: string;
+    }> = [];
+    let currentContext = "";
 
     diffResult.forEach((part) => {
       if (part.added || part.removed) {
         // Find the matching pair (removed + added)
         const contextBefore = currentContext.slice(-20); // Last 20 chars
 
-        if (!differences.length || differences[differences.length - 1].actual !== '') {
+        if (
+          !differences.length ||
+          differences[differences.length - 1].actual !== ""
+        ) {
           // Start new difference entry
           differences.push({
             pos: position - contextBefore.length,
-            expected: part.removed ? part.value : '',
-            actual: part.added ? part.value : '',
-            context: contextBefore
+            expected: part.removed ? part.value : "",
+            actual: part.added ? part.value : "",
+            context: contextBefore,
           });
         } else {
           // Complete the pair
@@ -101,27 +113,34 @@ function assertEqualWithDiff(actual: string | null | undefined, expected: string
 
       // Show context
       const visibleContext = diff.context
-        .replace(/\n/g, '↵')
-        .replace(/\t/g, '→')
-        .replace(/ /g, '·')
+        .replace(/\n/g, "↵")
+        .replace(/\t/g, "→")
+        .replace(/ /g, "·")
         .slice(-30); // Show last 30 chars of context
 
       diffOutput += `  Context: ...${visibleContext}\n`;
 
       // Show expected vs actual with Unicode info
       const formatChar = (str: string) => {
-        if (!str) return '(none)';
-        const visible = str.replace(/\n/g, '↵').replace(/\t/g, '→').replace(/ /g, '·');
-        const codes = Array.from(str).map(c => {
-          const code = c.charCodeAt(0);
-          return code > 127 ? `U+${code.toString(16).toUpperCase().padStart(4, '0')}` : `'${c}'`;
-        }).join(' ');
+        if (!str) return "(none)";
+        const visible = str
+          .replace(/\n/g, "↵")
+          .replace(/\t/g, "→")
+          .replace(/ /g, "·");
+        const codes = Array.from(str)
+          .map((c) => {
+            const code = c.charCodeAt(0);
+            return code > 127
+              ? `U+${code.toString(16).toUpperCase().padStart(4, "0")}`
+              : `'${c}'`;
+          })
+          .join(" ");
         return `${visible} [${codes}]`;
       };
 
       diffOutput += `  Expected: ${formatChar(diff.expected)}\n`;
       diffOutput += `  Actual:   ${formatChar(diff.actual)}\n`;
-      diffOutput += '\n';
+      diffOutput += "\n";
     });
 
     // Throw assertion error with diff but let Chai handle Expected/Received display
@@ -139,14 +158,14 @@ function assertEqualWithDiff(actual: string | null | undefined, expected: string
 }
 
 // Style configuration
-const STYLE_ID = 'http://www.zotero.org/styles/apa-7th-cne';
-const STYLE_LOCALE = 'en-US';
+const STYLE_ID = "http://www.zotero.org/styles/apa-7th-cne";
+const STYLE_LOCALE = "en-US";
 
-describe('APA 7th Edition - CNE (en-US)', function() {
+describe("APA 7th Edition - CNE (en-US)", function () {
   let bibliography: string;
 
   // Initialize styles before running tests
-  before(async function() {
+  before(async function () {
     this.timeout(30000);
 
     // Retrieve all items created in global setup
@@ -154,18 +173,14 @@ describe('APA 7th Edition - CNE (en-US)', function() {
     const allItems = await Zotero.Items.getAll(libraryID);
 
     // Render bibliography ONCE for all items
-    bibliography = await generateBibliography(
-      allItems,
-      STYLE_ID,
-      STYLE_LOCALE
-    );
+    bibliography = await generateBibliography(allItems, STYLE_ID, STYLE_LOCALE);
   });
 
   // ==========================================================================
   // Chinese Materials
   // ==========================================================================
 
-  describe('Chinese materials', function() {
+  describe("Chinese materials", function () {
     // Dynamically generate tests from expectations
     Object.entries(chineseExpectations).forEach(([fixtureId, expected]) => {
       const hasExpectation = expected && expected.trim();
@@ -174,12 +189,12 @@ describe('APA 7th Edition - CNE (en-US)', function() {
         ? `should format ${fixtureId} correctly`
         : `should format ${fixtureId} correctly - no expectation`;
 
-      testFn(testName, function() {
+      testFn(testName, function () {
         const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
         assertEqualWithDiff(
           actual,
           expected,
-          `CSL entry for ${fixtureId} does not match expected output`
+          `CSL entry for ${fixtureId} does not match expected output`,
         );
       });
     });
@@ -189,7 +204,7 @@ describe('APA 7th Edition - CNE (en-US)', function() {
   // Japanese Materials
   // ==========================================================================
 
-  describe('Japanese materials', function() {
+  describe("Japanese materials", function () {
     // Dynamically generate tests from expectations
     Object.entries(japaneseExpectations).forEach(([fixtureId, expected]) => {
       const hasExpectation = expected && expected.trim();
@@ -198,12 +213,12 @@ describe('APA 7th Edition - CNE (en-US)', function() {
         ? `should format ${fixtureId} correctly`
         : `should format ${fixtureId} correctly - no expectation`;
 
-      testFn(testName, function() {
+      testFn(testName, function () {
         const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
         assertEqualWithDiff(
           actual,
           expected,
-          `CSL entry for ${fixtureId} does not match expected output`
+          `CSL entry for ${fixtureId} does not match expected output`,
         );
       });
     });
@@ -213,7 +228,7 @@ describe('APA 7th Edition - CNE (en-US)', function() {
   // Korean Materials
   // ==========================================================================
 
-  describe('Korean materials', function() {
+  describe("Korean materials", function () {
     // Dynamically generate tests from expectations
     Object.entries(koreanExpectations).forEach(([fixtureId, expected]) => {
       const hasExpectation = expected && expected.trim();
@@ -222,12 +237,12 @@ describe('APA 7th Edition - CNE (en-US)', function() {
         ? `should format ${fixtureId} correctly`
         : `should format ${fixtureId} correctly - no expectation`;
 
-      testFn(testName, function() {
+      testFn(testName, function () {
         const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
         assertEqualWithDiff(
           actual,
           expected,
-          `CSL entry for ${fixtureId} does not match expected output`
+          `CSL entry for ${fixtureId} does not match expected output`,
         );
       });
     });
@@ -237,7 +252,7 @@ describe('APA 7th Edition - CNE (en-US)', function() {
   // English Materials (baseline tests for non-CNE behavior)
   // ==========================================================================
 
-  describe('English materials', function() {
+  describe("English materials", function () {
     // Dynamically generate tests from expectations
     Object.entries(englishExpectations).forEach(([fixtureId, expected]) => {
       const hasExpectation = expected && expected.trim();
@@ -246,15 +261,14 @@ describe('APA 7th Edition - CNE (en-US)', function() {
         ? `should format ${fixtureId} correctly`
         : `should format ${fixtureId} correctly - no expectation`;
 
-      testFn(testName, function() {
+      testFn(testName, function () {
         const actual = extractCslEntry(bibliography, ALL_FIXTURES[fixtureId]);
         assertEqualWithDiff(
           actual,
           expected,
-          `CSL entry for ${fixtureId} does not match expected output`
+          `CSL entry for ${fixtureId} does not match expected output`,
         );
       });
     });
   });
-
 });

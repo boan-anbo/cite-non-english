@@ -123,9 +123,9 @@ export function createInterceptor<T extends (...args: any[]) => any>(
     targetPath,
     beforeCall,
     afterCall,
-    wrapperMarker = '_intercepted',
+    wrapperMarker = "_intercepted",
     additionalPaths = [],
-    logPrefix = '[Interceptor]',
+    logPrefix = "[Interceptor]",
   } = config;
 
   let originalFunction: T | null = null;
@@ -137,14 +137,14 @@ export function createInterceptor<T extends (...args: any[]) => any>(
    *   { obj: Zotero.Utilities.Item, prop: 'itemToCSLJSON' }
    */
   function resolvePath(path: string): { obj: any; prop: string } | null {
-    const parts = path.split('.');
+    const parts = path.split(".");
     const prop = parts.pop()!;
     let obj: any = globalThis;
 
     for (const part of parts) {
       obj = obj?.[part];
       if (!obj) {
-        ztoolkit.log(`${logPrefix} Cannot resolve path: ${path}`, 'warning');
+        ztoolkit.log(`${logPrefix} Cannot resolve path: ${path}`, "warning");
         return null;
       }
     }
@@ -172,7 +172,7 @@ export function createInterceptor<T extends (...args: any[]) => any>(
     if ((currentFunction as any)?.[wrapperMarker]) {
       ztoolkit.log(
         `${logPrefix} WARNING: ${targetPath} already wrapped, skipping`,
-        'warning',
+        "warning",
       );
       isInstalled = true; // Mark as installed to prevent further attempts
       return false;
@@ -182,13 +182,17 @@ export function createInterceptor<T extends (...args: any[]) => any>(
     originalFunction = currentFunction;
 
     // Create future-proof wrapper using rest parameters
-    const wrapper = function (this: any, firstParam: any, ...restParams: any[]) {
+    const wrapper = function (
+      this: any,
+      firstParam: any,
+      ...restParams: any[]
+    ) {
       // Execute before callback if provided
       if (beforeCall) {
         try {
           (beforeCall as any)(firstParam, ...restParams);
         } catch (e) {
-          ztoolkit.log(`${logPrefix} beforeCall error: ${e}`, 'error');
+          ztoolkit.log(`${logPrefix} beforeCall error: ${e}`, "error");
         }
       }
 
@@ -200,7 +204,7 @@ export function createInterceptor<T extends (...args: any[]) => any>(
         try {
           return (afterCall as any)(result, firstParam, ...restParams);
         } catch (e) {
-          ztoolkit.log(`${logPrefix} afterCall error: ${e}`, 'error');
+          ztoolkit.log(`${logPrefix} afterCall error: ${e}`, "error");
           return result; // Return unchanged on error
         }
       }

@@ -7,13 +7,10 @@ import type { CneMetadata } from "../../model/CneMetadata";
 import { SUPPORTED_FIELDS } from "../../constants";
 import { buildAllFieldGroups } from "../../ui/fieldBuilder";
 import { buildAllAuthorFieldGroups } from "../../ui/authorFieldBuilder";
-import {
-  createLivePreview,
-  createFieldCounter,
-} from "../../ui/components";
+import { createLivePreview, createFieldCounter } from "../../ui/components";
 import {
   createLanguageSelector,
-  createQuickLanguageButtons
+  createQuickLanguageButtons,
 } from "../../ui/languageSelector";
 import { getCneStyles } from "../styles";
 
@@ -28,21 +25,25 @@ import { getCneStyles } from "../styles";
 export function buildMainContainer(
   doc: Document,
   item: Zotero.Item,
-  metadata: CneMetadata
+  metadata: CneMetadata,
 ): Element | DocumentFragment {
   // Build all field groups
   const fieldGroups = buildAllFieldGroups(SUPPORTED_FIELDS);
 
   // Build author field groups
-  const authorFieldGroups = buildAllAuthorFieldGroups(item, metadata.data.authors);
+  const authorFieldGroups = buildAllAuthorFieldGroups(
+    item,
+    metadata.data.authors,
+  );
 
   // Create main container with unique class for easy identification
   const container = ztoolkit.UI.createElement(doc, "div", {
     namespace: "html",
-    classList: ["cne-main-container"],  // Unique class for finding this container later
+    classList: ["cne-main-container"], // Unique class for finding this container later
     styles: {
       padding: "4px 8px",
-      fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      fontFamily:
+        "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       fontSize: "13px",
     },
     children: [

@@ -9,7 +9,11 @@
  * - romanizedShort: Optional short form for subsequent citations
  * - english: English translation
  */
-export type FieldVariant = "original" | "romanized" | "romanizedShort" | "english";
+export type FieldVariant =
+  | "original"
+  | "romanized"
+  | "romanizedShort"
+  | "english";
 
 /**
  * Supported non-English field names

@@ -2,11 +2,7 @@
  * Constants for Non-English Citation Manager
  */
 
-import type {
-  FieldConfig,
-  FieldVariant,
-  VariantLabelConfig,
-} from "./types";
+import type { FieldConfig, FieldVariant, VariantLabelConfig } from "./types";
 
 /**
  * Namespace prefix for all Non-English fields in Extra
@@ -110,10 +106,7 @@ export const ORIGINAL_LANGUAGE_KEY = "original-language" as const;
  * Helper to create namespaced field key
  * @example getFieldKey('title', 'english') => 'cne-title-english'
  */
-export function getFieldKey(
-  fieldName: string,
-  variant?: FieldVariant,
-): string {
+export function getFieldKey(fieldName: string, variant?: FieldVariant): string {
   if (variant) {
     return `${NAMESPACE}-${fieldName}-${variant}`;
   }

@@ -77,7 +77,7 @@ export class CneUIFactory {
       getString("clear-metadata-confirm-title"),
       getString("clear-metadata-confirm-message", {
         args: { count: items.length.toString() },
-      })
+      }),
     );
 
     if (!confirmed) {
@@ -97,7 +97,7 @@ export class CneUIFactory {
         // Remove all lines starting with "cne-"
         const lines = extra.split("\n");
         const filteredLines = lines.filter(
-          (line) => !line.trim().toLowerCase().startsWith("cne-")
+          (line) => !line.trim().toLowerCase().startsWith("cne-"),
         );
 
         // Only update if something was removed
@@ -239,7 +239,9 @@ export class CneUIFactory {
                     const fieldValue = match[2];
                     // Add as top-level CSL variable
                     item[fieldName] = fieldValue;
-                    ztoolkit.log(`Extracted CNE field: ${fieldName} = ${fieldValue}`);
+                    ztoolkit.log(
+                      `Extracted CNE field: ${fieldName} = ${fieldValue}`,
+                    );
                   } else {
                     // Keep non-CNE lines in note
                     remainingLines.push(line);

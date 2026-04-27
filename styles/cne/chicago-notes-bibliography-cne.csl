@@ -1543,36 +1543,6 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
     </choose>
   </macro>
   <!-- CNE Helper: Select short container-title variable -->
-  <macro name="cne-container-title-select-short">
-    <choose>
-      <if variable="cne-container-title-romanized">
-        <!-- CNE mode: try short romanized, fallback to full -->
-        <choose>
-          <if variable="cne-container-title-romanized-short">
-            <text variable="cne-container-title-romanized-short"/>
-          </if>
-          <else>
-            <text variable="cne-container-title-romanized"/>
-          </else>
-        </choose>
-      </if>
-      <else-if variable="cne-journal-romanized">
-        <!-- CNE mode: try short romanized, fallback to full -->
-        <choose>
-          <if variable="cne-journal-romanized-short">
-            <text variable="cne-journal-romanized-short"/>
-          </if>
-          <else>
-            <text variable="cne-journal-romanized"/>
-          </else>
-        </choose>
-      </else-if>
-      <else>
-        <!-- Standard: use container-title with auto-shortening -->
-        <text form="short" variable="container-title"/>
-      </else>
-    </choose>
-  </macro>
   <!-- CNE Helper: Add original container-title supplements (original + translation) -->
   <macro name="cne-container-title-supplements">
     <choose>
@@ -1593,8 +1563,24 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
       <if variable="cne-publisher-romanized">
         <text variable="cne-publisher-romanized"/>
       </if>
+      <else-if variable="cne-publisher-original">
+        <text variable="cne-publisher-original"/>
+      </else-if>
       <else>
         <text variable="publisher"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-series-select">
+    <choose>
+      <if variable="cne-series-romanized">
+        <text variable="cne-series-romanized"/>
+      </if>
+      <else-if variable="cne-series-original">
+        <text variable="cne-series-original"/>
+      </else-if>
+      <else>
+        <text variable="collection-title"/>
       </else>
     </choose>
   </macro>
@@ -4323,7 +4309,24 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="source-series-bib">
     <group delimiter=", ">
       <choose>
-        <if variable="collection-editor collection-title">
+        <if match="any" variable="cne-series-romanized cne-series-original">
+          <choose>
+            <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
+              <text macro="source-series-title"/>
+            </if>
+            <else>
+              <text text-case="title" macro="cne-series-select"/>
+              <names variable="collection-editor">
+                <label form="verb" suffix=" "/>
+                <name and="text"/>
+              </names>
+              <text macro="label-collection-number"/>
+              <text macro="label-issue"/>
+            </else>
+          </choose>
+        </if>
+        <else-if match="any" variable="cne-title-romanized cne-title-original cne-title-english cne-container-title-romanized cne-container-title-original cne-container-title-english cne-journal-romanized cne-journal-original cne-journal-english cne-publisher-romanized cne-publisher-original cne-publisher-english"/>
+        <else-if variable="collection-editor collection-title">
           <choose>
             <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
               <text macro="source-series-title"/>
@@ -4338,7 +4341,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
               <text macro="label-issue"/>
             </else>
           </choose>
-        </if>
+        </else-if>
         <else>
           <text macro="source-series-title"/>
         </else>
@@ -4348,7 +4351,24 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="source-series-note">
     <group delimiter=", ">
       <choose>
-        <if variable="collection-editor collection-title">
+        <if match="any" variable="cne-series-romanized cne-series-original">
+          <choose>
+            <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
+              <text macro="source-series-title"/>
+            </if>
+            <else>
+              <text text-case="title" macro="cne-series-select"/>
+              <names variable="collection-editor">
+                <label form="verb-short" suffix=" "/>
+                <name and="text"/>
+              </names>
+              <text macro="label-collection-number"/>
+              <text macro="label-issue"/>
+            </else>
+          </choose>
+        </if>
+        <else-if match="any" variable="cne-title-romanized cne-title-original cne-title-english cne-container-title-romanized cne-container-title-original cne-container-title-english cne-journal-romanized cne-journal-original cne-journal-english cne-publisher-romanized cne-publisher-original cne-publisher-english"/>
+        <else-if variable="collection-editor collection-title">
           <choose>
             <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
               <text macro="source-series-title"/>
@@ -4363,7 +4383,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
               <text macro="label-issue"/>
             </else>
           </choose>
-        </if>
+        </else-if>
         <else>
           <text macro="source-series-title"/>
         </else>
@@ -4373,19 +4393,39 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="source-series-title">
     <group delimiter=", ">
       <choose>
-        <if variable="issue">
-          <text text-case="title" variable="collection-title"/>
+        <if match="any" variable="cne-series-romanized cne-series-original">
+          <choose>
+            <if variable="issue">
+              <text text-case="title" macro="cne-series-select"/>
+              <text macro="label-collection-number"/>
+              <text macro="label-issue"/>
+            </if>
+            <else-if is-numeric="collection-number">
+              <group delimiter=" ">
+                <text text-case="title" macro="cne-series-select"/>
+                <text variable="collection-number"/>
+              </group>
+            </else-if>
+            <else>
+              <text text-case="title" macro="cne-series-select"/>
+              <text variable="collection-number"/>
+            </else>
+          </choose>
+        </if>
+        <else-if match="any" variable="cne-title-romanized cne-title-original cne-title-english cne-container-title-romanized cne-container-title-original cne-container-title-english cne-journal-romanized cne-journal-original cne-journal-english cne-publisher-romanized cne-publisher-original cne-publisher-english"/>
+        <else-if variable="issue">
+          <text text-case="title" macro="cne-series-select"/>
           <text macro="label-collection-number"/>
           <text macro="label-issue"/>
-        </if>
+        </else-if>
         <else-if is-numeric="collection-number" variable="collection-title">
           <group delimiter=" ">
-            <text text-case="title" variable="collection-title"/>
+            <text text-case="title" macro="cne-series-select"/>
             <text variable="collection-number"/>
           </group>
         </else-if>
         <else-if variable="collection-title">
-          <text text-case="title" variable="collection-title"/>
+          <text text-case="title" macro="cne-series-select"/>
           <text variable="collection-number"/>
         </else-if>
       </choose>
@@ -5061,10 +5101,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="source-publication-publisher-bib">
     <group delimiter=" ">
       <choose>
-        <if type="thesis" variable="publisher">
+        <if match="any" type="thesis" variable="cne-publisher-romanized cne-publisher-original publisher">
           <text text-case="capitalize-first" macro="cne-publisher-select"/>
         </if>
-        <else-if variable="publisher">
+        <else-if match="any" variable="cne-publisher-romanized cne-publisher-original publisher">
           <group delimiter=": ">
             <!-- <text text-case="capitalize-first" variable="publisher-place"/> -->
             <text text-case="capitalize-first" macro="cne-publisher-select"/>
@@ -5087,10 +5127,10 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <macro name="source-publication-publisher-note">
     <group delimiter=" ">
       <choose>
-        <if type="thesis" variable="publisher">
+        <if match="any" type="thesis" variable="cne-publisher-romanized cne-publisher-original publisher">
           <text macro="cne-publisher-select"/>
         </if>
-        <else-if variable="publisher">
+        <else-if match="any" variable="cne-publisher-romanized cne-publisher-original publisher">
           <group delimiter=": ">
             <!-- <text variable="publisher-place"/> -->
             <text macro="cne-publisher-select"/>

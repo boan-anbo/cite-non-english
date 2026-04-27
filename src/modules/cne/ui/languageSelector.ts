@@ -31,7 +31,8 @@ export function createWarningIcon(visible: boolean = false): any {
       display: visible ? "inline" : "none",
     },
     attributes: {
-      title: "Unknown language code. Please select a known language from the dropdown.",
+      title:
+        "Unknown language code. Please select a known language from the dropdown.",
     },
     properties: {
       innerHTML: "⚠",
@@ -224,7 +225,9 @@ export function updateWarningIcon(
   if (warningIcon) {
     const isKnown = !languageCode || isKnownLanguage(languageCode);
     const showWarning = !isKnown && hasData;
-    (warningIcon as HTMLElement).style.display = showWarning ? "inline" : "none";
+    (warningIcon as HTMLElement).style.display = showWarning
+      ? "inline"
+      : "none";
   }
 }
 
@@ -319,7 +322,9 @@ export function createQuickLanguageButtons(
   languageCodes.forEach((code) => {
     // Validate language code
     if (!isKnownLanguage(code)) {
-      ztoolkit.log(`[CNE] Warning: Unknown language code in quick languages: ${code}`);
+      ztoolkit.log(
+        `[CNE] Warning: Unknown language code in quick languages: ${code}`,
+      );
       return; // Skip invalid codes
     }
 
@@ -361,7 +366,10 @@ export function createQuickLanguageButtons(
  * Determine if two language codes are equivalent or share a base language
  * e.g., zh vs zh-CN should be treated as a match
  */
-export function languageCodesMatch(codeA?: string | null, codeB?: string | null): boolean {
+export function languageCodesMatch(
+  codeA?: string | null,
+  codeB?: string | null,
+): boolean {
   if (!codeA || !codeB) {
     return false;
   }

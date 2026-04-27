@@ -12,7 +12,8 @@ type CuratedStyle = {
 const CURATED_STYLES: CuratedStyle[] = [
   {
     id: "http://www.zotero.org/styles/chicago-notes-bibliography-cne",
-    title: "Chicago Manual of Style 18th edition (notes and bibliography) - CNE",
+    title:
+      "Chicago Manual of Style 18th edition (notes and bibliography) - CNE",
     filename: "chicago-notes-bibliography-cne.csl",
   },
   {
@@ -57,10 +58,13 @@ export async function installCuratedStylesSilently(): Promise<void> {
 
   for (const style of CURATED_STYLES) {
     const targetPath = PathUtils.join(stylesDir, style.filename);
-    const bundledURL = Services.io.newURI(rootURI).resolve(`styles/cne/${style.filename}`);
+    const bundledURL = Services.io
+      .newURI(rootURI)
+      .resolve(`styles/cne/${style.filename}`);
 
     try {
-      const bundledContents = await Zotero.File.getContentsFromURLAsync(bundledURL);
+      const bundledContents =
+        await Zotero.File.getContentsFromURLAsync(bundledURL);
 
       let needsWrite = true;
       if (await IOUtils.exists(targetPath)) {
@@ -68,7 +72,10 @@ export async function installCuratedStylesSilently(): Promise<void> {
           const existingContents = await IOUtils.readUTF8(targetPath);
           needsWrite = existingContents !== bundledContents;
         } catch (readError) {
-          const err = readError instanceof Error ? readError : new Error(String(readError));
+          const err =
+            readError instanceof Error
+              ? readError
+              : new Error(String(readError));
           Zotero.logError(err);
         }
       }

@@ -26,7 +26,7 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
 
   // Use custom variants if specified, otherwise use all VARIANT_LABELS
   const variantsToUse = variants
-    ? VARIANT_LABELS.filter(v => variants.includes(v.variant))
+    ? VARIANT_LABELS.filter((v) => variants.includes(v.variant))
     : VARIANT_LABELS;
 
   // Create grid rows for each variant (label + input with clear button)
@@ -36,22 +36,14 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
     const bindKey = `${name}.${variant}`; // e.g., "title.original"
 
     return [
-      createLabel(
-        variantConfig.label,
-        elementId,
-        variantConfig.l10nKey,
-      ),
+      createLabel(variantConfig.label, elementId, variantConfig.l10nKey),
       // Wrapper with input and clear button
       {
         tag: "div",
         namespace: "html",
         classList: ["cne-input-wrapper"],
         children: [
-          createTextInput(
-            elementId,
-            bindKey,
-            variantConfig.placeholder,
-          ),
+          createTextInput(elementId, bindKey, variantConfig.placeholder),
           // Clear button
           {
             tag: "button",
@@ -81,6 +73,8 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
  * @param supportedFields - Array of field configurations
  * @returns Array of field group elements
  */
-export function buildAllFieldGroups(supportedFields: readonly FieldConfig[]): any[] {
+export function buildAllFieldGroups(
+  supportedFields: readonly FieldConfig[],
+): any[] {
   return supportedFields.map((fieldConfig) => buildFieldGroup(fieldConfig));
 }

@@ -5,7 +5,7 @@
  * These test the baseline behavior without CNE enhancements.
  */
 
-import { FIXTURE_IDS } from '../../../fixtures/constants';
+import { FIXTURE_IDS } from "../../../fixtures/constants";
 
 export const englishExpectations: Record<string, string> = {
   /**
@@ -15,6 +15,5 @@ export const englishExpectations: Record<string, string> = {
    * Authors: Direct order in bibliography
    * Editors: Direct order, "edited by First Last"
    */
-  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]:
-    `Petrides, Georgios, Chitra Malur, and Max Fink. “Convulsive Therapy.” In <i>Catatonia: From Psychopathology to Neurobiology</i>, edited by Stanley N. Caroff, Stephan C. Mann, and Andrew Francis. American Psychiatric Association Publishing, 2004.`,
+  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]: `Petrides, Georgios, Chitra Malur, and Max Fink. “Convulsive Therapy.” In <i>Catatonia: From Psychopathology to Neurobiology</i>, edited by Stanley N. Caroff, Stephan C. Mann, and Andrew Francis. American Psychiatric Association Publishing, 2004.`,
 };
