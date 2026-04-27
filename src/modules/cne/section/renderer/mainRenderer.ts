@@ -10,6 +10,7 @@ import {
   updateCreatorSignature,
 } from "../binding";
 import { setupClearButtons } from "../handlers";
+import { setupResponsivePlaceholders } from "../handlers/responsivePlaceholders";
 import { buildMainContainer } from "./containerBuilder";
 import { renderError } from "./errorRenderer";
 
@@ -48,6 +49,7 @@ export function renderCneSection(renderProps: {
     setupDataBinding(body, metadata);
     setupClearButtons(body, metadata);
     setupLanguageBinding(body, item, metadata);
+    setupResponsivePlaceholders(body);
 
     // Initialize creator signature for change detection
     updateCreatorSignature(body, item);

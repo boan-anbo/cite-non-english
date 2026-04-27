@@ -12,20 +12,37 @@ export function getCneStyles(): string {
     .cne-field-grid input[type="text"]:hover {
       border-color: #999 !important;
     }
+    .cne-field-grid textarea.cne-text-input:hover {
+      border-color: #999 !important;
+    }
     .cne-field-grid input[type="text"]:focus {
       border-color: #0066cc !important;
       outline: none;
+    }
+    .cne-field-grid textarea.cne-text-input:focus {
+      border-color: #0066cc !important;
+      outline: none;
+    }
+    .cne-field-grid textarea.cne-text-input.cne-text-input--placeholder-nowrap {
+      white-space: pre;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+    .cne-field-grid.cne-field-grid--stacked {
+      grid-template-columns: 60px minmax(0, 1fr) !important;
     }
     .cne-input-wrapper {
       display: flex;
       align-items: center;
       gap: 4px;
+      min-width: 0;
     }
     .cne-clear-button {
       background: transparent;
       border: none;
       color: #999;
       cursor: pointer;
+      flex: 0 0 auto;
       padding: 4px;
       font-size: 16px;
       line-height: 1;

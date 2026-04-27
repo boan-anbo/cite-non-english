@@ -49,7 +49,84 @@
            </if>
            <else-if type="standard">
              <!-- `standard` listed in bibliography under organization, but note omits this (CMOS18 14.159) -->
-@@ -926,7 +933,10 @@
+@@ -733,6 +740,76 @@
+       </else>
+     </choose>
+   </macro>
++  <macro name="cne-sort-primary">
++    <choose>
++      <if variable="composer">
++        <choose>
++          <if variable="cne-sort-composer">
++            <text variable="cne-sort-composer"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </if>
++      <else-if variable="author">
++        <choose>
++          <if variable="cne-sort-author">
++            <text variable="cne-sort-author"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="director">
++        <choose>
++          <if variable="cne-sort-director">
++            <text variable="cne-sort-director"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="editor">
++        <choose>
++          <if variable="cne-sort-editor">
++            <text variable="cne-sort-editor"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="translator">
++        <choose>
++          <if variable="cne-sort-translator">
++            <text variable="cne-sort-translator"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </else-if>
++      <else>
++        <text macro="author-sort"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-sort-title-key">
++    <choose>
++      <if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </if>
++      <else>
++        <text macro="title-and-descriptions-bib"/>
++      </else>
++    </choose>
++  </macro>
+   <!-- Author elements -->
+   <macro name="author-short-and-recipient">
+     <group delimiter=" ">
+@@ -926,7 +1003,10 @@
                  <text form="short" term="sub-verbo"/>
                </if>
              </choose>
@@ -61,7 +138,7 @@
            </else-if>
          </choose>
        </group>
-@@ -1302,7 +1312,10 @@
+@@ -1302,7 +1382,10 @@
            <if match="any" variable="collection-editor compiler editor editorial-director">
              <!-- monographic usage -->
              <!-- notes always open with the primary title -->
@@ -73,7 +150,7 @@
            </if>
            <else>
              <!-- serial usage -->
-@@ -1312,7 +1325,10 @@
+@@ -1312,7 +1395,10 @@
        </else-if>
        <else>
          <!-- notes always open with the primary title -->
@@ -85,7 +162,7 @@
        </else>
      </choose>
    </macro>
-@@ -1372,7 +1388,10 @@
+@@ -1372,7 +1458,10 @@
    </macro>
    <macro name="title-and-part-title-bib">
      <group delimiter=". ">
@@ -97,7 +174,7 @@
        <group delimiter=", ">
          <text macro="label-part-number-capitalized"/>
          <text macro="title-part"/>
-@@ -1381,7 +1400,10 @@
+@@ -1381,7 +1470,10 @@
    </macro>
    <macro name="title-and-part-title-note">
      <group delimiter=", ">
@@ -109,7 +186,7 @@
        <group delimiter=", ">
          <text macro="label-part-number"/>
          <text macro="title-part"/>
-@@ -1393,7 +1415,10 @@
+@@ -1393,7 +1485,10 @@
      <!-- There is no `title-monographic-note` as notes always open with the primary title. -->
      <choose>
        <if variable="container-title">
@@ -121,7 +198,7 @@
        </if>
        <!-- For monographic items without `container-title`, bibliography entries list `part-title` or `volume-title` first if available -->
        <else-if variable="part-title">
-@@ -1403,7 +1428,10 @@
+@@ -1403,7 +1498,10 @@
          <text font-style="italic" text-case="title" variable="volume-title"/>
        </else-if>
        <else>
@@ -133,7 +210,7 @@
        </else>
      </choose>
    </macro>
-@@ -1457,53 +1485,181 @@
+@@ -1457,53 +1555,181 @@
        </else>
      </choose>
    </macro>
@@ -326,7 +403,7 @@
        </else>
      </choose>
    </macro>
-@@ -1511,49 +1667,49 @@
+@@ -1511,49 +1737,49 @@
      <choose>
        <if type="patent">
          <!-- No italics or quotes, sentence case -->
@@ -387,7 +464,7 @@
        </else>
      </choose>
    </macro>
-@@ -2985,7 +3141,10 @@
+@@ -2985,7 +3211,10 @@
              <text macro="label-volume"/>
              <text value="of"/>
              <group delimiter=", ">
@@ -399,7 +476,7 @@
                <names variable="collection-editor">
                  <label form="verb" suffix=" "/>
                  <name and="text"/>
-@@ -3013,7 +3172,10 @@
+@@ -3013,7 +3242,10 @@
                </else-if>
              </choose>
              <group delimiter=", ">
@@ -411,7 +488,7 @@
                <names variable="collection-editor">
                  <label form="verb" suffix=" "/>
                  <name and="text"/>
-@@ -3225,7 +3387,10 @@
+@@ -3225,7 +3457,10 @@
    <!-- Serial source title -->
    <macro name="source-serial-name">
      <group delimiter=" ">
@@ -423,7 +500,7 @@
        <choose>
          <!-- TODO: remove conditional when Zotero stops double-mapping `event-place` and `publisher-place` -->
          <if match="none" variable="event-date event-title">
-@@ -3447,7 +3612,7 @@
+@@ -3447,7 +3682,7 @@
          <else>
            <text variable="collection-title"/>
            <!-- publisher possible with `interview` (CMOS18 14.110) -->
@@ -432,7 +509,7 @@
            <text macro="source-serial-volume-status-bib"/>
          </else>
        </choose>
-@@ -3546,7 +3711,7 @@
+@@ -3546,7 +3781,7 @@
          <else>
            <text variable="collection-title"/>
            <!-- publisher possible with `interview` (CMOS18 14.110) -->
@@ -441,7 +518,7 @@
            <text macro="source-serial-volume-status-note"/>
          </else>
        </choose>
-@@ -3739,12 +3904,18 @@
+@@ -3739,12 +3974,18 @@
          <text font-style="italic" text-case="title" variable="volume-title"/>
        </else-if>
        <else>
@@ -462,7 +539,7 @@
    </macro>
    <!-- Monographic source description -->
    <macro name="source-monographic-description-bib">
-@@ -4167,7 +4338,24 @@
+@@ -4167,7 +4408,24 @@
    <macro name="source-series-bib">
      <group delimiter=", ">
        <choose>
@@ -488,7 +565,7 @@
            <choose>
              <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
                <text macro="source-series-title"/>
-@@ -4182,7 +4370,7 @@
+@@ -4182,7 +4440,7 @@
                <text macro="label-issue"/>
              </else>
            </choose>
@@ -497,7 +574,7 @@
          <else>
            <text macro="source-series-title"/>
          </else>
-@@ -4192,7 +4380,24 @@
+@@ -4192,7 +4450,24 @@
    <macro name="source-series-note">
      <group delimiter=", ">
        <choose>
@@ -523,7 +600,7 @@
            <choose>
              <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
                <text macro="source-series-title"/>
-@@ -4207,7 +4412,7 @@
+@@ -4207,7 +4482,7 @@
                <text macro="label-issue"/>
              </else>
            </choose>
@@ -532,7 +609,7 @@
          <else>
            <text macro="source-series-title"/>
          </else>
-@@ -4217,19 +4422,39 @@
+@@ -4217,19 +4492,39 @@
    <macro name="source-series-title">
      <group delimiter=", ">
        <choose>
@@ -577,7 +654,7 @@
            <text variable="collection-number"/>
          </else-if>
        </choose>
-@@ -4905,13 +5130,13 @@
+@@ -4905,13 +5200,13 @@
    <macro name="source-publication-publisher-bib">
      <group delimiter=" ">
        <choose>
@@ -596,7 +673,7 @@
            </group>
          </else-if>
          <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
-@@ -4931,13 +5156,13 @@
+@@ -4931,13 +5226,13 @@
    <macro name="source-publication-publisher-note">
      <group delimiter=" ">
        <choose>
@@ -615,3 +692,14 @@
            </group>
          </else-if>
          <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
+@@ -5887,8 +6182,8 @@
+   </macro>
+   <bibliography et-al-min="7" et-al-use-first="3" hanging-indent="true">
+     <sort>
+-      <key macro="author-sort"/>
+-      <key macro="title-and-descriptions-bib"/>
++      <key macro="cne-sort-primary"/>
++      <key macro="cne-sort-title-key"/>
+       <key macro="source-bib"/>
+       <key variable="volume"/>
+       <key variable="part-number"/>

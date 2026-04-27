@@ -29,12 +29,89 @@
 -    <summary>This style adheres to the MLA 8th edition handbook. Follows the structure of references as outlined in the MLA Manual closely</summary>
 -    <updated>2025-06-30T16:44:30+00:00</updated>
 +    <summary>MLA 8th edition with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English sources.
-+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
++CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
 +    <updated>2025-10-21T00:00:00+00:00</updated>
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
-@@ -71,25 +78,34 @@
+@@ -51,6 +58,76 @@
+       </substitute>
+     </names>
+   </macro>
++  <macro name="cne-sort-primary">
++    <choose>
++      <if variable="composer">
++        <choose>
++          <if variable="cne-sort-composer">
++            <text variable="cne-sort-composer"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </if>
++      <else-if variable="author">
++        <choose>
++          <if variable="cne-sort-author">
++            <text variable="cne-sort-author"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="director">
++        <choose>
++          <if variable="cne-sort-director">
++            <text variable="cne-sort-director"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="editor">
++        <choose>
++          <if variable="cne-sort-editor">
++            <text variable="cne-sort-editor"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="translator">
++        <choose>
++          <if variable="cne-sort-translator">
++            <text variable="cne-sort-translator"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </else-if>
++      <else>
++        <text macro="author"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-sort-title-key">
++    <choose>
++      <if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </if>
++      <else>
++        <text variable="title"/>
++      </else>
++    </choose>
++  </macro>
+   <macro name="author-short">
+     <group delimiter=", ">
+       <names variable="author">
+@@ -71,25 +148,34 @@
    <macro name="title">
      <choose>
        <if variable="container-title" match="any">
@@ -78,7 +155,7 @@
    </macro>
    <macro name="other-contributors">
      <choose>
-@@ -198,7 +214,7 @@
+@@ -198,7 +284,7 @@
    <macro name="publisher">
      <choose>
        <if type="article-magazine article-newspaper article-journal" match="none">
@@ -87,7 +164,18 @@
        </if>
      </choose>
    </macro>
-@@ -328,4 +344,105 @@
+@@ -300,8 +386,8 @@
+   </citation>
+   <bibliography hanging-indent="true" et-al-min="3" et-al-use-first="1" line-spacing="2" entry-spacing="0" subsequent-author-substitute="---">
+     <sort>
+-      <key macro="author"/>
+-      <key variable="title"/>
++      <key macro="cne-sort-primary"/>
++      <key macro="cne-sort-title-key"/>
+     </sort>
+     <layout suffix=".">
+       <group delimiter=". ">
+@@ -328,4 +414,105 @@
        </group>
      </layout>
    </bibliography>

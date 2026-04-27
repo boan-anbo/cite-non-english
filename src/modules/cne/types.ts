@@ -107,4 +107,5 @@ export interface VariantLabelConfig {
   label: string;
   l10nKey: string;
   placeholder?: string;
+  placeholderShort?: string;
 }

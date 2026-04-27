@@ -59,12 +59,14 @@ export function buildAuthorFieldGroup(
       `author-${index}-last-romanized`,
       `author-${index}.lastRomanized`,
       "e.g., Hao, Yamada",
+      "Hao/Yamada",
     ),
     createMultiLineLabel("First", "Rom.", `author-${index}-first-romanized`),
     createInputWithClearButton(
       `author-${index}-first-romanized`,
       `author-${index}.firstRomanized`,
       "e.g., Chunwen, Tarō",
+      "Chunwen/Tarō",
     ),
 
     // Row 2: Original names (Last | First) side by side
@@ -73,12 +75,14 @@ export function buildAuthorFieldGroup(
       `author-${index}-last-original`,
       `author-${index}.lastOriginal`,
       "e.g., 郝, 山田",
+      "郝/山田",
     ),
     createMultiLineLabel("First", "Orig.", `author-${index}-first-original`),
     createInputWithClearButton(
       `author-${index}-first-original`,
       `author-${index}.firstOriginal`,
       "e.g., 春文, 太郎",
+      "春文/太郎",
     ),
 
     // Options section
@@ -153,13 +157,14 @@ function createInputWithClearButton(
   inputId: string,
   bindKey: string,
   placeholder: string,
+  placeholderShort: string,
 ): any {
   return {
     tag: "div",
     namespace: "html",
     classList: ["cne-input-wrapper"],
     children: [
-      createTextInput(inputId, bindKey, placeholder),
+      createTextInput(inputId, bindKey, placeholder, placeholderShort),
       createClearButton(inputId),
     ],
   };

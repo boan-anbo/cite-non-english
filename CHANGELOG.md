@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.1.4] - 2026-04-27
+
+### Fixed
+
+- Bibliographies in bundled CNE styles now sort mixed English and CJK entries
+  together by CNE romanized creator/title keys instead of grouping non-English
+  entries after English entries.
+- CNE sorting now falls back to each base style's native primary-creator sort
+  when the primary creator has no CNE romanization, so a romanized secondary
+  editor/translator cannot override a native English author.
+- No-creator CNE items now sort by `cne-title-romanized` when available.
+- Narrow CNE item-pane fields now use responsive placeholder examples and stack
+  creator name inputs before placeholders wrap awkwardly.
+
+### Tested
+
+- Verified on Zotero 9.0.1.
+- `npm run lint:check`
+- `npm run build`
+- `ZOTERO_PLUGIN_ZOTERO_BIN_PATH=/Applications/Zotero.app/Contents/MacOS/zotero npm test`
+  passes with 109 tests.
+
 ## [0.1.3] - 2026-04-27
 
 ### Fixed
