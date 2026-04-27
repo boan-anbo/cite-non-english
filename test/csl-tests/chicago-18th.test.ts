@@ -38,7 +38,7 @@ import { chineseExpectations } from './expectations/chicago-18th/en-US/chinese';
 import { japaneseExpectations } from './expectations/chicago-18th/en-US/japanese';
 import { koreanExpectations } from './expectations/chicago-18th/en-US/korean';
 import { englishExpectations } from './expectations/chicago-18th/en-US/english';
-import { generateBibliography, extractCslEntry } from './test-helpers';
+import { generateBibliography, generateCitations, extractCslEntry } from './test-helpers';
 
 // Configure Chai to show full string diffs (not truncated)
 chai.config.truncateThreshold = 0;
@@ -144,6 +144,7 @@ const STYLE_LOCALE = 'en-US';
 
 describe('Chicago 18th Edition - CNE (en-US)', function() {
   let bibliography: string;
+  let citations: string;
 
   // Initialize styles before running tests
   before(async function() {
@@ -155,6 +156,11 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
 
     // Render bibliography ONCE for all items
     bibliography = await generateBibliography(
+      allItems,
+      STYLE_ID,
+      STYLE_LOCALE
+    );
+    citations = await generateCitations(
       allItems,
       STYLE_ID,
       STYLE_LOCALE
@@ -182,6 +188,29 @@ describe('Chicago 18th Edition - CNE (en-US)', function() {
           `CSL entry for ${fixtureId} does not match expected output`
         );
       });
+    });
+
+    it('should use CNE publisher fields and suppress native series in notes', function() {
+      assert.include(
+        citations,
+        'Chengwen chubanshe',
+        'Book notes should render cne-publisher-romanized'
+      );
+      assert.notInclude(
+        citations,
+        '中國方志叢書',
+        'Book notes should not render native Zotero series when CNE publisher is present'
+      );
+      assert.notInclude(
+        citations,
+        'Zhongguo fangzhi congshu',
+        'Book notes should not render romanized native series when CNE publisher is present'
+      );
+      assert.include(
+        citations,
+        'Shanghai renmin meishu chubanshe',
+        'Book-section notes should render cne-publisher-romanized'
+      );
     });
   });
 

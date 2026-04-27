@@ -170,6 +170,58 @@ cne-journal-original: 中国社会科学报
 cne-journal-romanized: Zhongguo shehui kexuebao`
   },
 
+  [FIXTURE_IDS.ZHCN_SUN_1968_XUNXIAN]: {
+    itemType: 'book',
+    title: '河南省浚縣彝器',
+    series: '中國方志叢書',
+    seriesNumber: '112',
+    publisher: '成文出版社',
+    date: '1968',
+    language: 'zh-TW',
+    creators: [{
+      firstName: '海波',
+      lastName: '孫',
+      creatorType: 'editor'
+    }],
+    extra: `cne-creator-0-last-original: 孫
+cne-creator-0-first-original: 海波
+cne-creator-0-last-romanized: Sun
+cne-creator-0-first-romanized: Haibo
+cne-title-original: 河南省浚縣彝器
+cne-title-romanized: Henan sheng Xunxian yi qi
+cne-title-english: Bronzes of Xunxian County, Henan
+cne-publisher-original: 成文出版社
+cne-publisher-romanized: Chengwen chubanshe`
+  },
+
+  [FIXTURE_IDS.ZHCN_LI_2002_JINHOU]: {
+    itemType: 'bookSection',
+    title: '晋侯墓地发掘与研究',
+    bookTitle: '晋国奇珍: 山西晋侯墓群出土文物精品',
+    publisher: '上海人民美术出版社',
+    place: '上海',
+    date: '2002',
+    pages: '17-27',
+    language: 'zh-CN',
+    creators: [{
+      firstName: '伯谦',
+      lastName: '李',
+      creatorType: 'author'
+    }],
+    extra: `cne-creator-0-last-original: 李
+cne-creator-0-first-original: 伯谦
+cne-creator-0-last-romanized: Li
+cne-creator-0-first-romanized: Boqian
+cne-title-original: 晋侯墓地发掘与研究
+cne-title-romanized: Jin hou mudi fajue yu yanjiu
+cne-title-english: Excavations and Research on the Cemetery of Marquis of Jin
+cne-container-title-original: 晋国奇珍: 山西晋侯墓群出土文物精品
+cne-container-title-romanized: Jin guo qi zhen: Shanxi Jin hou muqun chutu wenwu jingpin
+cne-container-title-english: Treasures of the Jin State: Gems from Excavations of Cemetery of Marquis of Jin in Shanxi Province
+cne-publisher-original: 上海人民美术出版社
+cne-publisher-romanized: Shanghai renmin meishu chubanshe`
+  },
+
   // ============================================================================
   // Japanese Fixtures
   // ============================================================================

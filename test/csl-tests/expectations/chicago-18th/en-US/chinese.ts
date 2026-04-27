@@ -17,5 +17,11 @@ export const chineseExpectations: Record<string, string> = {
     `Du Weisheng 杜伟生. “Dunhuang yishu yongzhi gaikuang ji qianxi” 敦煌遗书用纸概况及浅析 [An analysis and description of the use of paper in Dunhuang manuscripts]. In <i>Rongshe yu chuangxin: guoji Dunhuang xiangmu diliuci huiyi lunwenji</i> 融攝与创新: 国际敦煌项目第六次会议论文集 [Tradition and innovation: Proceedings of the 6th International Dunhuang Project conservation conference], edited by Lin Shitian 林世田 and Alastair Morrison. Beijing tushuguan chubanshe, 2007.`,
 
   [FIXTURE_IDS.ZHCN_SHA_2014_SHIKU]:
-    `Sha Wutian 沙武田. “Shiku kaogu kaipi Dunghuangxue yanjiu xinlingyu” 石窟考古开辟敦煌学研究新领域 [Cave archeology to open a new field for Dunhuang studies]. <i>Zhongguo shehui kexuebao</i> 中国社会科学报, January 8, 2014.`
+    `Sha Wutian 沙武田. “Shiku kaogu kaipi Dunghuangxue yanjiu xinlingyu” 石窟考古开辟敦煌学研究新领域 [Cave archeology to open a new field for Dunhuang studies]. <i>Zhongguo shehui kexuebao</i> 中国社会科学报, January 8, 2014.`,
+
+  [FIXTURE_IDS.ZHCN_SUN_1968_XUNXIAN]:
+    `Sun Haibo 孫海波, ed. <i>Henan sheng Xunxian yi qi</i> 河南省浚縣彝器 [Bronzes of Xunxian County, Henan]. Chengwen chubanshe, 1968.`,
+
+  [FIXTURE_IDS.ZHCN_LI_2002_JINHOU]:
+    `Li Boqian 李伯谦. “Jin hou mudi fajue yu yanjiu” 晋侯墓地发掘与研究 [Excavations and Research on the Cemetery of Marquis of Jin]. In <i>Jin guo qi zhen: Shanxi Jin hou muqun chutu wenwu jingpin</i> 晋国奇珍: 山西晋侯墓群出土文物精品 [Treasures of the Jin State: Gems from Excavations of Cemetery of Marquis of Jin in Shanxi Province]. Shanghai renmin meishu chubanshe, 2002.`
 };

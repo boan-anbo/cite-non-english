@@ -78,28 +78,22 @@ class CSLBuilder:
         return template
 
     def _get_diff_files(self) -> list[Path]:
-        # Collect diff files that match the expected naming convention.
-        filname_diffs = set(self.diffs_dir.glob(f"{self.style_family}*.diff"))
-        reference_diffs = []
-        # Also examine all diff files for an internal reference to the template.
-        for diff_file in self.diffs_dir.glob("*.diff"):
-            if diff_file in filname_diffs:
-                continue
+        # Diff headers are generated from the actual template path and are the
+        # only reliable family ownership signal. CSL metadata may include other
+        # template links for inheritance/documentation and can be overinclusive.
+        template_header = f"--- {self.templates_dir}/{self.style_family}-template.csl"
+        all_diffs = []
+        for diff_file in sorted(self.diffs_dir.glob("*.diff")):
             try:
                 with diff_file.open("r", encoding="utf-8") as f:
-                    content = f.read()
-                # Check for a template reference line, for example rel="template" that contains the expected style family.
-                if (
-                    'rel="template"' in content
-                    and f"/{self.style_family}" in content
-                ):
-                    reference_diffs.append(diff_file)
+                    first_line = f.readline().rstrip("\n")
+                if first_line == template_header:
+                    all_diffs.append(diff_file)
             except Exception as e:
                 logging.error(
                     f"Error reading diff file {diff_file.name}: {e}",
                     exc_info=True,
                 )
-        all_diffs = sorted(list(filname_diffs) + reference_diffs)
         if not all_diffs:
             raise FileNotFoundError(
                 f"No diff files found for style family '{self.style_family}' in {self.diffs_dir}"
@@ -240,29 +234,30 @@ class CSLBuilder:
             )
             return
 
-        # Collect development files that match the expected naming convention.
-        expected_dev_files = set(
-            self.development_dir.glob(f"{self.style_family}*.csl")
-        )
-        additional_dev_files = []
-        # Examine .csl files for internal references to the template.
+        template_header = f"--- {self.templates_dir}/{self.style_family}-template.csl"
+        dev_files = []
         for dev_file in self.development_dir.glob("*.csl"):
-            if dev_file in expected_dev_files:
-                continue
+            diff_file = self.diffs_dir / dev_file.with_suffix(".diff").name
             try:
-                with dev_file.open("r", encoding="utf-8") as f:
-                    content = f.read()
-                if (
-                    'rel="template"' in content
-                    and f"/{self.style_family}" in content
-                ):
-                    additional_dev_files.append(dev_file)
+                if diff_file.exists():
+                    with diff_file.open("r", encoding="utf-8") as f:
+                        first_line = f.readline().rstrip("\n")
+                    if first_line == template_header:
+                        dev_files.append(dev_file)
+                        continue
+
+                    # Existing diffs are the source of truth for variants
+                    # whose names overlap multiple families, such as MLA notes.
+                    continue
+
+                if dev_file.name.startswith(f"{self.style_family}"):
+                    dev_files.append(dev_file)
             except Exception as e:
                 logging.error(
-                    f"Error reading development file {dev_file.name}: {e}",
+                    f"Error reading diff file {diff_file.name}: {e}",
                     exc_info=True,
                 )
-        dev_files = sorted(list(expected_dev_files) + additional_dev_files)
+        dev_files = sorted(dev_files)
 
         if not dev_files:
             logging.warning(
