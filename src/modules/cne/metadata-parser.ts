@@ -21,11 +21,7 @@ import type {
   FieldVariant,
   CneCreatorData,
 } from "./types";
-import {
-  NAMESPACE,
-  FIELD_VARIANTS,
-  ORIGINAL_LANGUAGE_KEY,
-} from "./constants";
+import { NAMESPACE, FIELD_VARIANTS, ORIGINAL_LANGUAGE_KEY } from "./constants";
 
 /**
  * Regular expression to match CNE metadata lines in Extra field
@@ -104,8 +100,10 @@ function parseCreatorFields(lines: string[]): CneCreatorData[] {
       }
 
       // Build field name: lastRomanized, firstRomanized, lastOriginal, firstOriginal
-      const capitalizedPart = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-      const capitalizedVariant = variant.charAt(0).toUpperCase() + variant.slice(1);
+      const capitalizedPart =
+        namePart.charAt(0).toUpperCase() + namePart.slice(1);
+      const capitalizedVariant =
+        variant.charAt(0).toUpperCase() + variant.slice(1);
       const fieldName = (namePart + capitalizedVariant) as keyof CneCreatorData;
       const creator = creatorsMap.get(index)!;
       (creator as any)[fieldName] = value;

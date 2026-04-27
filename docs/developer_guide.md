@@ -172,14 +172,17 @@ We patch citeproc's `setLangPrefsForCites()` to maintain CNE preferences:
 
 ```typescript
 export function installCneLangPrefPatch(): void {
-  if (typeof CSL !== 'undefined' && CSL?.Engine && !originalJsSetLangPrefs) {
+  if (typeof CSL !== "undefined" && CSL?.Engine && !originalJsSetLangPrefs) {
     originalJsSetLangPrefs = CSL.Engine.prototype.setLangPrefsForCites;
-    CSL.Engine.prototype.setLangPrefsForCites = function (obj: any, conv?: any) {
+    CSL.Engine.prototype.setLangPrefsForCites = function (
+      obj: any,
+      conv?: any,
+    ) {
       originalJsSetLangPrefs!.call(this, obj, conv);
       try {
         (this as any)._cneLangOverride?.();
       } catch (err) {
-        Zotero?.debug?.('[CNE Config] Error in JS lang override: ' + err);
+        Zotero?.debug?.("[CNE Config] Error in JS lang override: " + err);
       }
     };
   }
@@ -189,13 +192,16 @@ export function installCneLangPrefPatch(): void {
 ### Engine Configuration
 
 ```typescript
-export function configureCiteprocForCNE(engine: any, config: CNEConfigOptions): void {
+export function configureCiteprocForCNE(
+  engine: any,
+  config: CNEConfigOptions,
+): void {
   installCneLangPrefPatch();
-  const persons = config?.persons ?? ['translit'];
+  const persons = config?.persons ?? ["translit"];
 
   engine._cneLangOverride = () => {
-    enforcePersonsArray(engine.opt?.['cite-lang-prefs'], persons);
-    enforcePersonsArray(engine.state?.opt?.['cite-lang-prefs'], persons);
+    enforcePersonsArray(engine.opt?.["cite-lang-prefs"], persons);
+    enforcePersonsArray(engine.state?.opt?.["cite-lang-prefs"], persons);
   };
 
   engine.setLangPrefsForCites({ persons });

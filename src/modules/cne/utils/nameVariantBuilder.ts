@@ -68,7 +68,11 @@
  *
  * This is a bibliographic distinction, not style-specific.
  */
-const CONTAINER_CREATOR_ROLES = ['editor', 'translator', 'collection-editor'] as const;
+const CONTAINER_CREATOR_ROLES = [
+  "editor",
+  "translator",
+  "collection-editor",
+] as const;
 
 /**
  * Check if a creator role is a container creator
@@ -87,7 +91,7 @@ function isContainerCreator(role: string): boolean {
  */
 export interface VariantConfig {
   /** Which variant tag we're building ('en' or 'en-x-western') */
-  variantTag: 'en' | 'en-x-western';
+  variantTag: "en" | "en-x-western";
 
   /** Creator's role (author, editor, translator, etc.) */
   creatorRole: string;
@@ -189,27 +193,27 @@ export function getVariantMultiMain(config: VariantConfig): string | undefined {
   // Technical justification: The multi.main value here controls NAME FORMATTING
   // BEHAVIOR only (comma vs no-comma), not linguistic or cultural classification.
   // ============================================================================
-  if (config.variantTag === 'en') {
+  if (config.variantTag === "en") {
     if (config.hasCNE) {
       // Use 'zh' for ALL CJK to trigger citeproc's romanesque downgrade
       // (See detailed explanation above for why this is necessary)
-      return 'zh';  // Force romanesque=1 for all CJK → "Kang U-bang" (no comma)
+      return "zh"; // Force romanesque=1 for all CJK → "Kang U-bang" (no comma)
     }
-    return 'en';  // Non-CNE creators stay romanesque=2 → "John Smith"
+    return "en"; // Non-CNE creators stay romanesque=2 → "John Smith"
   }
 
   // 'en-x-western' variant: used with separator="comma" (APA-style)
   // Strategy: Role-based multi.main to handle CJK container creators
-  if (config.variantTag === 'en-x-western') {
+  if (config.variantTag === "en-x-western") {
     // Container creators (editor, translator) need special handling
     // to get family-first formatting without CSL name-as-sort-order
     if (isContainerCreator(config.creatorRole) && config.hasCNE) {
-      return config.originalLang;  // Force romanesque=1 → "Lin S."
+      return config.originalLang; // Force romanesque=1 → "Lin S."
     }
 
     // Primary creators (author, director, etc.) use 'en' for romanesque=2
     // This lets CSL name-as-sort-order control inversion
-    return 'en';  // Romanesque=2 → "Du, W." with name-as-sort-order="all"
+    return "en"; // Romanesque=2 → "Du, W." with name-as-sort-order="all"
   }
 
   // Default: inherit
@@ -251,7 +255,7 @@ export function getVariantMultiMain(config: VariantConfig): string | undefined {
 export function buildNameVariant(
   config: VariantConfig,
   family: string,
-  given: string
+  given: string,
 ): any {
   const multiMain = getVariantMultiMain(config);
 
@@ -265,18 +269,18 @@ export function buildNameVariant(
   // So "Kim," + " " + "Minsoo" = "Kim, Minsoo" ✓
   let processedFamily = family;
   if (config.forceComma && family) {
-    processedFamily = `${family},`;  // Append comma to family name
+    processedFamily = `${family},`; // Append comma to family name
   }
 
   const variant: any = {
-    family: processedFamily || '',
-    given: given || ''
+    family: processedFamily || "",
+    given: given || "",
   };
 
   // Only add multi.main if we're overriding (not inheriting)
   if (multiMain) {
     variant.multi = {
-      main: multiMain
+      main: multiMain,
     };
   }
 

@@ -33,7 +33,8 @@ async function onStartup() {
 
   // Initialize CNE processing interceptors based on preference
   const enablePref = getPref("enable");
-  const processingPrefEnabled = enablePref === undefined ? true : Boolean(enablePref);
+  const processingPrefEnabled =
+    enablePref === undefined ? true : Boolean(enablePref);
   setCneProcessingEnabled(processingPrefEnabled);
   watchCneProcessingPreference();
 

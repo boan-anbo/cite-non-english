@@ -25,7 +25,10 @@ let creatorsRefreshTimeout: number | null = null;
  * @param container - Container element
  * @param languageCode - Current language code
  */
-function updateQuickButtonStates(container: HTMLElement, languageCode: string): void {
+function updateQuickButtonStates(
+  container: HTMLElement,
+  languageCode: string,
+): void {
   const quickButtons = container.querySelectorAll(".cne-quick-btn");
   quickButtons.forEach((btn: Element) => {
     const btnCode = btn.getAttribute("data-language-code");
@@ -101,7 +104,9 @@ export function setupLanguageBinding(
     {
       notify: async (event: string, type: string, ids: string[] | number[]) => {
         // Convert ids to numbers for comparison
-        const numericIds = ids.map((id) => typeof id === "string" ? parseInt(id, 10) : id);
+        const numericIds = ids.map((id) =>
+          typeof id === "string" ? parseInt(id, 10) : id,
+        );
         if (
           type === "item" &&
           event === "modify" &&
@@ -145,7 +150,9 @@ export function setupLanguageBinding(
               // Debounce: wait 300ms after last change before refreshing
               // This gives users time to finish typing creator names
               creatorsRefreshTimeout = setTimeout(async () => {
-                ztoolkit.log("[CNE] Creators changed (debounced), refreshing author fields");
+                ztoolkit.log(
+                  "[CNE] Creators changed (debounced), refreshing author fields",
+                );
                 await refreshAuthorFields(container, item, metadata);
                 creatorsRefreshTimeout = null;
               }, 300) as any;

@@ -29,11 +29,11 @@ export type ItemFields = Partial<{
  * Combines Zotero item fields with creators and required fields
  */
 export interface JournalArticleFixture extends ItemFields {
-  itemType: 'journalArticle';
+  itemType: "journalArticle";
   title: string;
   publicationTitle: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
-  extra: string;  // CNE metadata in Extra field format (required)
+  extra: string; // CNE metadata in Extra field format (required)
 }
 
 /**
@@ -41,17 +41,17 @@ export interface JournalArticleFixture extends ItemFields {
  * Combines Zotero item fields with creators and required fields
  */
 export interface BookFixture extends ItemFields {
-  itemType: 'book';
+  itemType: "book";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
-  extra: string;  // CNE metadata in Extra field format (required)
+  extra: string; // CNE metadata in Extra field format (required)
 }
 
 /**
  * Complete test fixture for a book section (chapter)
  */
 export interface BookSectionFixture extends ItemFields {
-  itemType: 'bookSection';
+  itemType: "bookSection";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
   extra: string;
@@ -61,7 +61,7 @@ export interface BookSectionFixture extends ItemFields {
  * Complete test fixture for a newspaper article
  */
 export interface NewspaperArticleFixture extends ItemFields {
-  itemType: 'newspaperArticle';
+  itemType: "newspaperArticle";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
   extra: string;
@@ -71,7 +71,7 @@ export interface NewspaperArticleFixture extends ItemFields {
  * Complete test fixture for a webpage
  */
 export interface WebpageFixture extends ItemFields {
-  itemType: 'webpage';
+  itemType: "webpage";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
   extra?: string;
@@ -81,7 +81,7 @@ export interface WebpageFixture extends ItemFields {
  * Complete test fixture for a film/motion picture
  */
 export interface FilmFixture extends ItemFields {
-  itemType: 'film';
+  itemType: "film";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
   extra?: string;
@@ -91,7 +91,7 @@ export interface FilmFixture extends ItemFields {
  * Complete test fixture for a dataset
  */
 export interface DatasetFixture extends ItemFields {
-  itemType: 'dataset';
+  itemType: "dataset";
   title: string;
   creators: Array<_ZoteroTypes.Item.CreatorJSON>;
   extra: string;

@@ -1,6 +1,6 @@
 # Cite Non-English (CNE)
 
-[![zotero target version](https://img.shields.io/badge/Zotero-7-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
+[![zotero target version](https://img.shields.io/badge/Zotero-9-green?style=flat-square&logo=zotero&logoColor=CC2936)](https://www.zotero.org)
 [![Using Zotero Plugin Template](https://img.shields.io/badge/Using-Zotero%20Plugin%20Template-blue?style=flat-square&logo=github)](https://github.com/windingwind/zotero-plugin-template)
 
 Cite Non-English (CNE) is a Zotero extension to provide all-in-one support for non-English citations that just works.
@@ -70,16 +70,16 @@ The **current development focus** is on CJK sources. The infrastructure is inten
 1. **Download** the latest CNE XPI from the [releases page](https://github.com/boan-anbo/cite-non-english/releases) and **install** it in Zotero (Tools → Plugins).
 
 2. For each item, open the **Cite Non-English (CNE)** panel in Zotero's item sidebar and enter the original-script, romanized, and translated information you need.
-![Enter CNE citation fields](docs/images/howto-sidebar.png)
+   ![Enter CNE citation fields](docs/images/howto-sidebar.png)
 
 3. In the Cite Non-English (CNE) panel choose the item's language, or click the quick language buttons, e.g., "zh-CN", "zh-TW", "ja-JP", "ko-KR".
-![Select language](docs/images/howto-language.png)
+   ![Select language](docs/images/howto-language.png)
 
 4. When citing, choose the curated CNE versions of the CSL styles (e.g., "Chicago 18th CNE") so the multilingual fields render correctly.
-![Select CNE styles](docs/images/howto-style.png)
+   ![Select CNE styles](docs/images/howto-style.png)
 
 5. The citations will render with appropriate romanization, original script, and English translation for names and titles:
-![Rendered citations](docs/images/howto-rendered.png)
+   ![Rendered citations](docs/images/howto-rendered.png)
 
 ---
 
@@ -137,7 +137,7 @@ The challenges for supporting non-English citations come from two directions: Zo
 - **No native field support** – Zotero provides no built-in fields for romanized titles, translated titles, original-script variants, or alternative publisher names. Parallel metadata must be stored in the Extra field and parsed by plugins.
 
 - **Citeproc's limitations and hardcoded internal logic** – The [citeproc engines (`citeproc-js`)](https://github.com/Juris-M/citeproc-js) have limitations and hardcode language-specific handling.
-For example, `citeproc-js` has hardcoded special handling for "Asian names" but only included Chinese and Japanese, not Korean. As another example, `citeproc-js` makes formatting decisions on behalf of users without exposing configuration options. For example, romanized Asian names can _only_ (hardcoded logic) render with a single space and no comma between family and given names (e.g., "Hao Chunwen"), making comma-separated formats required by certain styles (see the challenges from the style guides below) unavailable. These decisions are hardcoded into the engine's internal logic and cannot be overridden through CSL. Lack of documentation of the citeproc also makes it difficult to extend and/or circumvent its limitations. But again, despite these flaws, `citeproc-js` provided the critical infrastructure to support multilingual citations in Zotero upon which CNE is built.
+  For example, `citeproc-js` has hardcoded special handling for "Asian names" but only included Chinese and Japanese, not Korean. As another example, `citeproc-js` makes formatting decisions on behalf of users without exposing configuration options. For example, romanized Asian names can _only_ (hardcoded logic) render with a single space and no comma between family and given names (e.g., "Hao Chunwen"), making comma-separated formats required by certain styles (see the challenges from the style guides below) unavailable. These decisions are hardcoded into the engine's internal logic and cannot be overridden through CSL. Lack of documentation of the citeproc also makes it difficult to extend and/or circumvent its limitations. But again, despite these flaws, `citeproc-js` provided the critical infrastructure to support multilingual citations in Zotero upon which CNE is built.
 
 - **Undocumented internal APIs** – Citeproc's internal APIs governing name processing and cite-lang-prefs configuration are neither documented nor designed for external use. Implementing CNE requires reverse-engineering these internals and maintaining patches across Zotero updates.
 
@@ -150,6 +150,7 @@ For example, `citeproc-js` has hardcoded special handling for "Asian names" but 
 - **Parallel scripts, romanization, and English translation** – Humanities and social science style guides (e.g., Chicago, MLA, APA) demand romanized text, original script, and English translations all within the same citation.
 
   _Example:_ A Chinese journal article title must appear per some guides as:
+
   > "Qingdai yilai Sanxia diqu shuihan zaihai de chubu yanjiu" 清代以来三峡地区水旱灾害的初步研究 [A preliminary study of floods and droughts in the Three Gorges region since the Qing dynasty]
 
 - **Evolving Asian name conventions** – Recent style guides increasingly require East Asian names to appear in their native order (family name first) without commas, reflecting a shift toward linguistically respectful formatting. Traditionally, names were formatted with Western-style comma separation:

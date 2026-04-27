@@ -88,7 +88,8 @@ export const BIBLATEX_FIELD_MAPPINGS: BibLaTeXFieldMapping[] = [
 
   // ========== Series Fields (Experimental) ==========
   {
-    description: "Original script series title (experimental, may not be standard)",
+    description:
+      "Original script series title (experimental, may not be standard)",
     cneFieldPath: "series.original",
     biblatexField: "seriestitleaddon",
     formatter: (value) => `\\textzh{${value}}`,
@@ -98,7 +99,8 @@ export const BIBLATEX_FIELD_MAPPINGS: BibLaTeXFieldMapping[] = [
 
   // ========== Publisher Fields (Experimental) ==========
   {
-    description: "Original script publisher name (experimental, may not be standard)",
+    description:
+      "Original script publisher name (experimental, may not be standard)",
     cneFieldPath: "publisher.original",
     biblatexField: "publisheraddon",
     formatter: (value) => `\\textzh{${value}}`,
@@ -114,7 +116,7 @@ export const BIBLATEX_FIELD_MAPPINGS: BibLaTeXFieldMapping[] = [
  * @returns Value at path or undefined
  */
 function getNestedValue(obj: any, path: string): string | undefined {
-  const parts = path.split('.');
+  const parts = path.split(".");
   let current = obj;
 
   for (const part of parts) {
@@ -124,7 +126,7 @@ function getNestedValue(obj: any, path: string): string | undefined {
     current = current[part];
   }
 
-  return typeof current === 'string' ? current : undefined;
+  return typeof current === "string" ? current : undefined;
 }
 
 /**
@@ -239,7 +241,9 @@ export function hasBibLaTeXData(metadata: CneMetadataData): boolean {
  * @param metadata - CNE metadata with author data
  * @returns BibLaTeX author field value (future implementation)
  */
-export function formatBibLaTeXAuthors(metadata: CneMetadataData): string | null {
+export function formatBibLaTeXAuthors(
+  metadata: CneMetadataData,
+): string | null {
   // TODO: Implement full BibLaTeX author formatting
   // For now, return null and handle authors via item.creators modification
   return null;

@@ -47,9 +47,9 @@ export function initializeBibLaTeXIntegration() {
   // Create interceptor using the reusable factory
   // This automatically handles rest parameters for future-proofing
   biblatexInterceptor = createInterceptor({
-    targetPath: 'Zotero.Utilities.Internal.itemToExportFormat',
-    wrapperMarker: '_cneBibLaTeXIntercepted',
-    logPrefix: '[CNE BibLaTeX]',
+    targetPath: "Zotero.Utilities.Internal.itemToExportFormat",
+    wrapperMarker: "_cneBibLaTeXIntercepted",
+    logPrefix: "[CNE BibLaTeX]",
 
     // afterCall receives the export item and can modify it before returning
     afterCall: (exportItem: any, zoteroItem: any, ...args: any[]) => {
@@ -103,7 +103,9 @@ export function initializeBibLaTeXIntegration() {
  */
 export function removeBibLaTeXIntegration() {
   if (!biblatexInterceptor) {
-    ztoolkit.log("[CNE] BibLaTeX interceptor not initialized, nothing to remove");
+    ztoolkit.log(
+      "[CNE] BibLaTeX interceptor not initialized, nothing to remove",
+    );
     return;
   }
 
@@ -191,7 +193,7 @@ function injectBibLaTeXFields(
 ): string {
   // Parse existing biblatex.* fields provided by user
   const userBibLaTeXFields = new Set<string>();
-  const extraLines = originalExtra.split('\n');
+  const extraLines = originalExtra.split("\n");
 
   for (const line of extraLines) {
     // Match biblatex.fieldname= or biblatex.fieldname: (both formats supported by BBT)
