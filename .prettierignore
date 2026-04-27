@@ -1,7 +1,12 @@
 .vscode
+.scaffold
 build
+dist
 logs
 node_modules
+snapshots
+styles/.venv
+styles/src/style_variant_builder/__pycache__
 package-lock.json
 yarn.lock
 pnpm-lock.yaml

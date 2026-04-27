@@ -19,13 +19,15 @@ import { setupClearButtons } from "../handlers";
 export async function refreshAuthorFields(
   body: HTMLElement,
   item: Zotero.Item,
-  metadata: CneMetadata
+  metadata: CneMetadata,
 ): Promise<void> {
   try {
     ztoolkit.log("[CNE] Refreshing author fields for item:", item.id);
 
     // Find the main container using our unique class
-    const realContainer = body.querySelector(".cne-main-container") as HTMLElement;
+    const realContainer = body.querySelector(
+      ".cne-main-container",
+    ) as HTMLElement;
     if (!realContainer) {
       ztoolkit.log("[CNE] Error: Could not find CNE main container");
       return;
@@ -36,9 +38,11 @@ export async function refreshAuthorFields(
     // Build new author field groups
     const newAuthorFieldGroups = buildAllAuthorFieldGroups(
       item,
-      metadata.data.authors
+      metadata.data.authors,
     );
-    ztoolkit.log(`[CNE] Built ${newAuthorFieldGroups.length} new author field groups`);
+    ztoolkit.log(
+      `[CNE] Built ${newAuthorFieldGroups.length} new author field groups`,
+    );
 
     // Strategy: Rebuild the container children array preserving non-author elements
     // This mimics the initial render approach more closely
@@ -48,22 +52,30 @@ export async function refreshAuthorFields(
     // Collect all non-author sections
     for (const child of childrenArray) {
       // Skip author sections (they contain author inputs)
-      const hasAuthorInputs = child.querySelector && child.querySelector('[id^="author-"]');
+      const hasAuthorInputs =
+        child.querySelector && child.querySelector('[id^="author-"]');
       if (!hasAuthorInputs) {
         childrenToKeep.push(child);
       }
     }
 
     // Find where to insert author fields - after language buttons
-    let insertIndex = findInsertionIndex(childrenToKeep);
+    const insertIndex = findInsertionIndex(childrenToKeep);
 
-    ztoolkit.log(`[CNE] Inserting author fields at index ${insertIndex} of ${childrenToKeep.length} kept elements`);
+    ztoolkit.log(
+      `[CNE] Inserting author fields at index ${insertIndex} of ${childrenToKeep.length} kept elements`,
+    );
 
     // Create new author elements
     const newAuthorElements = createAuthorElements(doc, newAuthorFieldGroups);
 
     // Rebuild the container with elements in correct order
-    rebuildContainer(realContainer, childrenToKeep, newAuthorElements, insertIndex);
+    rebuildContainer(
+      realContainer,
+      childrenToKeep,
+      newAuthorElements,
+      insertIndex,
+    );
 
     // Re-setup data binding for all elements
     // Use setTimeout to ensure DOM is fully updated
@@ -77,7 +89,6 @@ export async function refreshAuthorFields(
 
       ztoolkit.log("[CNE] Author fields refreshed and bindings re-established");
     }, 0);
-
   } catch (error) {
     ztoolkit.log("[CNE] Error refreshing author fields:", error);
     throw error;
@@ -95,7 +106,10 @@ function findInsertionIndex(childrenToKeep: Element[]): number {
   // First try: after language buttons
   for (let i = 0; i < childrenToKeep.length; i++) {
     const child = childrenToKeep[i];
-    if (child.classList && child.classList.contains("cne-quick-language-buttons")) {
+    if (
+      child.classList &&
+      child.classList.contains("cne-quick-language-buttons")
+    ) {
       insertIndex = i + 1;
       break;
     }
@@ -129,7 +143,7 @@ function findInsertionIndex(childrenToKeep: Element[]): number {
  */
 function createAuthorElements(
   doc: Document,
-  fieldGroups: any[]
+  fieldGroups: any[],
 ): (Element | DocumentFragment)[] {
   const elements: (Element | DocumentFragment)[] = [];
 
@@ -137,7 +151,7 @@ function createAuthorElements(
     const element = ztoolkit.UI.createElement(
       doc,
       fieldGroupConfig.tag,
-      fieldGroupConfig
+      fieldGroupConfig,
     );
     elements.push(element);
   }
@@ -156,7 +170,7 @@ function rebuildContainer(
   container: HTMLElement,
   childrenToKeep: Element[],
   authorElements: (Element | DocumentFragment)[],
-  insertIndex: number
+  insertIndex: number,
 ): void {
   // First, remove all children but keep references to non-author elements
   while (container.firstChild) {

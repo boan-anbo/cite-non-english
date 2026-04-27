@@ -31,11 +31,15 @@
  * romanized title, English translation, and romanized journal).
  */
 
-import { assert } from 'chai';
-import { ALL_FIXTURES, FIXTURE_IDS } from './fixtures';
-import { createZoteroItemFromTestCase, stylesManager, installCslStyle } from './test-helpers';
+import { assert } from "chai";
+import { ALL_FIXTURES, FIXTURE_IDS } from "./fixtures";
+import {
+  createZoteroItemFromTestCase,
+  stylesManager,
+  installCslStyle,
+} from "./test-helpers";
 
-describe('Global Setup - Batch Item Creation', function() {
+describe("Global Setup - Batch Item Creation", function () {
   // Increase timeout for batch creation
   this.timeout(30000);
 
@@ -45,32 +49,34 @@ describe('Global Setup - Batch Item Creation', function() {
    * Items are created from unified fixtures across all languages.
    * They persist in Zotero for use by subsequent test files.
    */
-  before(async function() {
+  before(async function () {
     // Get user library ID
     const libraryID = Zotero.Libraries.userLibraryID;
 
     // Clean up any existing items from previous test runs
-    console.log('🧹 Cleaning up existing items...');
+    console.log("🧹 Cleaning up existing items...");
     const existingItems = await Zotero.Items.getAll(libraryID);
     if (existingItems.length > 0) {
-      await Promise.all(existingItems.map(item => item.eraseTx()));
+      await Promise.all(existingItems.map((item) => item.eraseTx()));
       console.log(`✅ Deleted ${existingItems.length} existing items`);
     }
 
     // Install all CNE styles BEFORE initializing Zotero.Styles
-    console.log('📝 Installing CNE styles...');
-    await installCslStyle('chicago-notes-bibliography-cne.csl');
-    await installCslStyle('chicago-author-date-cne.csl');
-    await installCslStyle('apa-7th-cne.csl');
-    await installCslStyle('modern-language-association-8th-cne.csl');
-    await installCslStyle('modern-language-association-9th-in-text-cne.csl');
-    await installCslStyle('modern-language-association-9th-notes-cne.csl');
-    console.log('✅ Styles installed');
+    console.log("📝 Installing CNE styles...");
+    await installCslStyle("chicago-notes-bibliography-cne.csl");
+    await installCslStyle("chicago-author-date-cne.csl");
+    await installCslStyle("apa-7th-cne.csl");
+    await installCslStyle("modern-language-association-8th-cne.csl");
+    await installCslStyle("modern-language-association-9th-in-text-cne.csl");
+    await installCslStyle("modern-language-association-9th-notes-cne.csl");
+    console.log("✅ Styles installed");
 
     // Initialize Zotero Styles ONCE for all tests (after styles are installed)
     await stylesManager.ensureInitialized();
 
-    console.log(`📦 Creating ${Object.keys(ALL_FIXTURES).length} test items...`);
+    console.log(
+      `📦 Creating ${Object.keys(ALL_FIXTURES).length} test items...`,
+    );
 
     let createdCount = 0;
     for (const [fixtureId, fixture] of Object.entries(ALL_FIXTURES)) {
@@ -84,13 +90,13 @@ describe('Global Setup - Batch Item Creation', function() {
   /**
    * Validate that items were created successfully
    */
-  it('should create all fixture items', async function() {
+  it("should create all fixture items", async function () {
     const libraryID = Zotero.Libraries.userLibraryID;
     const items = await Zotero.Items.getAll(libraryID);
     assert.isAtLeast(
       items.length,
       Object.keys(ALL_FIXTURES).length,
-      `Expected at least ${Object.keys(ALL_FIXTURES).length} items to be created`
+      `Expected at least ${Object.keys(ALL_FIXTURES).length} items to be created`,
     );
   });
 
@@ -104,29 +110,51 @@ describe('Global Setup - Batch Item Creation', function() {
    *
    * If this validation fails, CNE plugin won't enrich the item correctly.
    */
-  it('should have correct Extra fields for hua-1999-qingdai', async function() {
+  it("should have correct Extra fields for hua-1999-qingdai", async function () {
     // Find item by original title (unique identifier)
     const libraryID = Zotero.Libraries.userLibraryID;
     const items = await Zotero.Items.getAll(libraryID);
     const huaItem = items.find(
-      item => item.getField('title') === '清代以来三峡地区水旱灾害的初步研究'
+      (item) => item.getField("title") === "清代以来三峡地区水旱灾害的初步研究",
     );
 
-    assert.exists(huaItem, 'hua-1999-qingdai item should exist');
+    assert.exists(huaItem, "hua-1999-qingdai item should exist");
 
     // Validate Extra field contains CNE metadata
-    const extra = huaItem!.getField('extra');
-    assert.isString(extra, 'Extra field should be a string');
-    assert.isNotEmpty(extra, 'Extra field should not be empty');
+    const extra = huaItem!.getField("extra");
+    assert.isString(extra, "Extra field should be a string");
+    assert.isNotEmpty(extra, "Extra field should not be empty");
 
     // Check for key CNE fields
-    assert.include(extra, 'cne-creator-0-last-romanized: Hua', 'Should have romanized author last name');
-    assert.include(extra, 'cne-creator-0-first-romanized: Linfu', 'Should have romanized author first name');
-    assert.include(extra, 'cne-title-romanized:', 'Should have romanized title');
-    assert.include(extra, 'cne-title-english:', 'Should have English translation');
-    assert.include(extra, 'cne-journal-romanized: Zhongguo shehui kexue', 'Should have romanized journal');
+    assert.include(
+      extra,
+      "cne-creator-0-last-romanized: Hua",
+      "Should have romanized author last name",
+    );
+    assert.include(
+      extra,
+      "cne-creator-0-first-romanized: Linfu",
+      "Should have romanized author first name",
+    );
+    assert.include(
+      extra,
+      "cne-title-romanized:",
+      "Should have romanized title",
+    );
+    assert.include(
+      extra,
+      "cne-title-english:",
+      "Should have English translation",
+    );
+    assert.include(
+      extra,
+      "cne-journal-romanized: Zhongguo shehui kexue",
+      "Should have romanized journal",
+    );
 
-    console.log(`✅ hua-1999-qingdai Extra fields validated (${extra.length} chars)`);
+    console.log(
+      `✅ hua-1999-qingdai Extra fields validated (${extra.length} chars)`,
+    );
   });
 
   /**
@@ -134,18 +162,26 @@ describe('Global Setup - Batch Item Creation', function() {
    *
    * Tests single-field (literal) author name handling
    */
-  it('should have correct Extra fields for beijing-airusheng-2011', async function() {
+  it("should have correct Extra fields for beijing-airusheng-2011", async function () {
     const libraryID = Zotero.Libraries.userLibraryID;
     const items = await Zotero.Items.getAll(libraryID);
     const beijingItem = items.find(
-      item => item.getField('title') === '中国基本古籍库'
+      (item) => item.getField("title") === "中国基本古籍库",
     );
 
-    assert.exists(beijingItem, 'beijing-airusheng-2011 item should exist');
+    assert.exists(beijingItem, "beijing-airusheng-2011 item should exist");
 
-    const extra = beijingItem!.getField('extra');
-    assert.include(extra, 'cne-creator-0-last-romanized:', 'Should have romanized institutional author');
-    assert.include(extra, 'cne-title-romanized:', 'Should have romanized title');
+    const extra = beijingItem!.getField("extra");
+    assert.include(
+      extra,
+      "cne-creator-0-last-romanized:",
+      "Should have romanized institutional author",
+    );
+    assert.include(
+      extra,
+      "cne-title-romanized:",
+      "Should have romanized title",
+    );
   });
 
   /**
@@ -153,17 +189,25 @@ describe('Global Setup - Batch Item Creation', function() {
    *
    * Tests handling of multiple authors with CNE metadata
    */
-  it('should have correct Extra fields for abe-1983-saigo', async function() {
+  it("should have correct Extra fields for abe-1983-saigo", async function () {
     const libraryID = Zotero.Libraries.userLibraryID;
     const items = await Zotero.Items.getAll(libraryID);
     const abeItem = items.find(
-      item => item.getField('title') === '最後の「日本人」 : 朝河貫一の生涯'
+      (item) => item.getField("title") === "最後の「日本人」 : 朝河貫一の生涯",
     );
 
-    assert.exists(abeItem, 'abe-1983-saigo item should exist');
+    assert.exists(abeItem, "abe-1983-saigo item should exist");
 
-    const extra = abeItem!.getField('extra');
-    assert.include(extra, 'cne-creator-0-last-romanized: Abe', 'Should have first author romanized');
-    assert.include(extra, 'cne-creator-1-last-romanized: Kaneko', 'Should have second author romanized');
+    const extra = abeItem!.getField("extra");
+    assert.include(
+      extra,
+      "cne-creator-0-last-romanized: Abe",
+      "Should have first author romanized",
+    );
+    assert.include(
+      extra,
+      "cne-creator-1-last-romanized: Kaneko",
+      "Should have second author romanized",
+    );
   });
 });

@@ -78,9 +78,7 @@ export const LANGUAGE_NAMES: Record<string, [string, string]> = {
  * @param code - ISO language code (e.g., "ja-JP", "zh-CN")
  * @returns Tuple of [nativeName, englishName] or null if not found
  */
-export function getLanguageName(
-  code: string,
-): [string, string] | null {
+export function getLanguageName(code: string): [string, string] | null {
   return LANGUAGE_NAMES[code] || null;
 }
 

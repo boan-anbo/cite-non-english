@@ -93,7 +93,11 @@ export class ItemToCSLJSONInterceptor {
     // Create wrapper function that applies all registered callbacks
     // IMPORTANT: Use rest parameters to future-proof against API changes.
     // This captures ALL arguments and passes them through unchanged.
-    const interceptorWrapper = function (this: any, zoteroItem: any, ...args: any[]) {
+    const interceptorWrapper = function (
+      this: any,
+      zoteroItem: any,
+      ...args: any[]
+    ) {
       // Call original Zotero function to get base CSL-JSON
       // Pass through all arguments - future-proof!
       const cslItem = ItemToCSLJSONInterceptor.originalFunction.call(

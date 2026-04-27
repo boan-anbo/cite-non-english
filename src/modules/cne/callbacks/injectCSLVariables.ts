@@ -71,7 +71,7 @@ import type { CneFieldData, CneFieldName } from "../types";
 function injectFieldVariants(
   cslItem: any,
   fieldName: CneFieldName,
-  fieldData: CneFieldData
+  fieldData: CneFieldData,
 ) {
   // Inject romanized version
   if (fieldData.romanized) {
@@ -113,7 +113,7 @@ export function injectCSLVariables(zoteroItem: any, cslItem: any) {
   // Try multiple access patterns
   let extraContent: string | undefined;
 
-  if (typeof zoteroItem.getField === 'function') {
+  if (typeof zoteroItem.getField === "function") {
     extraContent = zoteroItem.getField("extra");
   } else if (zoteroItem.extra) {
     extraContent = zoteroItem.extra;
@@ -131,26 +131,30 @@ export function injectCSLVariables(zoteroItem: any, cslItem: any) {
 
   // Inject title variants
   if (metadata.title) {
-    injectFieldVariants(cslItem, 'title', metadata.title);
+    injectFieldVariants(cslItem, "title", metadata.title);
   }
 
   // Inject journal variants
   if (metadata.journal) {
-    injectFieldVariants(cslItem, 'journal', metadata.journal);
+    injectFieldVariants(cslItem, "journal", metadata.journal);
   }
 
   // Inject publisher variants
   if (metadata.publisher) {
-    injectFieldVariants(cslItem, 'publisher', metadata.publisher);
+    injectFieldVariants(cslItem, "publisher", metadata.publisher);
   }
 
   // Inject series variants
   if (metadata.series) {
-    injectFieldVariants(cslItem, 'series', metadata.series);
+    injectFieldVariants(cslItem, "series", metadata.series);
   }
 
   // Inject container-title variants (CSL-compliant hyphenated format)
   if (metadata["container-title"]) {
-    injectFieldVariants(cslItem, 'container-title', metadata["container-title"]);
+    injectFieldVariants(
+      cslItem,
+      "container-title",
+      metadata["container-title"],
+    );
   }
 }

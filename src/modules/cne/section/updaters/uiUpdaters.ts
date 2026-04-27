@@ -11,7 +11,10 @@ import type { CneMetadata } from "../../model/CneMetadata";
  * @param container - Container element
  * @param metadata - CneMetadata instance
  */
-export function updateLivePreview(container: HTMLElement, metadata: CneMetadata): void {
+export function updateLivePreview(
+  container: HTMLElement,
+  metadata: CneMetadata,
+): void {
   const previewElement = container.querySelector("#cjk-data-preview");
   if (previewElement) {
     previewElement.innerHTML = JSON.stringify(metadata.toJSON(), null, 2);
@@ -24,7 +27,10 @@ export function updateLivePreview(container: HTMLElement, metadata: CneMetadata)
  * @param container - Container element
  * @param metadata - CneMetadata instance
  */
-export function updateFieldCounter(container: HTMLElement, metadata: CneMetadata): void {
+export function updateFieldCounter(
+  container: HTMLElement,
+  metadata: CneMetadata,
+): void {
   const counterElement = container.querySelector("#cjk-field-counter");
   if (counterElement) {
     const count = metadata.getFilledFieldCount();
@@ -40,7 +46,10 @@ export function updateFieldCounter(container: HTMLElement, metadata: CneMetadata
  * @param container - Container element
  * @param metadata - CneMetadata instance
  */
-export function updateAllUI(container: HTMLElement, metadata: CneMetadata): void {
+export function updateAllUI(
+  container: HTMLElement,
+  metadata: CneMetadata,
+): void {
   updateLivePreview(container, metadata);
   updateFieldCounter(container, metadata);
 }

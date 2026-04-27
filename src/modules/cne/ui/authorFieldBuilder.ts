@@ -226,7 +226,8 @@ function createCheckboxOption(
 ): any {
   // Convert kebab-case to camelCase for data binding
   // 'original-spacing' -> 'optionsOriginalSpacing'
-  const bindKey = "options" +
+  const bindKey =
+    "options" +
     optionKey
       .split("-")
       .map((part) => part.charAt(0).toUpperCase() + part.slice(1))

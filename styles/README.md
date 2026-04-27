@@ -39,27 +39,33 @@ We use the [Style Variant Builder](https://github.com/citation-style-language/st
 When you need to modify the CNE variant:
 
 1. **Make changes in the development file**
+
    ```bash
    cd styles
    # Edit development/chicago-notes-bibliography-cne.csl
    ```
 
 2. **Generate diff file**
+
    ```bash
    make diffs
    ```
+
    This creates/updates `diffs/chicago-notes-bibliography-cne.diff` which records your changes.
 
 3. **Build final variant**
+
    ```bash
    make
    ```
+
    This generates the final style in `output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl` with:
    - All your modifications applied
    - Unused macros pruned
    - Proper header comment added
 
 4. **Update production variant**
+
    ```bash
    cp output/chicago-notes-bibliography/chicago-notes-bibliography-cne.csl cne/
    ```
@@ -74,17 +80,20 @@ When you need to modify the CNE variant:
 When the official Chicago style is updated:
 
 1. **Download new upstream version**
+
    ```bash
    # Download from https://github.com/citation-style-language/styles
    cp new-chicago-notes-bibliography.csl upstream/
    ```
 
 2. **Update template**
+
    ```bash
    cp upstream/chicago-notes-bibliography.csl templates/chicago-notes-bibliography-template.csl
    ```
 
 3. **Regenerate variants**
+
    ```bash
    make dev   # Applies diff to new template
    make       # Builds final variant
@@ -120,11 +129,13 @@ Users of the CNE plugin can access these styles by:
 CNE styles are backwards-compatible with standard citation styles. They add support for custom fields that enable proper formatting of non-English sources according to major style guides (e.g., Chicago Manual of Style).
 
 **Standard behavior** (without CNE fields):
+
 ```
 Author. Title. Publisher, Year.
 ```
 
 **CNE behavior** (with CNE fields):
+
 ```
 Author. Romanized-Title Original-Title [English-Translation]. Publisher, Year.
 ```
@@ -162,16 +173,19 @@ First Name: Xiaobo 王小波
 **Examples of proper formatting**:
 
 Single author:
+
 ```
 Hao, Chunwen 郝春文. Tang houqi wudai Songchu Dunhuang sengni de shehui shenghuo...
 ```
 
 Multiple authors:
+
 ```
 Abe, Yoshio 阿部善雄 and Kaneko, Hideo 金子英生. Saigo no "Nihonjin"...
 ```
 
 **This works seamlessly** because:
+
 - Zotero's author fields accept any Unicode text
 - CSL processors render the author fields exactly as entered
 - No special configuration or plugin features needed
@@ -188,12 +202,14 @@ Abe, Yoshio 阿部善雄 and Kaneko, Hideo 金子英生. Saigo no "Nihonjin"...
 **Based on**: Chicago Manual of Style 18th edition (notes and bibliography)
 
 **Enhancements**:
+
 - Displays romanized titles with proper formatting (italics/quotes based on item type)
 - Includes original script after romanized form
 - Shows English translation in square brackets
 - Supports short romanized forms for subsequent citations
 
 **Example output**:
+
 ```
 Bibliography:
 王小波. Huangjin niandai 黃金年代 [Golden Time]. Er ban. 聯經出版事業股份有限公司, 2023.
@@ -210,6 +226,7 @@ Subsequent note:
 ### Adding a New CNE Style Variant
 
 1. **Get the upstream style**:
+
    ```bash
    # Download from https://github.com/citation-style-language/styles
    curl -o styles/upstream/style-name.csl https://raw.githubusercontent.com/citation-style-language/styles/master/style-name.csl
@@ -222,6 +239,7 @@ Subsequent note:
    - Modify title rendering macros to call `title-cne-supplements`
 
 3. **Test the variant**:
+
    ```bash
    # Copy to test server
    cp styles/cne/style-name-cne.csl tools/citeproc-js-server/csl/
@@ -245,11 +263,13 @@ See `cne/chicago-notes-bibliography-cne.csl` lines 1476-1514 for the reference i
 For each macro that renders `title-primary`, wrap it with a group that calls supplements:
 
 **Before**:
+
 ```xml
 <text macro="title-primary"/>
 ```
 
 **After**:
+
 ```xml
 <group delimiter=" ">
   <text macro="title-primary"/>
@@ -258,6 +278,7 @@ For each macro that renders `title-primary`, wrap it with a group that calls sup
 ```
 
 **Locations to modify**:
+
 - `title-note` (for note citations)
 - `title-and-part-title-bib` (for bibliography with parts)
 - `title-and-part-title-note` (for notes with parts)
@@ -283,12 +304,14 @@ diff -u styles/upstream/style-name.csl styles/cne/style-name-cne.csl
 ### Manual Testing
 
 1. Start the CSL test server:
+
    ```bash
    cd tools/citeproc-js-server
    node lib/citeServer.js &
    ```
 
 2. Test with curl:
+
    ```bash
    curl -X POST http://127.0.0.1:8085?responseformat=html&style=chicago-notes-bibliography-cne \
      -H "Content-Type: application/json" \
@@ -303,6 +326,7 @@ diff -u styles/upstream/style-name.csl styles/cne/style-name-cne.csl
 ### Automated Testing
 
 Test fixtures are in `test/csl-tests/fixtures/`. Each fixture should include:
+
 - Items with and without CNE fields
 - Various item types (book, article, chapter, etc.)
 - Optional fields (to test graceful degradation)
@@ -350,11 +374,13 @@ The `<text>` element has four distinct uses:
 #### `<label>` - Smart Variable Labels
 
 The `<label>` element is a **CSL specification built-in** that automatically:
+
 - Generates appropriate labels for variables (e.g., "p." for pages, "ed." for editors)
 - **Determines singular/plural forms automatically** by inspecting the variable's value
 - Localizes to the user's language
 
 **Example**:
+
 ```xml
 <group delimiter=" ">
   <label variable="page" form="short"/>
@@ -363,10 +389,12 @@ The `<label>` element is a **CSL specification built-in** that automatically:
 ```
 
 **Input data**:
+
 - `{"page": "42"}` → Output: `"p. 42"` (singular)
 - `{"page": "42-58"}` → Output: `"pp. 42-58"` (plural, detected automatically!)
 
 **Key difference from `<text term>`**:
+
 ```xml
 <!-- ❌ Manual singular/plural - error-prone -->
 <text term="page" form="short" plural="true"/>
@@ -397,10 +425,12 @@ CSL's conditional branching works like if-else statements:
 ```
 
 **Important**: Multiple attributes in `<if>` use **AND** logic, not OR!
+
 - `<if type="book" variable="author">` means `type === "book" AND author exists`
 - For OR logic, use `match="any"`: `<if type="book article-journal" match="any">`
 
 **Rules**:
+
 - `<choose>` must contain at least one `<if>` element
 - `<if>` must have at least one condition attribute
 - No `<else>` means "return empty if no conditions match"
@@ -408,20 +438,24 @@ CSL's conditional branching works like if-else statements:
 ### `<label>` vs `<macro>`: When to Use Which
 
 #### Use `<label>` (CSL built-in) when:
+
 - ✅ Working with standard CSL variables (page, volume, issue, editor, translator, etc.)
 - ✅ Need automatic singular/plural determination
 - ✅ Want standard localization
 
 #### Use `<macro>` (custom definition) when:
+
 - ✅ Working with custom variables (like `cne-title-romanized`)
 - ✅ Need complex conditional logic
 - ✅ `<label>` doesn't support your use case
 
 **Analogy**:
+
 - `<label>` = Built-in function (like `Math.sqrt()` in JavaScript)
 - `<macro>` = User-defined function (like `function myHelper()`)
 
 **Example - Custom label for CNE**:
+
 ```xml
 <macro name="title-with-cne-labels">
   <group delimiter=" ">
@@ -455,6 +489,7 @@ CSL has a three-layer localization system:
    - Example: British English uses "vols" (no period), American uses "vols."
 
 **Example override**:
+
 ```xml
 <locale xml:lang="en">
   <terms>
@@ -466,6 +501,7 @@ CSL has a three-layer localization system:
 ### Common Patterns
 
 #### Pattern 1: Conditional Labels
+
 ```xml
 <choose>
   <if is-numeric="chapter-number" type="song">
@@ -479,15 +515,18 @@ CSL has a three-layer localization system:
 ```
 
 #### Pattern 2: Smart Groups
+
 ```xml
 <group delimiter=" ">
   <label variable="page" form="short"/>
   <text variable="page"/>
 </group>
 ```
+
 **Note**: `<group>` automatically omits empty elements. If `page` doesn't exist, entire group returns empty.
 
 #### Pattern 3: CNE Supplements (Our Pattern)
+
 ```xml
 <macro name="title-primary-with-cne">
   <group delimiter=" ">
@@ -508,6 +547,7 @@ CSL has a three-layer localization system:
 2. **Use CSL validator**: https://validator.citationstyles.org/
 
 3. **Test with citeproc**:
+
    ```bash
    # Invalid CSL will fail to load
    node tools/citeproc-js-server/lib/citeServer.js
@@ -521,6 +561,7 @@ CSL has a three-layer localization system:
 ### Further Reading
 
 For comprehensive CSL documentation, see:
+
 - [Official CSL Primer](https://docs.citationstyles.org/en/stable/primer.html) - Basics
 - [CSL Specification](https://docs.citationstyles.org/en/stable/specification.html) - Complete reference
 - This guide focuses on practical patterns for CNE style development
@@ -530,6 +571,7 @@ For comprehensive CSL documentation, see:
 ## Resources
 
 ### CSL and Zotero Documentation
+
 - [CSL Specification](https://docs.citationstyles.org/)
 - [CSL Primer](https://docs.citationstyles.org/en/stable/primer.html)
 - [CSL Style Repository](https://github.com/citation-style-language/styles)
@@ -538,5 +580,6 @@ For comprehensive CSL documentation, see:
 - [Chicago Manual of Style](https://www.chicagomanualofstyle.org/)
 
 ### Related Work
+
 - [Customizing Chicago 17 for Japanese and Chinese Citations](https://gist.github.com/tom-newhall/88557892c6646b8cfda9e8963c2b733d) - An alternative CSL-based approach using conditional formatting with `no-comma: true` tags for East Asian names and titles
 - [CSL Discussion: Rendering Japanese Author Names with name-part Affixes](https://discourse.citationstyles.org/t/is-it-possible-to-render-name-part-affixes-in-japanese-author-names/1828/18) - Community discussion on challenges with Japanese name rendering and proposals for using `name-kana` fields for proper sorting and display

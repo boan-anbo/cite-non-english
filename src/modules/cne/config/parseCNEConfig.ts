@@ -23,7 +23,7 @@ export interface RomanizedCJKFormatting {
    *
    * @default 'last-name-first'
    */
-  order?: 'last-name-first' | 'first-name-first';
+  order?: "last-name-first" | "first-name-first";
 
   /**
    * Separator between family and given names
@@ -33,7 +33,7 @@ export interface RomanizedCJKFormatting {
    *
    * @default 'space'
    */
-  separator?: 'comma' | 'space';
+  separator?: "comma" | "space";
 }
 
 /**
@@ -106,7 +106,7 @@ export interface CNEConfigOptions {
  * - `translit`: Transliteration/romanization (searches multi._key for romanized variants)
  * - `translat`: Translation (searches multi._key for translated variants)
  */
-export type SlotValue = 'orig' | 'translit' | 'translat';
+export type SlotValue = "orig" | "translit" | "translat";
 
 /**
  * Valid field type names
@@ -115,7 +115,7 @@ export type SlotValue = 'orig' | 'translit' | 'translat';
  * Title formatting is controlled by CSL macros, as titles require
  * complex style-specific formatting that multi-slot cannot provide.
  */
-export type FieldType = 'persons';
+export type FieldType = "persons";
 
 /**
  * Parse CNE-CONFIG string from style metadata
@@ -158,80 +158,86 @@ export type FieldType = 'persons';
  * **Note**: Titles, journals, publishers use CSL macros, not CNE-CONFIG.
  */
 export function parseCNEConfigString(configString: string): CNEConfigOptions {
-  if (!configString || typeof configString !== 'string') {
-    throw new Error('CNE-CONFIG string must be a non-empty string');
+  if (!configString || typeof configString !== "string") {
+    throw new Error("CNE-CONFIG string must be a non-empty string");
   }
 
   const trimmed = configString.trim();
 
   // Try JSON format first (preferred)
-  if (trimmed.startsWith('{')) {
+  if (trimmed.startsWith("{")) {
     try {
       const parsed = JSON.parse(trimmed);
 
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        throw new Error('CNE-CONFIG JSON must be an object');
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("CNE-CONFIG JSON must be an object");
       }
 
       const config: CNEConfigOptions = {};
-      const validFields: FieldType[] = ['persons'];
-      const validSlots: SlotValue[] = ['orig', 'translit', 'translat'];
-      const validOrders = ['last-name-first', 'first-name-first'];
-      const validSeparators = ['comma', 'space'];
+      const validFields: FieldType[] = ["persons"];
+      const validSlots: SlotValue[] = ["orig", "translit", "translat"];
+      const validOrders = ["last-name-first", "first-name-first"];
+      const validSeparators = ["comma", "space"];
 
       // Validate and convert to CNEConfigOptions
       for (const [key, value] of Object.entries(parsed)) {
         // Handle nameFormatting (new modular structure)
-        if (key === 'nameFormatting') {
-          if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        if (key === "nameFormatting") {
+          if (!value || typeof value !== "object" || Array.isArray(value)) {
             throw new Error(
-              `nameFormatting must be an object, got: ${typeof value}`
+              `nameFormatting must be an object, got: ${typeof value}`,
             );
           }
 
           const nameFormatting: NameFormatting = {};
 
           // Handle romanizedCJK
-          if ('romanizedCJK' in value) {
+          if ("romanizedCJK" in value) {
             const romanizedCJK = (value as any).romanizedCJK;
-            if (!romanizedCJK || typeof romanizedCJK !== 'object' || Array.isArray(romanizedCJK)) {
+            if (
+              !romanizedCJK ||
+              typeof romanizedCJK !== "object" ||
+              Array.isArray(romanizedCJK)
+            ) {
               throw new Error(
-                `nameFormatting.romanizedCJK must be an object, got: ${typeof romanizedCJK}`
+                `nameFormatting.romanizedCJK must be an object, got: ${typeof romanizedCJK}`,
               );
             }
 
             const romanizedCJKFormatting: RomanizedCJKFormatting = {};
 
             // Validate order
-            if ('order' in romanizedCJK) {
+            if ("order" in romanizedCJK) {
               const order = romanizedCJK.order;
-              if (typeof order !== 'string') {
+              if (typeof order !== "string") {
                 throw new Error(
-                  `nameFormatting.romanizedCJK.order must be a string, got: ${typeof order}`
+                  `nameFormatting.romanizedCJK.order must be a string, got: ${typeof order}`,
                 );
               }
               if (!validOrders.includes(order)) {
                 throw new Error(
-                  `Invalid order: "${order}". Valid values: ${validOrders.join(', ')}`
+                  `Invalid order: "${order}". Valid values: ${validOrders.join(", ")}`,
                 );
               }
-              romanizedCJKFormatting.order = order as 'last-name-first' | 'first-name-first';
+              romanizedCJKFormatting.order = order as
+                | "last-name-first"
+                | "first-name-first";
             }
 
             // Validate separator
-            if ('separator' in romanizedCJK) {
+            if ("separator" in romanizedCJK) {
               const separator = romanizedCJK.separator;
-              if (typeof separator !== 'string') {
+              if (typeof separator !== "string") {
                 throw new Error(
-                  `nameFormatting.romanizedCJK.separator must be a string, got: ${typeof separator}`
+                  `nameFormatting.romanizedCJK.separator must be a string, got: ${typeof separator}`,
                 );
               }
               if (!validSeparators.includes(separator)) {
                 throw new Error(
-                  `Invalid separator: "${separator}". Valid values: ${validSeparators.join(', ')}`
+                  `Invalid separator: "${separator}". Valid values: ${validSeparators.join(", ")}`,
                 );
               }
-              romanizedCJKFormatting.separator = separator as 'comma' | 'space';
+              romanizedCJKFormatting.separator = separator as "comma" | "space";
             }
 
             nameFormatting.romanizedCJK = romanizedCJKFormatting;
@@ -244,16 +250,16 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         // Validate field type (e.g., 'persons')
         if (!validFields.includes(key as FieldType)) {
           throw new Error(
-            `Invalid field type: "${key}". Valid types: ${validFields.join(', ')}, nameFormatting. ` +
-            `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
-            `Title formatting is controlled by CSL macros.`
+            `Invalid field type: "${key}". Valid types: ${validFields.join(", ")}, nameFormatting. ` +
+              `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
+              `Title formatting is controlled by CSL macros.`,
           );
         }
 
         // Validate slots is array
         if (!Array.isArray(value)) {
           throw new Error(
-            `Field "${key}" must be an array of slot values, got: ${typeof value}`
+            `Field "${key}" must be an array of slot values, got: ${typeof value}`,
           );
         }
 
@@ -261,7 +267,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         for (const slot of value) {
           if (!validSlots.includes(slot as SlotValue)) {
             throw new Error(
-              `Invalid slot value: "${slot}". Valid values: ${validSlots.join(', ')}`
+              `Invalid slot value: "${slot}". Valid values: ${validSlots.join(", ")}`,
             );
           }
         }
@@ -269,7 +275,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         // Validate slot count (max 3 slots: primary, secondary, tertiary)
         if (value.length > 3) {
           throw new Error(
-            `Too many slots for "${key}": ${value.length}. Maximum is 3 (primary, secondary, tertiary)`
+            `Too many slots for "${key}": ${value.length}. Maximum is 3 (primary, secondary, tertiary)`,
           );
         }
 
@@ -295,35 +301,35 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
     if (!assignment) continue;
 
     // Parse field=slot1,slot2,slot3
-    const parts = assignment.split('=');
+    const parts = assignment.split("=");
     if (parts.length !== 2) {
       throw new Error(
-        `Invalid CNE-CONFIG syntax: "${assignment}". Expected format: "field=slot1,slot2"`
+        `Invalid CNE-CONFIG syntax: "${assignment}". Expected format: "field=slot1,slot2"`,
       );
     }
 
     const [fieldType, slotsStr] = parts;
 
     // Validate field type
-    const validFields: FieldType[] = ['persons'];
+    const validFields: FieldType[] = ["persons"];
 
     if (!validFields.includes(fieldType as FieldType)) {
       throw new Error(
-        `Invalid field type: "${fieldType}". Valid types: ${validFields.join(', ')}. ` +
-        `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
-        `Title formatting is controlled by CSL macros.`
+        `Invalid field type: "${fieldType}". Valid types: ${validFields.join(", ")}. ` +
+          `Note: CNE-CONFIG only controls multi-slot rendering for names. ` +
+          `Title formatting is controlled by CSL macros.`,
       );
     }
 
     // Parse slots
-    const slots = slotsStr.split(',').map((s) => s.trim());
+    const slots = slotsStr.split(",").map((s) => s.trim());
 
     // Validate slots
-    const validSlots: SlotValue[] = ['orig', 'translit', 'translat'];
+    const validSlots: SlotValue[] = ["orig", "translit", "translat"];
     for (const slot of slots) {
       if (!validSlots.includes(slot as SlotValue)) {
         throw new Error(
-          `Invalid slot value: "${slot}". Valid values: ${validSlots.join(', ')}`
+          `Invalid slot value: "${slot}". Valid values: ${validSlots.join(", ")}`,
         );
       }
     }
@@ -331,7 +337,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
     // Validate slot count (max 3 slots: primary, secondary, tertiary)
     if (slots.length > 3) {
       throw new Error(
-        `Too many slots for "${fieldType}": ${slots.length}. Maximum is 3 (primary, secondary, tertiary)`
+        `Too many slots for "${fieldType}": ${slots.length}. Maximum is 3 (primary, secondary, tertiary)`,
       );
     }
 
@@ -362,57 +368,78 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
 function extractCNEConfigFromPI(doc: Document): CNEConfigOptions | null {
   try {
     // === DIAGNOSTIC LOGGING START ===
-    Zotero.debug('[CNE Config PI] === DIAGNOSTIC START ===');
-    Zotero.debug('[CNE Config PI] typeof Node: ' + typeof Node);
+    Zotero.debug("[CNE Config PI] === DIAGNOSTIC START ===");
+    Zotero.debug("[CNE Config PI] typeof Node: " + typeof Node);
 
-    if (typeof Node !== 'undefined') {
-      Zotero.debug('[CNE Config PI] Node is defined');
-      Zotero.debug('[CNE Config PI] Node.PROCESSING_INSTRUCTION_NODE: ' + Node.PROCESSING_INSTRUCTION_NODE);
-      Zotero.debug('[CNE Config PI] Node.ELEMENT_NODE: ' + Node.ELEMENT_NODE);
-      Zotero.debug('[CNE Config PI] Node.TEXT_NODE: ' + Node.TEXT_NODE);
+    if (typeof Node !== "undefined") {
+      Zotero.debug("[CNE Config PI] Node is defined");
+      Zotero.debug(
+        "[CNE Config PI] Node.PROCESSING_INSTRUCTION_NODE: " +
+          Node.PROCESSING_INSTRUCTION_NODE,
+      );
+      Zotero.debug("[CNE Config PI] Node.ELEMENT_NODE: " + Node.ELEMENT_NODE);
+      Zotero.debug("[CNE Config PI] Node.TEXT_NODE: " + Node.TEXT_NODE);
     } else {
-      Zotero.debug('[CNE Config PI] Node is UNDEFINED - will use numeric constant 7');
+      Zotero.debug(
+        "[CNE Config PI] Node is UNDEFINED - will use numeric constant 7",
+      );
     }
     // === DIAGNOSTIC LOGGING END ===
 
     // Get <info> element
-    const infoElement = doc.querySelector('info');
+    const infoElement = doc.querySelector("info");
     if (!infoElement) {
-      Zotero.debug('[CNE Config PI] No <info> element found');
+      Zotero.debug("[CNE Config PI] No <info> element found");
       return null;
     }
 
-    Zotero.debug('[CNE Config PI] Found <info> element, child nodes count: ' + infoElement.childNodes.length);
+    Zotero.debug(
+      "[CNE Config PI] Found <info> element, child nodes count: " +
+        infoElement.childNodes.length,
+    );
 
     // Iterate through child nodes looking for processing instruction
     for (let i = 0; i < infoElement.childNodes.length; i++) {
       const node = infoElement.childNodes[i];
 
       // === DIAGNOSTIC: Log each node ===
-      Zotero.debug(`[CNE Config PI] Node ${i}: type=${node.nodeType}, nodeName="${node.nodeName}"`);
+      Zotero.debug(
+        `[CNE Config PI] Node ${i}: type=${node.nodeType}, nodeName="${node.nodeName}"`,
+      );
 
       // Check if it's a processing instruction with target "cne-config"
       // Use numeric constant (7) for PROCESSING_INSTRUCTION_NODE
       if (node.nodeType === 7) {
         Zotero.debug(`[CNE Config PI] Found PI node! Checking target...`);
         const pi = node as ProcessingInstruction;
-        Zotero.debug(`[CNE Config PI] PI target: "${pi.target}", data: "${pi.data}"`);
+        Zotero.debug(
+          `[CNE Config PI] PI target: "${pi.target}", data: "${pi.data}"`,
+        );
 
-        if (pi.target === 'cne-config') {
+        if (pi.target === "cne-config") {
           const configString = pi.data.trim();
-          Zotero.debug(`[CNE Config PI] SUCCESS! Found cne-config PI: "${configString}"`);
+          Zotero.debug(
+            `[CNE Config PI] SUCCESS! Found cne-config PI: "${configString}"`,
+          );
           return parseCNEConfigString(configString);
         } else {
-          Zotero.debug(`[CNE Config PI] PI target mismatch: "${pi.target}" !== "cne-config"`);
+          Zotero.debug(
+            `[CNE Config PI] PI target mismatch: "${pi.target}" !== "cne-config"`,
+          );
         }
       }
     }
 
-    Zotero.debug('[CNE Config PI] No <?cne-config?> processing instruction found');
+    Zotero.debug(
+      "[CNE Config PI] No <?cne-config?> processing instruction found",
+    );
     return null;
   } catch (error) {
-    Zotero.debug('[CNE Config PI] ERROR: ' + error);
-    Zotero.debug('[CNE Config PI] Error stack: ' + (error instanceof Error ? error.stack : 'no stack'));
+    Zotero.debug("[CNE Config PI] ERROR: " + error);
+    Zotero.debug(
+      "[CNE Config PI] Error stack: " +
+        (error instanceof Error ? error.stack : "no stack"),
+    );
     return null;
   }
 }
@@ -439,19 +466,23 @@ function extractCNEConfigFromPI(doc: Document): CNEConfigOptions | null {
  * // Returns: { persons: ['translit', 'orig'] }
  * ```
  */
-export function extractCNEConfigFromStyleXml(styleXml: string | Document): CNEConfigOptions | null {
+export function extractCNEConfigFromStyleXml(
+  styleXml: string | Document,
+): CNEConfigOptions | null {
   try {
     let doc: Document;
 
     // Parse XML if string provided
-    if (typeof styleXml === 'string') {
+    if (typeof styleXml === "string") {
       const parser = new DOMParser();
-      doc = parser.parseFromString(styleXml, 'text/xml');
+      doc = parser.parseFromString(styleXml, "text/xml");
 
       // Check for parsing errors
-      const parserError = doc.querySelector('parsererror');
+      const parserError = doc.querySelector("parsererror");
       if (parserError) {
-        Zotero.debug('[CNE Config] XML parsing error: ' + parserError.textContent);
+        Zotero.debug(
+          "[CNE Config] XML parsing error: " + parserError.textContent,
+        );
         return null;
       }
     } else {
@@ -461,44 +492,46 @@ export function extractCNEConfigFromStyleXml(styleXml: string | Document): CNECo
     // Try Processing Instruction first (preferred method)
     const piConfig = extractCNEConfigFromPI(doc);
     if (piConfig) {
-      Zotero.debug('[CNE Config] Using PI-based config');
+      Zotero.debug("[CNE Config] Using PI-based config");
       return piConfig;
     }
 
     // Fallback to summary parsing (legacy method for backward compatibility)
-    Zotero.debug('[CNE Config] No PI found, trying summary fallback');
+    Zotero.debug("[CNE Config] No PI found, trying summary fallback");
 
-    const summaryElement = doc.querySelector('info > summary');
+    const summaryElement = doc.querySelector("info > summary");
     if (!summaryElement) {
-      Zotero.debug('[CNE Config] No <summary> element found');
+      Zotero.debug("[CNE Config] No <summary> element found");
       return null;
     }
 
-    const summaryText = summaryElement.textContent || '';
+    const summaryText = summaryElement.textContent || "";
 
     // Look for CNE-CONFIG: marker
-    const configMarker = 'CNE-CONFIG:';
+    const configMarker = "CNE-CONFIG:";
     const markerIndex = summaryText.indexOf(configMarker);
 
     if (markerIndex === -1) {
-      Zotero.debug('[CNE Config] No CNE-CONFIG marker found in summary');
+      Zotero.debug("[CNE Config] No CNE-CONFIG marker found in summary");
       return null;
     }
 
     // Extract config string (everything after "CNE-CONFIG:" until end or newline)
     const configStart = markerIndex + configMarker.length;
     const remaining = summaryText.substring(configStart);
-    const configString = remaining.split('\n')[0].trim();
+    const configString = remaining.split("\n")[0].trim();
 
     if (!configString) {
-      Zotero.debug('[CNE Config] Empty config string after CNE-CONFIG marker');
+      Zotero.debug("[CNE Config] Empty config string after CNE-CONFIG marker");
       return null;
     }
 
-    Zotero.debug(`[CNE Config] Found summary config (legacy): "${configString}"`);
+    Zotero.debug(
+      `[CNE Config] Found summary config (legacy): "${configString}"`,
+    );
     return parseCNEConfigString(configString);
   } catch (error) {
-    Zotero.debug('[CNE Config] Error extracting config from style: ' + error);
+    Zotero.debug("[CNE Config] Error extracting config from style: " + error);
     return null;
   }
 }
@@ -521,7 +554,7 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
   try {
     // Get style XML from Zotero style object
     // Zotero styles have a getXML() method that returns the style XML
-    if (typeof style.getXML === 'function') {
+    if (typeof style.getXML === "function") {
       const styleXml = style.getXML();
       const configFromMemory = extractCNEConfigFromStyleXml(styleXml);
       if (configFromMemory) {
@@ -540,7 +573,7 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
     // Final fallback: read the installed style file from disk.
     // This covers cases where the in-memory style XML lacks the CNE markers
     // (e.g. temporary Style Editor copies).
-    if (style.path && typeof style.path === 'string') {
+    if (style.path && typeof style.path === "string") {
       try {
         const fileContents = (Zotero.File as any).getContents
           ? (Zotero.File as any).getContents(style.path)
@@ -549,25 +582,30 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
           const configFromFile = extractCNEConfigFromStyleXml(fileContents);
           if (configFromFile) {
             Zotero.debug(
-              '[CNE Config] Loaded configuration from style.path fallback: ' + style.path
+              "[CNE Config] Loaded configuration from style.path fallback: " +
+                style.path,
             );
             return configFromFile;
           }
         }
       } catch (fileError) {
         Zotero.debug(
-          '[CNE Config] Failed to read style.path fallback (' +
+          "[CNE Config] Failed to read style.path fallback (" +
             style.path +
-            '): ' +
-            fileError
+            "): " +
+            fileError,
         );
       }
     }
 
-    Zotero.debug('[CNE Config] Style object has no getXML() method or xml property');
+    Zotero.debug(
+      "[CNE Config] Style object has no getXML() method or xml property",
+    );
     return null;
   } catch (error) {
-    Zotero.debug('[CNE Config] Error extracting config from style object: ' + error);
+    Zotero.debug(
+      "[CNE Config] Error extracting config from style object: " + error,
+    );
     return null;
   }
 }
@@ -588,7 +626,7 @@ export function extractCNEConfigFromStyle(style: any): CNEConfigOptions | null {
  */
 export function getDefaultCNEConfig(): CNEConfigOptions {
   return {
-    persons: ['translit'],
+    persons: ["translit"],
   };
 }
 
@@ -599,12 +637,12 @@ export function getDefaultCNEConfig(): CNEConfigOptions {
  * @returns True if valid, false otherwise
  */
 export function isValidCNEConfig(config: any): config is CNEConfigOptions {
-  if (!config || typeof config !== 'object') {
+  if (!config || typeof config !== "object") {
     return false;
   }
 
-  const validFields: FieldType[] = ['persons'];
-  const validSlots: SlotValue[] = ['orig', 'translit', 'translat'];
+  const validFields: FieldType[] = ["persons"];
+  const validSlots: SlotValue[] = ["orig", "translit", "translat"];
 
   for (const field of validFields) {
     if (field in config) {

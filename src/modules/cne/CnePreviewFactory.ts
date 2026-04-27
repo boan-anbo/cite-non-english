@@ -9,7 +9,7 @@ import {
   extractCNEConfigFromStyle,
   configureCiteprocForCNE,
   getDefaultCNEConfig,
-} from './config';
+} from "./config";
 
 /**
  * Decorator for example functions
@@ -76,11 +76,12 @@ export class CnePreviewFactory {
 
     // Get available styles and default to first available, or Chicago
     const availableStyles = Zotero.Styles.getVisible();
-    let defaultStyleId = "http://www.zotero.org/styles/chicago-note-bibliography";
+    let defaultStyleId =
+      "http://www.zotero.org/styles/chicago-note-bibliography";
 
     // Try to find CNE test style first, otherwise use Chicago
-    const cneTestStyle = availableStyles.find((s: any) =>
-      s.styleID.includes("cne-test") || s.title.includes("CNE")
+    const cneTestStyle = availableStyles.find(
+      (s: any) => s.styleID.includes("cne-test") || s.title.includes("CNE"),
     );
 
     if (cneTestStyle) {
@@ -344,7 +345,9 @@ export class CnePreviewFactory {
       const styleId = dialogData.selectedStyleId;
       const locale = dialogData.selectedLocale || "en-US";
 
-      ztoolkit.log(`Generating preview with style: ${styleId}, locale: ${locale}`);
+      ztoolkit.log(
+        `Generating preview with style: ${styleId}, locale: ${locale}`,
+      );
 
       // Get citation and bibliography HTML
       const result = await this.generateCitationPreview(items, styleId, locale);
@@ -361,7 +364,9 @@ export class CnePreviewFactory {
       }
 
       const citationsDiv = dialogDoc.getElementById("cne-citations-preview");
-      const bibliographyDiv = dialogDoc.getElementById("cne-bibliography-preview");
+      const bibliographyDiv = dialogDoc.getElementById(
+        "cne-bibliography-preview",
+      );
 
       if (citationsDiv) {
         citationsDiv.innerHTML = result.citationHTML;
@@ -381,7 +386,9 @@ export class CnePreviewFactory {
       }
 
       const citationsDiv = dialogDoc.getElementById("cne-citations-preview");
-      const bibliographyDiv = dialogDoc.getElementById("cne-bibliography-preview");
+      const bibliographyDiv = dialogDoc.getElementById(
+        "cne-bibliography-preview",
+      );
 
       const errorMsg = `<p style="color: red;">Error generating preview: ${error}</p>`;
 
@@ -419,10 +426,15 @@ export class CnePreviewFactory {
       // Extract CNE-CONFIG from style metadata and apply to engine
       const cneConfig = extractCNEConfigFromStyle(style);
       if (cneConfig) {
-        console.log('[CNE Preview] Found CNE-CONFIG, applying to engine:', cneConfig);
+        console.log(
+          "[CNE Preview] Found CNE-CONFIG, applying to engine:",
+          cneConfig,
+        );
         configureCiteprocForCNE(cslEngine, cneConfig);
       } else {
-        console.log('[CNE Preview] No CNE-CONFIG found, using default configuration');
+        console.log(
+          "[CNE Preview] No CNE-CONFIG found, using default configuration",
+        );
         configureCiteprocForCNE(cslEngine, getDefaultCNEConfig());
       }
 
@@ -448,7 +460,7 @@ export class CnePreviewFactory {
           citation,
           [],
           [],
-          "html"
+          "html",
         );
         ztoolkit.log("Preview citation generated:", citationResult);
 
@@ -475,14 +487,17 @@ export class CnePreviewFactory {
                 singleCitation,
                 [],
                 [],
-                "html"
+                "html",
               );
 
               if (result && result !== "[NO_PRINTED_FORM]") {
                 individualCitations.push(`<p>${result}</p>`);
               }
             } catch (err) {
-              ztoolkit.log(`Error generating citation for item ${itemIds[i]}:`, err);
+              ztoolkit.log(
+                `Error generating citation for item ${itemIds[i]}:`,
+                err,
+              );
             }
           }
 
@@ -509,7 +524,8 @@ export class CnePreviewFactory {
 
       return {
         citationHTML: citationHTML || "<p>No citation generated</p>",
-        bibliographyHTML: bibliographyHTML || "<p>No bibliography generated</p>",
+        bibliographyHTML:
+          bibliographyHTML || "<p>No bibliography generated</p>",
       };
     } catch (error) {
       ztoolkit.log("Error in generateCitationPreview:", error);

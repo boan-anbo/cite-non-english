@@ -4,7 +4,11 @@
  */
 
 import { CneMetadata } from "../../model/CneMetadata";
-import { setupDataBinding, setupLanguageBinding, updateCreatorSignature } from "../binding";
+import {
+  setupDataBinding,
+  setupLanguageBinding,
+  updateCreatorSignature,
+} from "../binding";
 import { setupClearButtons } from "../handlers";
 import { buildMainContainer } from "./containerBuilder";
 import { renderError } from "./errorRenderer";
@@ -47,7 +51,6 @@ export function renderCneSection(renderProps: {
 
     // Initialize creator signature for change detection
     updateCreatorSignature(body, item);
-
   } catch (error) {
     ztoolkit.log("[CNE] Error rendering non-English section:", error);
     renderError(body, error);

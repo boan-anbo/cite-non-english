@@ -6,5 +6,11 @@
 export { setupDataBinding } from "./dataBinding";
 export { setupStaticFieldBinding } from "./staticFieldBinding";
 export { setupAuthorFieldBinding } from "./authorFieldBinding";
-export { setupLanguageBinding, cleanupLanguageBinding } from "./languageBinding";
-export { checkCreatorsChanged, updateCreatorSignature } from "./creatorChangeDetector";
+export {
+  setupLanguageBinding,
+  cleanupLanguageBinding,
+} from "./languageBinding";
+export {
+  checkCreatorsChanged,
+  updateCreatorSignature,
+} from "./creatorChangeDetector";

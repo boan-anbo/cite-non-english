@@ -21,11 +21,11 @@
  * ```
  */
 
-import { ALL_FIXTURES as UNIFIED_FIXTURES } from './unified-fixtures';
+import { ALL_FIXTURES as UNIFIED_FIXTURES } from "./unified-fixtures";
 
 // Re-export types and constants
-export * from './types';
-export * from './constants';
+export * from "./types";
+export * from "./constants";
 
 /**
  * Single source of truth for all test fixtures

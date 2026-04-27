@@ -8,7 +8,7 @@
  * Based on MLA 9th edition standard formatting.
  */
 
-import { FIXTURE_IDS } from '../../../fixtures/constants';
+import { FIXTURE_IDS } from "../../../fixtures/constants";
 
 export const englishExpectations: Record<string, string> = {
   /**
@@ -21,6 +21,5 @@ export const englishExpectations: Record<string, string> = {
    * Note: Multiple authors: first author inverted, others in natural order
    * Note: Editors NOT inverted: “edited by S. N. Caroff, S. C. Mann, and A. Francis“
    */
-  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]:
-    `Petrides, Georgios, et al. “Convulsive Therapy.” <i>Catatonia: From Psychopathology to Neurobiology</i>, edited by Stanley N. Caroff et al., American Psychiatric Association Publishing, 2004.`,
+  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]: `Petrides, Georgios, et al. “Convulsive Therapy.” <i>Catatonia: From Psychopathology to Neurobiology</i>, edited by Stanley N. Caroff et al., American Psychiatric Association Publishing, 2004.`,
 };

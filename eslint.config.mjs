@@ -12,5 +12,12 @@ export default zotero({
         "@typescript-eslint/no-unused-vars": "off",
       },
     },
+    {
+      files: ["test/**/*.test.ts"],
+      rules: {
+        // CSL fixtures share generated describe blocks across languages/styles.
+        "mocha/no-setup-in-describe": "off",
+      },
+    },
   ],
 });

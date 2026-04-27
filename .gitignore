@@ -19,6 +19,8 @@ dist/
 # Development tools - ignore node_modules only
 test-debug.txt
 tools/style-variant-builder/
+styles/.venv/
+__pycache__/
 
 # Test artifacts
 *.log
