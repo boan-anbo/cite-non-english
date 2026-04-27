@@ -23,6 +23,8 @@ export const FIXTURE_IDS = {
   ZHCN_DU_2007_DUNHUANG: 'du-2007-dunhuang',
   ZHCN_DU_2007_DUNHUANG_REV: 'du-2007-dunhuang-rev',  // Same as du-2007 but editors reversed (English first)
   ZHCN_SHA_2014_SHIKU: 'sha-2014-shiku',
+  ZHCN_SUN_1968_XUNXIAN: 'sun-1968-xunxian',
+  ZHCN_LI_2002_JINHOU: 'li-2002-jinhou',
 
   // Japanese fixtures (ja)
   JA_ABE_1983_SAIGO: 'abe-1983-saigo',
