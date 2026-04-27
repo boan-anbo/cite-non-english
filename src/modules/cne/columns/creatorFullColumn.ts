@@ -13,9 +13,14 @@ import { parseCNEMetadata } from "../metadata-parser";
  * CJK language codes that should use no-space formatting
  */
 const CJK_LANGUAGES = new Set([
-  "zh-CN", "zh-TW", "zh-HK", "zh-SG", // Chinese variants
-  "ja-JP", "ja",                       // Japanese
-  "ko-KR", "ko",                       // Korean
+  "zh-CN",
+  "zh-TW",
+  "zh-HK",
+  "zh-SG", // Chinese variants
+  "ja-JP",
+  "ja", // Japanese
+  "ko-KR",
+  "ko", // Korean
   "zh", // Generic Chinese
 ]);
 
@@ -131,7 +136,8 @@ export function getCreatorDisplay(item: Zotero.Item): string {
       // Fallback: detect from name characters
       const lastName = firstCreator.lastName || "";
       const firstName = firstCreator.firstName || "";
-      useCJKFormat = containsCJKCharacters(lastName) || containsCJKCharacters(firstName);
+      useCJKFormat =
+        containsCJKCharacters(lastName) || containsCJKCharacters(firstName);
     }
 
     // Format and return

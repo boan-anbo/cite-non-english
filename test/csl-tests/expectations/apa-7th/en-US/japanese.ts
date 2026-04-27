@@ -13,7 +13,7 @@
  * https://guides.library.yale.edu/c.php?g=296262&p=1974231
  */
 
-import { FIXTURE_IDS } from '../../../fixtures/constants';
+import { FIXTURE_IDS } from "../../../fixtures/constants";
 
 export const japaneseExpectations: Record<string, string> = {
   /**
@@ -22,8 +22,7 @@ export const japaneseExpectations: Record<string, string> = {
    * APA Format:
    * Author. (Year). Title [Translation]. Publisher.
    */
-  [FIXTURE_IDS.JA_ABE_1983_SAIGO]:
-    `Abe, Y., & Kaneko, H. (1983). <i>Saigo no “Nihonjin”: Asakawa Kan’Ichi no shōgai</i> [The last “Japanese”: Life of Kan’ichi Asakawa]. Iwanami Shoten.`,
+  [FIXTURE_IDS.JA_ABE_1983_SAIGO]: `Abe, Y., & Kaneko, H. (1983). <i>Saigo no “Nihonjin”: Asakawa Kan’Ichi no shōgai</i> [The last “Japanese”: Life of Kan’ichi Asakawa]. Iwanami Shoten.`,
 
   /**
    * Japanese Journal Article - Kondō (2013)
@@ -34,8 +33,7 @@ export const japaneseExpectations: Record<string, string> = {
    * Note: Article titles are NOT italicized
    * Note: Journal title and volume are italicized
    */
-  [FIXTURE_IDS.JA_KONDO_2013_YALE]:
-    `Kondō, S. (2013). Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite [On Harima no Kuni Ōbe no Shō Kankei Monjo at Yale University Collection]. <i>Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō</i>, <i>23</i>, 1–22.`,
+  [FIXTURE_IDS.JA_KONDO_2013_YALE]: `Kondō, S. (2013). Yēru Daigaku Shozō Harima no Kuni Ōbe no Shō Kankei Monjo ni Tsuite [On Harima no Kuni Ōbe no Shō Kankei Monjo at Yale University Collection]. <i>Tokyō Daigaku Shiryō Hensanjo Kenkyū Kiyō</i>, <i>23</i>, 1–22.`,
 
   /**
    * Japanese Film - Ozu (1953)
@@ -45,8 +43,7 @@ export const japaneseExpectations: Record<string, string> = {
    *
    * Note: This example doesn't have an English translation in the fixture
    */
-  [FIXTURE_IDS.JA_OZU_1953_TOKYO]:
-    `Ozu, Y. (Director). (1953). <i>Tōkyō Monogatari</i> [Video recording]. Shōchiku.`,
+  [FIXTURE_IDS.JA_OZU_1953_TOKYO]: `Ozu, Y. (Director). (1953). <i>Tōkyō Monogatari</i> [Video recording]. Shōchiku.`,
 
   /**
    * Japanese Book Chapter - Yoshimi (2012)
@@ -54,6 +51,5 @@ export const japaneseExpectations: Record<string, string> = {
    * APA Format:
    * Author. (Year). Chapter title [Translation]. In Editor (Ed.), Book title [Translation] (pp. Pages). Publisher.
    */
-  [FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU]:
-    `Yoshimi, S. (2012). Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō [Expo as another media: reception of Atoms for Peace]. In <i>Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio</i> [Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War] (pp. 291–315). Tōkyō Daigaku Shuppan.`,
+  [FIXTURE_IDS.JA_YOSHIMI_2012_MOHITOTSU]: `Yoshimi, S. (2012). Mōhitotsu no media to shite no hakurankai: Genshiryoku Heiwa Riyōhaku no juyō [Expo as another media: reception of Atoms for Peace]. In <i>Senryō suru me senryō suru koe: CIE/USIS eia to VOA rajio</i> [Occupying Eyes, Occupying Voices: CIE/USIS Films and VOA Radio in Asia during the Cold War] (pp. 291–315). Tōkyō Daigaku Shuppan.`,
 };

@@ -14,11 +14,11 @@ export {
   type CNEConfigOptions,
   type SlotValue,
   type FieldType,
-} from './parseCNEConfig';
+} from "./parseCNEConfig";
 
 export {
   configureCiteprocForCNE,
   setCiteAffixes,
   setTransliterationTags,
   installCneLangPrefPatch,
-} from './configureCiteproc';
+} from "./configureCiteproc";

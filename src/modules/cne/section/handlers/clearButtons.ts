@@ -14,7 +14,10 @@ import { debouncedSave } from "./saveHandler";
  * @param container - Container element
  * @param metadata - CneMetadata instance
  */
-export function setupClearButtons(container: HTMLElement, metadata: CneMetadata): void {
+export function setupClearButtons(
+  container: HTMLElement,
+  metadata: CneMetadata,
+): void {
   const clearButtons = container.querySelectorAll(".cne-clear-button");
 
   clearButtons.forEach((button: Element) => {
@@ -42,7 +45,8 @@ export function setupClearButtons(container: HTMLElement, metadata: CneMetadata)
         if (!indexMatch) return;
 
         const authorIndex = parseInt(indexMatch[1], 10);
-        if (!metadata.data.authors || !metadata.data.authors[authorIndex]) return;
+        if (!metadata.data.authors || !metadata.data.authors[authorIndex])
+          return;
 
         const fieldKey = keys[1];
         (metadata.data.authors[authorIndex] as any)[fieldKey] = "";

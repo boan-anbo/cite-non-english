@@ -3,4 +3,8 @@
  * Centralized exports for all UI updater functionality
  */
 
-export { updateLivePreview, updateFieldCounter, updateAllUI } from "./uiUpdaters";
+export {
+  updateLivePreview,
+  updateFieldCounter,
+  updateAllUI,
+} from "./uiUpdaters";

@@ -195,7 +195,10 @@
 
 import type { CneCreatorData } from "../types";
 import { parseCNEMetadata } from "../metadata-parser";
-import { buildNameVariant, type VariantConfig } from "../utils/nameVariantBuilder";
+import {
+  buildNameVariant,
+  type VariantConfig,
+} from "../utils/nameVariantBuilder";
 import { getPref } from "../../../utils/prefs";
 
 /**
@@ -266,11 +269,17 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
 
     // Check if first element looks like a name object (has family/given/literal)
     const firstElement = value[0];
-    if (!firstElement || typeof firstElement !== 'object') {
+    if (!firstElement || typeof firstElement !== "object") {
       continue;
     }
 
-    if (!('family' in firstElement || 'given' in firstElement || 'literal' in firstElement)) {
+    if (
+      !(
+        "family" in firstElement ||
+        "given" in firstElement ||
+        "literal" in firstElement
+      )
+    ) {
       continue;
     }
 
@@ -306,9 +315,12 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       // See docs/citeproc-name-ordering.md for detailed explanation.
       // ============================================================================
 
-      const hasCneData = cneCreator &&
-        (cneCreator.lastRomanized || cneCreator.firstRomanized ||
-         cneCreator.lastOriginal || cneCreator.firstOriginal);
+      const hasCneData =
+        cneCreator &&
+        (cneCreator.lastRomanized ||
+          cneCreator.firstRomanized ||
+          cneCreator.lastOriginal ||
+          cneCreator.firstOriginal);
 
       if (hasCneData) {
         // This creator has CNE data → use original language for Asian ordering
@@ -317,7 +329,7 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
           cslCreator.multi = {};
         }
         if (!cslCreator.multi._key) {
-          cslCreator.multi._key = {};  // Always initialize to prevent undefined errors
+          cslCreator.multi._key = {}; // Always initialize to prevent undefined errors
         }
         cslCreator.multi.main = originalLang;
       } else {
@@ -327,7 +339,7 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
           cslCreator.multi = {};
         }
         if (!cslCreator.multi._key) {
-          cslCreator.multi._key = {};  // Always initialize to prevent undefined errors
+          cslCreator.multi._key = {}; // Always initialize to prevent undefined errors
         }
         cslCreator.multi.main = "en";
       }
@@ -412,26 +424,29 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
         // EXTENSIBLE SPACING LOGIC for original names
         // Read comma-separated language codes from preferences
         // Example: "ja" or "ja,zh,ko"
-        const spacingLanguagesStr = (getPref('spacingLanguages') as string) || '';
+        const spacingLanguagesStr =
+          (getPref("spacingLanguages") as string) || "";
         const spacingLanguages = spacingLanguagesStr
-          .split(',')
-          .map(s => s.trim())
-          .filter(s => s.length > 0);
+          .split(",")
+          .map((s) => s.trim())
+          .filter((s) => s.length > 0);
 
         // Check if originalLang matches any configured language
         // Uses prefix matching: 'ja' matches 'ja', 'ja-JP', 'ja-Latn'
-        const autoApplySpacing = spacingLanguages.some(lang =>
-          originalLang.startsWith(lang)
+        const autoApplySpacing = spacingLanguages.some((lang) =>
+          originalLang.startsWith(lang),
         );
 
         // Per-author override always wins if explicitly set
-        const shouldSpace = cneCreator.optionsOriginalSpacing ?? autoApplySpacing;
+        const shouldSpace =
+          cneCreator.optionsOriginalSpacing ?? autoApplySpacing;
 
         // If spacing enabled, prepend space to given name for citeproc concatenation
         // Citeproc will output: family + given = "山田" + " 太郎" = "山田 太郎"
-        cslCreator.given = shouldSpace && cneCreator.lastOriginal
-          ? ` ${cneCreator.firstOriginal}`  // Prepend space: " 太郎"
-          : cneCreator.firstOriginal;        // No space: "小波"
+        cslCreator.given =
+          shouldSpace && cneCreator.lastOriginal
+            ? ` ${cneCreator.firstOriginal}` // Prepend space: " 太郎"
+            : cneCreator.firstOriginal; // No space: "小波"
       }
 
       // 2. Create DUAL romanized variants (for 'translit' slot)
@@ -439,39 +454,39 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
         // Variant 1: NATIVE formatting (no commas) - for Chicago
         // Uses abstraction to determine proper multi.main (always inherits for 'en')
         // Comma injection applied if optionsForceComma is enabled
-        cslCreator.multi._key['en'] = buildNameVariant(
+        cslCreator.multi._key["en"] = buildNameVariant(
           {
-            variantTag: 'en',
+            variantTag: "en",
             creatorRole: key,
             originalLang: originalLang,
             hasCNE: true,
-            forceComma: cneCreator.optionsForceComma
+            forceComma: cneCreator.optionsForceComma,
           },
-          cneCreator.lastRomanized || '',
-          cneCreator.firstRomanized || ''
+          cneCreator.lastRomanized || "",
+          cneCreator.firstRomanized || "",
         );
 
         // Variant 2: WESTERN formatting (with inversion) - for APA
         // Uses abstraction to handle role-specific multi.main for container creators
         // Comma injection applied if optionsForceComma is enabled
-        cslCreator.multi._key['en-x-western'] = buildNameVariant(
+        cslCreator.multi._key["en-x-western"] = buildNameVariant(
           {
-            variantTag: 'en-x-western',
+            variantTag: "en-x-western",
             creatorRole: key,
             originalLang: originalLang,
             hasCNE: true,
-            forceComma: cneCreator.optionsForceComma
+            forceComma: cneCreator.optionsForceComma,
           },
-          cneCreator.lastRomanized || '',
-          cneCreator.firstRomanized || ''
+          cneCreator.lastRomanized || "",
+          cneCreator.firstRomanized || "",
         );
       }
 
       Zotero.debug(
         `[CNE] Dual-variant architecture - Main=original, en=native romanized, en-x-western=western romanized` +
-        `\n  Main fields (original): ${JSON.stringify({ family: cslCreator.family, given: cslCreator.given })}` +
-        `\n  multi._key['en'] (native romanized): ${JSON.stringify(cslCreator.multi._key['en'])}` +
-        `\n  multi._key['en-x-western'] (western romanized): ${JSON.stringify(cslCreator.multi._key['en-x-western'])}`
+          `\n  Main fields (original): ${JSON.stringify({ family: cslCreator.family, given: cslCreator.given })}` +
+          `\n  multi._key['en'] (native romanized): ${JSON.stringify(cslCreator.multi._key["en"])}` +
+          `\n  multi._key['en-x-western'] (western romanized): ${JSON.stringify(cslCreator.multi._key["en-x-western"])}`,
       );
 
       enrichedCount++;
@@ -479,6 +494,8 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
   }
 
   if (enrichedCount > 0) {
-    ztoolkit.log(`[CNE] Enriched ${enrichedCount} creator name(s) with romanized + original`);
+    ztoolkit.log(
+      `[CNE] Enriched ${enrichedCount} creator name(s) with romanized + original`,
+    );
   }
 }

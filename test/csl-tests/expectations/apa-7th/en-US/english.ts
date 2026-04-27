@@ -6,7 +6,7 @@
  * abstraction doesn't break standard English name formatting.
  */
 
-import { FIXTURE_IDS } from '../../../fixtures/constants';
+import { FIXTURE_IDS } from "../../../fixtures/constants";
 
 export const englishExpectations: Record<string, string> = {
   /**
@@ -19,6 +19,5 @@ export const englishExpectations: Record<string, string> = {
    * Tests that English editors stay in direct order: "S. N. Caroff, S. C. Mann, & A. Francis"
    * NOT inverted: "Caroff, S. N., Mann, S. C., & Francis, A."
    */
-  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]:
-    `Petrides, G., Malur, C., & Fink, M. (2004). Convulsive Therapy. In S. N. Caroff, S. C. Mann, & A. Francis (Eds.), <i>Catatonia: From Psychopathology to Neurobiology</i>. American Psychiatric Association Publishing.`,
+  [FIXTURE_IDS.EN_PETRIDES_2004_CONVULSIVE]: `Petrides, G., Malur, C., & Fink, M. (2004). Convulsive Therapy. In S. N. Caroff, S. C. Mann, & A. Francis (Eds.), <i>Catatonia: From Psychopathology to Neurobiology</i>. American Psychiatric Association Publishing.`,
 };

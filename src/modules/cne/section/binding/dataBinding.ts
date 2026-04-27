@@ -19,7 +19,10 @@ import { setupAuthorFieldBinding } from "./authorFieldBinding";
  * @param container - Container element with input elements
  * @param metadata - CneMetadata instance to bind to
  */
-export function setupDataBinding(container: HTMLElement, metadata: CneMetadata): void {
+export function setupDataBinding(
+  container: HTMLElement,
+  metadata: CneMetadata,
+): void {
   // Find all elements with data-bind attribute
   const boundElements = container.querySelectorAll("[data-bind]");
 

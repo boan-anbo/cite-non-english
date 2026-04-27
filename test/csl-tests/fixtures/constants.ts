@@ -16,34 +16,34 @@
  */
 export const FIXTURE_IDS = {
   // Chinese fixtures (zh-CN)
-  ZHCN_HAO_1998_TANG: 'hao-1998-tang',
-  ZHCN_HUA_1999_QINGDAI: 'hua-1999-qingdai',
-  ZHCN_BEIJING_AIRUSHENG_2011: 'beijing-airusheng-2011',
-  ZHCN_JIA_2010_ERSHISI: 'jia-2010-ershisi',
-  ZHCN_DU_2007_DUNHUANG: 'du-2007-dunhuang',
-  ZHCN_DU_2007_DUNHUANG_REV: 'du-2007-dunhuang-rev',  // Same as du-2007 but editors reversed (English first)
-  ZHCN_SHA_2014_SHIKU: 'sha-2014-shiku',
-  ZHCN_SUN_1968_XUNXIAN: 'sun-1968-xunxian',
-  ZHCN_LI_2002_JINHOU: 'li-2002-jinhou',
+  ZHCN_HAO_1998_TANG: "hao-1998-tang",
+  ZHCN_HUA_1999_QINGDAI: "hua-1999-qingdai",
+  ZHCN_BEIJING_AIRUSHENG_2011: "beijing-airusheng-2011",
+  ZHCN_JIA_2010_ERSHISI: "jia-2010-ershisi",
+  ZHCN_DU_2007_DUNHUANG: "du-2007-dunhuang",
+  ZHCN_DU_2007_DUNHUANG_REV: "du-2007-dunhuang-rev", // Same as du-2007 but editors reversed (English first)
+  ZHCN_SHA_2014_SHIKU: "sha-2014-shiku",
+  ZHCN_SUN_1968_XUNXIAN: "sun-1968-xunxian",
+  ZHCN_LI_2002_JINHOU: "li-2002-jinhou",
 
   // Japanese fixtures (ja)
-  JA_ABE_1983_SAIGO: 'abe-1983-saigo',
-  JA_KONDO_2013_YALE: 'kondo-2013-yale',
-  JA_OZU_1953_TOKYO: 'ozu-1953-tokyo',
-  JA_YOSHIMI_2012_MOHITOTSU: 'yoshimi-2012-mohitotsu',
+  JA_ABE_1983_SAIGO: "abe-1983-saigo",
+  JA_KONDO_2013_YALE: "kondo-2013-yale",
+  JA_OZU_1953_TOKYO: "ozu-1953-tokyo",
+  JA_YOSHIMI_2012_MOHITOTSU: "yoshimi-2012-mohitotsu",
 
   // Korean fixtures (ko)
-  KO_KANG_1990_WONYUNG: 'kang-1990-wonyung',
-  KO_HAN_1991_KYONGHUNG: 'han-1991-kyonghung',
-  KO_HA_2000_TONGSAM: 'ha-2000-tongsam',
-  KO_CHU_2008_KWANGUPYONG: 'chu-2008-kwangupyong',
-  KO_KIM_2020_COMMA: 'kim-2020-comma',  // Test fixture for force-comma feature
+  KO_KANG_1990_WONYUNG: "kang-1990-wonyung",
+  KO_HAN_1991_KYONGHUNG: "han-1991-kyonghung",
+  KO_HA_2000_TONGSAM: "ha-2000-tongsam",
+  KO_CHU_2008_KWANGUPYONG: "chu-2008-kwangupyong",
+  KO_KIM_2020_COMMA: "kim-2020-comma", // Test fixture for force-comma feature
 
   // English fixtures (en) - for testing non-CNE behavior
-  EN_PETRIDES_2004_CONVULSIVE: 'petrides-2004-convulsive',
+  EN_PETRIDES_2004_CONVULSIVE: "petrides-2004-convulsive",
 } as const;
 
 /**
  * Type for fixture ID values (the actual string IDs)
  */
-export type FixtureId = typeof FIXTURE_IDS[keyof typeof FIXTURE_IDS];
+export type FixtureId = (typeof FIXTURE_IDS)[keyof typeof FIXTURE_IDS];

@@ -11,15 +11,17 @@
  * @returns A string signature representing the creators
  */
 function getCreatorSignature(creators: any[]): string {
-  return creators.map(c => {
-    // Include all fields that might change
-    const lastName = c.lastName || '';
-    const firstName = c.firstName || '';
-    const name = c.name || '';
-    const typeID = c.creatorTypeID !== undefined ? c.creatorTypeID : '';
+  return creators
+    .map((c) => {
+      // Include all fields that might change
+      const lastName = c.lastName || "";
+      const firstName = c.firstName || "";
+      const name = c.name || "";
+      const typeID = c.creatorTypeID !== undefined ? c.creatorTypeID : "";
 
-    return `${lastName}|${firstName}|${name}|${typeID}`;
-  }).join(';');
+      return `${lastName}|${firstName}|${name}|${typeID}`;
+    })
+    .join(";");
 }
 
 /**
@@ -32,7 +34,7 @@ function getCreatorSignature(creators: any[]): string {
  */
 export function checkCreatorsChanged(
   container: HTMLElement,
-  item: Zotero.Item
+  item: Zotero.Item,
 ): boolean {
   try {
     const currentCreators = item.getCreators();
@@ -40,12 +42,13 @@ export function checkCreatorsChanged(
     // Count displayed author field groups by looking for unique author field IDs
     // Each author has fields like "author-0-last-romanized", "author-1-last-romanized", etc.
     const displayedAuthorFields = container.querySelectorAll(
-      '[id^="author-"][id$="-last-romanized"]'
+      '[id^="author-"][id$="-last-romanized"]',
     );
     const displayedCount = displayedAuthorFields.length;
 
     // Check for "No creators found" message (displayed when creators.length === 0)
-    const hasNoCreatorsMessage = container.textContent?.includes("No creators found");
+    const hasNoCreatorsMessage =
+      container.textContent?.includes("No creators found");
 
     if (currentCreators.length === 0 && hasNoCreatorsMessage) {
       // Both have 0 creators - no change
@@ -67,7 +70,7 @@ export function checkCreatorsChanged(
 
     // Check content changes using signature comparison
     const currentSignature = getCreatorSignature(currentCreators);
-    const storedSignature = (container as any)._creatorSignature || '';
+    const storedSignature = (container as any)._creatorSignature || "";
     const contentChanged = currentSignature !== storedSignature;
 
     // Determine if any change occurred
@@ -79,11 +82,11 @@ export function checkCreatorsChanged(
 
       if (countChanged) {
         ztoolkit.log(
-          `[CNE] Creators count changed: item has ${currentCreators.length}, displaying ${displayedCount}`
+          `[CNE] Creators count changed: item has ${currentCreators.length}, displaying ${displayedCount}`,
         );
       } else if (contentChanged) {
         ztoolkit.log(
-          `[CNE] Creator names/types changed (count unchanged: ${currentCreators.length})`
+          `[CNE] Creator names/types changed (count unchanged: ${currentCreators.length})`,
         );
       }
     }
@@ -104,14 +107,16 @@ export function checkCreatorsChanged(
  */
 export function updateCreatorSignature(
   container: HTMLElement,
-  item: Zotero.Item
+  item: Zotero.Item,
 ): void {
   try {
     const currentCreators = item.getCreators();
     const signature = getCreatorSignature(currentCreators);
     (container as any)._creatorSignature = signature;
 
-    ztoolkit.log(`[CNE] Updated creator signature for ${currentCreators.length} creators`);
+    ztoolkit.log(
+      `[CNE] Updated creator signature for ${currentCreators.length} creators`,
+    );
   } catch (error) {
     ztoolkit.log("[CNE] Error updating creator signature:", error);
   }

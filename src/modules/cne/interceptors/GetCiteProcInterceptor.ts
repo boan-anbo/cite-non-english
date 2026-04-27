@@ -2,8 +2,11 @@
  * GetCiteProc Interceptor - configures citeproc engines on creation.
  */
 
-import { extractCNEConfigFromStyle } from '../config/parseCNEConfig';
-import { configureCiteprocForCNE, installCneLangPrefPatch } from '../config/configureCiteproc';
+import { extractCNEConfigFromStyle } from "../config/parseCNEConfig";
+import {
+  configureCiteprocForCNE,
+  installCneLangPrefPatch,
+} from "../config/configureCiteproc";
 
 export class GetCiteProcInterceptor {
   private static originalGetCiteProc: any = null;
@@ -18,16 +21,17 @@ export class GetCiteProcInterceptor {
     this.originalGetCiteProc = ZoteroStyle.prototype.getCiteProc;
     installCneLangPrefPatch();
 
-    const self = this;
+    const originalGetCiteProc = this.originalGetCiteProc;
     ZoteroStyle.prototype.getCiteProc = function (...args: any[]) {
-      const engine = self.originalGetCiteProc.call(this, ...args);
+      const engine = originalGetCiteProc.call(this, ...args);
 
       if (!(engine as any)._cneConfigured) {
         const cneConfig = extractCNEConfigFromStyle(this);
         if (cneConfig) {
           configureCiteprocForCNE(engine, cneConfig);
           (engine as any)._cneConfigApplied = cneConfig;
-          (engine as any)._cneLangPrefs = engine.opt?.['cite-lang-prefs']?.persons;
+          (engine as any)._cneLangPrefs =
+            engine.opt?.["cite-lang-prefs"]?.persons;
         }
         (engine as any)._cneConfigured = true;
       }

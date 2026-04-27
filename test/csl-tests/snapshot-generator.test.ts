@@ -38,8 +38,12 @@
  * ```
  */
 
-import { assert } from 'chai';
-import { generateBibliography, generateCitations, saveSnapshot } from './test-helpers';
+import { assert } from "chai";
+import {
+  generateBibliography,
+  generateCitations,
+  saveSnapshot,
+} from "./test-helpers";
 
 /**
  * Style Registry
@@ -52,59 +56,72 @@ import { generateBibliography, generateCitations, saveSnapshot } from './test-he
  */
 const STYLE_REGISTRY = [
   {
-    name: 'Chicago 18th Edition (author-date) - CNE',
-    styleId: 'http://www.zotero.org/styles/chicago-author-date-cne',
-    styleFilename: 'chicago-author-date-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/chicago-author-date-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/chicago-author-date-cne/en-US/all-languages-notes.html'
+    name: "Chicago 18th Edition (author-date) - CNE",
+    styleId: "http://www.zotero.org/styles/chicago-author-date-cne",
+    styleFilename: "chicago-author-date-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/chicago-author-date-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/chicago-author-date-cne/en-US/all-languages-notes.html",
   },
   {
-    name: 'Chicago 18th Edition (Notes and Bibliography) - CNE',
-    styleId: 'http://www.zotero.org/styles/chicago-notes-bibliography-cne',
-    styleFilename: 'chicago-notes-bibliography-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/chicago-notes-bibliography-cne/en-US/all-languages-notes.html'
+    name: "Chicago 18th Edition (Notes and Bibliography) - CNE",
+    styleId: "http://www.zotero.org/styles/chicago-notes-bibliography-cne",
+    styleFilename: "chicago-notes-bibliography-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/chicago-notes-bibliography-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/chicago-notes-bibliography-cne/en-US/all-languages-notes.html",
   },
   {
-    name: 'APA 7th Edition - CNE',
-    styleId: 'http://www.zotero.org/styles/apa-7th-cne',
-    styleFilename: 'apa-7th-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/apa-7th-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/apa-7th-cne/en-US/all-languages-notes.html'
+    name: "APA 7th Edition - CNE",
+    styleId: "http://www.zotero.org/styles/apa-7th-cne",
+    styleFilename: "apa-7th-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/apa-7th-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes: "snapshots/apa-7th-cne/en-US/all-languages-notes.html",
   },
   {
-    name: 'MLA 8th Edition - CNE',
-    styleId: 'http://www.zotero.org/styles/modern-language-association-8th-cne',
-    styleFilename: 'modern-language-association-8th-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/modern-language-association-8th-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/modern-language-association-8th-cne/en-US/all-languages-notes.html'
+    name: "MLA 8th Edition - CNE",
+    styleId: "http://www.zotero.org/styles/modern-language-association-8th-cne",
+    styleFilename: "modern-language-association-8th-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/modern-language-association-8th-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/modern-language-association-8th-cne/en-US/all-languages-notes.html",
   },
   {
-    name: 'MLA 9th Edition (in-text) - CNE',
-    styleId: 'http://www.zotero.org/styles/modern-language-association-9th-in-text-cne',
-    styleFilename: 'modern-language-association-9th-in-text-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-notes.html'
+    name: "MLA 9th Edition (in-text) - CNE",
+    styleId:
+      "http://www.zotero.org/styles/modern-language-association-9th-in-text-cne",
+    styleFilename: "modern-language-association-9th-in-text-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/modern-language-association-9th-in-text-cne/en-US/all-languages-notes.html",
   },
   {
-    name: 'MLA 9th Edition (notes) - CNE',
-    styleId: 'http://www.zotero.org/styles/modern-language-association-9th-notes-cne',
-    styleFilename: 'modern-language-association-9th-notes-cne.csl',
-    locale: 'en-US',
-    snapshotPathBibliography: 'snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-bibliography.html',
-    snapshotPathNotes: 'snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-notes.html'
+    name: "MLA 9th Edition (notes) - CNE",
+    styleId:
+      "http://www.zotero.org/styles/modern-language-association-9th-notes-cne",
+    styleFilename: "modern-language-association-9th-notes-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/modern-language-association-9th-notes-cne/en-US/all-languages-notes.html",
   },
 ];
 
-describe('Snapshot Generator', function() {
+describe("Snapshot Generator", function () {
   let allItems: Zotero.Item[];
 
-  before(async function() {
+  before(async function () {
     this.timeout(60000); // Longer timeout for multiple styles
 
     // Retrieve all items created by global setup
@@ -117,7 +134,7 @@ describe('Snapshot Generator', function() {
       const bibliography = await generateBibliography(
         allItems,
         style.styleId,
-        style.locale
+        style.locale,
       );
       await saveSnapshot(style.snapshotPathBibliography, bibliography);
 
@@ -125,16 +142,20 @@ describe('Snapshot Generator', function() {
       const citations = await generateCitations(
         allItems,
         style.styleId,
-        style.locale
+        style.locale,
       );
       await saveSnapshot(style.snapshotPathNotes, citations);
     }
   });
 
-  it('should have generated all snapshots', function() {
+  it("should have generated all snapshots", function () {
     // Dummy test to make Mocha happy
     // The actual work is done in the before hook
     assert.isArray(allItems);
-    assert.isAbove(allItems.length, 0, 'Should have loaded items from global setup');
+    assert.isAbove(
+      allItems.length,
+      0,
+      "Should have loaded items from global setup",
+    );
   });
 });
