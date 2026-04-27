@@ -602,6 +602,76 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
       </else>
     </choose>
   </macro>
+  <macro name="cne-sort-primary">
+    <choose>
+      <if variable="composer">
+        <choose>
+          <if variable="cne-sort-composer">
+            <text variable="cne-sort-composer"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </if>
+      <else-if variable="author">
+        <choose>
+          <if variable="cne-sort-author">
+            <text variable="cne-sort-author"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="director">
+        <choose>
+          <if variable="cne-sort-director">
+            <text variable="cne-sort-director"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="editor">
+        <choose>
+          <if variable="cne-sort-editor">
+            <text variable="cne-sort-editor"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="translator">
+        <choose>
+          <if variable="cne-sort-translator">
+            <text variable="cne-sort-translator"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="cne-sort-title">
+        <text variable="cne-sort-title"/>
+      </else-if>
+      <else>
+        <text macro="author-sort"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-sort-title-key">
+    <choose>
+      <if variable="cne-sort-title">
+        <text variable="cne-sort-title"/>
+      </if>
+      <else>
+        <text macro="title-and-descriptions-bib"/>
+      </else>
+    </choose>
+  </macro>
   <!-- Author elements -->
   <macro name="author-inline-and-recipient">
     <!-- identical to `author-short-and-recipient` but with initialization -->
@@ -3882,11 +3952,11 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   </macro>
   <bibliography et-al-min="7" et-al-use-first="3" hanging-indent="true">
     <sort>
-      <key macro="author-sort"/>
+      <key macro="cne-sort-primary"/>
       <key macro="date-sort-group"/>
       <key macro="date-sort-year"/>
       <key macro="date"/>
-      <key macro="title-and-descriptions-bib"/>
+      <key macro="cne-sort-title-key"/>
       <key macro="source-bib"/>
       <key variable="volume"/>
       <key variable="part-number"/>

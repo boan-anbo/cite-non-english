@@ -7,6 +7,7 @@ import type { CneMetadata } from "../../model/CneMetadata";
 import { buildAllAuthorFieldGroups } from "../../ui/authorFieldBuilder";
 import { setupDataBinding, updateCreatorSignature } from "../binding";
 import { setupClearButtons } from "../handlers";
+import { setupResponsivePlaceholders } from "../handlers/responsivePlaceholders";
 
 /**
  * Refresh only the author fields section when creators change
@@ -82,6 +83,7 @@ export async function refreshAuthorFields(
     setTimeout(() => {
       setupDataBinding(body, metadata);
       setupClearButtons(body, metadata);
+      setupResponsivePlaceholders(body);
 
       // Update the creator signature to match current state
       // This ensures the next comparison will be accurate

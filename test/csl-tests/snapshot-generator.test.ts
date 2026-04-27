@@ -44,6 +44,7 @@ import {
   generateCitations,
   saveSnapshot,
 } from "./test-helpers";
+import { ALL_FIXTURES } from "./fixtures";
 
 /**
  * Style Registry
@@ -118,6 +119,27 @@ const STYLE_REGISTRY = [
   },
 ];
 
+const FIXTURE_TITLE_ORDER = new Map(
+  Object.values(ALL_FIXTURES).map((fixture, index) => [fixture.title, index]),
+);
+
+function sortItemsForSnapshots(items: Zotero.Item[]) {
+  return [...items].sort((a, b) => {
+    const aIndex =
+      FIXTURE_TITLE_ORDER.get(String(a.getField("title"))) ??
+      Number.MAX_SAFE_INTEGER;
+    const bIndex =
+      FIXTURE_TITLE_ORDER.get(String(b.getField("title"))) ??
+      Number.MAX_SAFE_INTEGER;
+
+    if (aIndex !== bIndex) {
+      return aIndex - bIndex;
+    }
+
+    return a.id - b.id;
+  });
+}
+
 describe("Snapshot Generator", function () {
   let allItems: Zotero.Item[];
 
@@ -126,7 +148,7 @@ describe("Snapshot Generator", function () {
 
     // Retrieve all items created by global setup
     const libraryID = Zotero.Libraries.userLibraryID;
-    allItems = await Zotero.Items.getAll(libraryID);
+    allItems = sortItemsForSnapshots(await Zotero.Items.getAll(libraryID));
 
     // Generate snapshots for each style
     for (const style of STYLE_REGISTRY) {

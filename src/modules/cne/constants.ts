@@ -71,24 +71,28 @@ export const VARIANT_LABELS: readonly VariantLabelConfig[] = [
     label: "Original",
     l10nKey: "cne-variant-original",
     placeholder: "汉字, 漢字, かな, 한글",
+    placeholderShort: "汉字/かな/한글",
   },
   {
     variant: "romanized",
     label: "Romanized",
     l10nKey: "cne-variant-romanized",
     placeholder: "Pinyin, Romaji, etc.",
+    placeholderShort: "Pinyin/Romaji",
   },
   {
     variant: "romanizedShort",
     label: "Romanized (Short)",
     l10nKey: "cne-variant-romanized-short",
     placeholder: "Short form for subsequent citations",
+    placeholderShort: "Short form",
   },
   {
     variant: "english",
     label: "English",
     l10nKey: "cne-variant-english",
     placeholder: "English translation",
+    placeholderShort: "English",
   },
 ] as const;
 

@@ -352,6 +352,76 @@ CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"l
       </else>
     </choose>
   </macro>
+  <macro name="cne-sort-primary">
+    <choose>
+      <if variable="composer">
+        <choose>
+          <if variable="cne-sort-composer">
+            <text variable="cne-sort-composer"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </if>
+      <else-if variable="author">
+        <choose>
+          <if variable="cne-sort-author">
+            <text variable="cne-sort-author"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="director">
+        <choose>
+          <if variable="cne-sort-director">
+            <text variable="cne-sort-director"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="editor">
+        <choose>
+          <if variable="cne-sort-editor">
+            <text variable="cne-sort-editor"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="translator">
+        <choose>
+          <if variable="cne-sort-translator">
+            <text variable="cne-sort-translator"/>
+          </if>
+          <else>
+            <text macro="author-sort"/>
+          </else>
+        </choose>
+      </else-if>
+      <else-if variable="cne-sort-title">
+        <text variable="cne-sort-title"/>
+      </else-if>
+      <else>
+        <text macro="author-sort"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-sort-title-key">
+    <choose>
+      <if variable="cne-sort-title">
+        <text variable="cne-sort-title"/>
+      </if>
+      <else>
+        <text macro="title"/>
+      </else>
+    </choose>
+  </macro>
   <macro name="date-bib">
     <group delimiter=" " prefix="(" suffix=")">
       <choose>
@@ -2221,11 +2291,11 @@ CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"l
   </citation>
   <bibliography hanging-indent="true" et-al-min="21" et-al-use-first="19" et-al-use-last="true" entry-spacing="0" line-spacing="2">
     <sort>
-      <key macro="author-sort"/>
+      <key macro="cne-sort-primary"/>
       <key macro="date-sort-group" sort="ascending"/>
       <key macro="date-sort" sort="ascending"/>
       <key variable="status"/>
-      <key macro="title"/>
+      <key macro="cne-sort-title-key"/>
     </sort>
     <layout>
       <choose>

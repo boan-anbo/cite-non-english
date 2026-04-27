@@ -201,6 +201,23 @@ import {
 } from "../utils/nameVariantBuilder";
 import { getPref } from "../../../utils/prefs";
 
+function buildCreatorSortName(
+  cneCreator: CneCreatorData | undefined,
+  cslCreator: any,
+) {
+  const family =
+    cneCreator?.lastRomanized || cslCreator.family || cslCreator.literal || "";
+  const given = cneCreator?.firstRomanized || cslCreator.given || "";
+  return [family, given]
+    .map((part) => String(part).trim())
+    .filter(Boolean)
+    .join(" ");
+}
+
+function hasRomanizedCreatorName(cneCreator: CneCreatorData | undefined) {
+  return Boolean(cneCreator?.lastRomanized || cneCreator?.firstRomanized);
+}
+
 /**
  * Enrich creator names in CSL-JSON with CNE metadata
  *
@@ -284,12 +301,19 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
     }
 
     // This is a creator array - enrich each creator
+    const sortNames: string[] = [];
+    let shouldSetRoleSortKey = false;
+
     for (let i = 0; i < value.length; i++) {
       const cslCreator = value[i];
 
       // Get CNE metadata for this creator
       const cneCreator = metadata.authors[metadataIndex];
       metadataIndex++;
+      sortNames.push(buildCreatorSortName(cneCreator, cslCreator));
+      if (i === 0 && hasRomanizedCreatorName(cneCreator)) {
+        shouldSetRoleSortKey = true;
+      }
 
       // ============================================================================
       // CRITICAL: Name Ordering Control via multi.main
@@ -490,6 +514,10 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       );
 
       enrichedCount++;
+    }
+
+    if (shouldSetRoleSortKey) {
+      cslItem[`cne-sort-${key}`] = sortNames.filter(Boolean).join(" ");
     }
   }
 

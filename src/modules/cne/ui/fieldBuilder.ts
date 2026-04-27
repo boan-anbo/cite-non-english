@@ -43,7 +43,12 @@ export function buildFieldGroup(fieldConfig: FieldConfig): any {
         namespace: "html",
         classList: ["cne-input-wrapper"],
         children: [
-          createTextInput(elementId, bindKey, variantConfig.placeholder),
+          createTextInput(
+            elementId,
+            bindKey,
+            variantConfig.placeholder,
+            variantConfig.placeholderShort,
+          ),
           // Clear button
           {
             tag: "button",

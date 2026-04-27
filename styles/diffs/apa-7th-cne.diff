@@ -34,7 +34,84 @@
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
-@@ -576,11 +583,17 @@
+@@ -345,6 +352,76 @@
+       </else>
+     </choose>
+   </macro>
++  <macro name="cne-sort-primary">
++    <choose>
++      <if variable="composer">
++        <choose>
++          <if variable="cne-sort-composer">
++            <text variable="cne-sort-composer"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </if>
++      <else-if variable="author">
++        <choose>
++          <if variable="cne-sort-author">
++            <text variable="cne-sort-author"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="director">
++        <choose>
++          <if variable="cne-sort-director">
++            <text variable="cne-sort-director"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="editor">
++        <choose>
++          <if variable="cne-sort-editor">
++            <text variable="cne-sort-editor"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="translator">
++        <choose>
++          <if variable="cne-sort-translator">
++            <text variable="cne-sort-translator"/>
++          </if>
++          <else>
++            <text macro="author-sort"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </else-if>
++      <else>
++        <text macro="author-sort"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-sort-title-key">
++    <choose>
++      <if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </if>
++      <else>
++        <text macro="title"/>
++      </else>
++    </choose>
++  </macro>
+   <macro name="date-bib">
+     <group delimiter=" " prefix="(" suffix=")">
+       <choose>
+@@ -576,11 +653,17 @@
      <!-- For book-like items, assume part-number and part-title refer to the book/volume. -->
      <choose>
        <if variable="container-title" match="any">
@@ -54,7 +131,7 @@
        </else>
      </choose>
    </macro>
-@@ -593,7 +606,10 @@
+@@ -593,7 +676,10 @@
            <if variable="reviewed-title" match="none"/>
            <else>
              <group delimiter=": ">
@@ -66,7 +143,7 @@
                <text macro="part-title"/>
              </group>
            </else>
-@@ -601,7 +617,10 @@
+@@ -601,7 +687,10 @@
        </if>
        <else>
          <group delimiter=": ">
@@ -78,7 +155,7 @@
            <text macro="part-title"/>
          </group>
        </else>
-@@ -618,7 +637,7 @@
+@@ -618,7 +707,7 @@
    </macro>
    <macro name="title-plus-volume-title">
      <group delimiter=": ">
@@ -87,7 +164,7 @@
        <text macro="volume-title"/>
      </group>
    </macro>
-@@ -701,6 +720,101 @@
+@@ -701,6 +790,101 @@
              <text variable="title" form="short" font-style="italic" text-case="title"/>
            </else>
          </choose>
@@ -189,7 +266,7 @@
        </else>
      </choose>
    </macro>
-@@ -1520,7 +1634,10 @@
+@@ -1520,7 +1704,10 @@
    <macro name="container-periodical">
      <group delimiter=". ">
        <group delimiter=", ">
@@ -201,7 +278,7 @@
          <choose>
            <if variable="volume">
              <group>
-@@ -1605,9 +1722,12 @@
+@@ -1605,9 +1792,12 @@
                  <names variable="container-author"/>
                </substitute>
              </names>
@@ -217,7 +294,7 @@
              </group>
            </group>
            <text macro="parenthetical-container"/>
-@@ -1622,7 +1742,7 @@
+@@ -1622,7 +1812,7 @@
          <if type="thesis">
            <choose>
              <if variable="archive DOI URL" match="none">
@@ -226,7 +303,7 @@
              </if>
            </choose>
          </if>
-@@ -1630,19 +1750,19 @@
+@@ -1630,19 +1820,19 @@
            <!-- For websites, treat container title like publisher -->
            <group delimiter="; ">
              <text variable="container-title" text-case="title"/>
@@ -249,3 +326,17 @@
          </else-if>
        </choose>
        <group delimiter=", ">
+@@ -2101,11 +2291,11 @@
+   </citation>
+   <bibliography hanging-indent="true" et-al-min="21" et-al-use-first="19" et-al-use-last="true" entry-spacing="0" line-spacing="2">
+     <sort>
+-      <key macro="author-sort"/>
++      <key macro="cne-sort-primary"/>
+       <key macro="date-sort-group" sort="ascending"/>
+       <key macro="date-sort" sort="ascending"/>
+       <key variable="status"/>
+-      <key macro="title"/>
++      <key macro="cne-sort-title-key"/>
+     </sort>
+     <layout>
+       <choose>

@@ -38,7 +38,84 @@
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
    <locale xml:lang="en">
-@@ -407,33 +414,54 @@
+@@ -260,6 +267,76 @@
+       </substitute>
+     </names>
+   </macro>
++  <macro name="cne-sort-primary">
++    <choose>
++      <if variable="composer">
++        <choose>
++          <if variable="cne-sort-composer">
++            <text variable="cne-sort-composer"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </if>
++      <else-if variable="author">
++        <choose>
++          <if variable="cne-sort-author">
++            <text variable="cne-sort-author"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="director">
++        <choose>
++          <if variable="cne-sort-director">
++            <text variable="cne-sort-director"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="editor">
++        <choose>
++          <if variable="cne-sort-editor">
++            <text variable="cne-sort-editor"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="translator">
++        <choose>
++          <if variable="cne-sort-translator">
++            <text variable="cne-sort-translator"/>
++          </if>
++          <else>
++            <text macro="author"/>
++          </else>
++        </choose>
++      </else-if>
++      <else-if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </else-if>
++      <else>
++        <text macro="author"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-sort-title-key">
++    <choose>
++      <if variable="cne-sort-title">
++        <text variable="cne-sort-title"/>
++      </if>
++      <else>
++        <text macro="title"/>
++      </else>
++    </choose>
++  </macro>
+   <macro name="author-short">
+     <group delimiter=", ">
+       <names variable="composer">
+@@ -407,33 +484,54 @@
      <choose>
        <if match="any" type="bill collection legislation regulation treaty">
          <!-- No italics or quotes, title case -->
@@ -100,7 +177,7 @@
        </else>
      </choose>
    </macro>
-@@ -662,7 +690,10 @@
+@@ -662,7 +760,10 @@
              <text value="of"/>
            </else-if>
          </choose>
@@ -112,7 +189,7 @@
          <text prefix="[" suffix="]" variable="publisher-place"/>
        </group>
      </group>
-@@ -676,7 +707,10 @@
+@@ -676,7 +777,10 @@
          <text font-style="italic" text-case="title" variable="volume-title"/>
        </else-if>
        <else>
@@ -124,7 +201,7 @@
        </else>
      </choose>
    </macro>
-@@ -826,7 +860,7 @@
+@@ -826,7 +930,7 @@
    <macro name="container1-publisher-or-place">
      <choose>
        <if variable="publisher">
@@ -133,7 +210,7 @@
        </if>
        <else>
          <!-- use place of publication as fallback (cf. MLA 5.67) -->
-@@ -1189,6 +1223,110 @@
+@@ -1189,6 +1293,110 @@
        <!-- TODO: provide container date here when available -->
      </group>
    </macro>
@@ -244,3 +321,14 @@
    <citation disambiguate-add-givenname="true" disambiguate-add-names="true" et-al-min="3" et-al-use-first="1">
      <layout delimiter="; " prefix="(" suffix=")">
        <choose>
+@@ -1209,8 +1417,8 @@
+   </citation>
+   <bibliography entry-spacing="0" et-al-min="3" et-al-use-first="1" hanging-indent="true" line-spacing="2" subsequent-author-substitute="&#8212;&#8212;&#8212;">
+     <sort>
+-      <key macro="author"/>
+-      <key macro="title"/>
++      <key macro="cne-sort-primary"/>
++      <key macro="cne-sort-title-key"/>
+       <key macro="supplemental-element-after-title"/>
+       <key macro="container1"/>
+       <key macro="supplemental-element-between"/>

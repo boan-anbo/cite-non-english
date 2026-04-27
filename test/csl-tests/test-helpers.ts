@@ -273,6 +273,19 @@ export async function generateBibliography(
 }
 
 /**
+ * Extract bibliography entries in rendered order.
+ *
+ * This is intentionally order-preserving for sorting regression tests.
+ */
+export function extractCslEntryTexts(bibliography: string): string[] {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(bibliography, "text/html");
+  return Array.from(doc.querySelectorAll(".csl-bib-body > .csl-entry")).map(
+    (entry) => (entry.textContent || "").replace(/\s+/g, " ").trim(),
+  );
+}
+
+/**
  * Generate citations (notes format) for items using specified style and locale
  *
  * @param items - Array of Zotero items

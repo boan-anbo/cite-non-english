@@ -58,6 +58,7 @@ describe("Global Setup - Batch Item Creation", function () {
     const existingItems = await Zotero.Items.getAll(libraryID);
     if (existingItems.length > 0) {
       await Promise.all(existingItems.map((item) => item.eraseTx()));
+      await Zotero.Creators.purge();
       console.log(`✅ Deleted ${existingItems.length} existing items`);
     }
 

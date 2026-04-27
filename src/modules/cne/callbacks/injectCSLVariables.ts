@@ -132,6 +132,9 @@ export function injectCSLVariables(zoteroItem: any, cslItem: any) {
   // Inject title variants
   if (metadata.title) {
     injectFieldVariants(cslItem, "title", metadata.title);
+    if (metadata.title.romanized) {
+      cslItem["cne-sort-title"] = metadata.title.romanized;
+    }
   }
 
   // Inject journal variants

@@ -20,19 +20,34 @@ export function createTextInput(
   id: string,
   bindKey: string,
   placeholder?: string,
+  placeholderShort?: string,
 ): any {
+  const attributes: Record<string, string> = {
+    "data-bind": bindKey,
+    "data-prop": "value",
+    placeholder: placeholder || "",
+    rows: "1",
+    wrap: "soft",
+  };
+
+  if (placeholder) {
+    attributes["data-placeholder-full"] = placeholder;
+  }
+
+  if (placeholderShort) {
+    attributes["data-placeholder-short"] = placeholderShort;
+  }
+
   return {
     tag: "textarea",
     namespace: "html",
     id,
-    attributes: {
-      "data-bind": bindKey,
-      "data-prop": "value",
-      placeholder: placeholder || "",
-      rows: "1",
-    },
+    classList: ["cne-text-input"],
+    attributes,
     styles: {
+      flex: "1 1 0",
       width: "100%",
+      minWidth: "0",
       boxSizing: "border-box",
       backgroundColor: "transparent",
       border: "1px solid transparent",
@@ -199,7 +214,13 @@ export function createFieldSection(
       {
         tag: "div",
         namespace: "html",
-        classList: ["cne-field-grid"],
+        classList: [
+          "cne-field-grid",
+          ...(columns === 2 ? ["cne-field-grid--two-column"] : []),
+        ],
+        attributes: {
+          "data-cne-columns": String(columns),
+        },
         styles: {
           display: "grid",
           gridTemplateColumns,
