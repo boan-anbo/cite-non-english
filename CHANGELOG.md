@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.6] - 2026-04-28
+
+### Fixed
+
+- Chicago 18 Author-Date CNE now renders ordinary CNE title fields in
+  bibliography entries, matching the bundled Chicago notes style. For example,
+  Japanese book and chapter titles now render romanized title, original script,
+  and English translation such as `Saigo no “Nihonjin”: Asakawa Kan’Ichi no
+shōgai` + `最後の「日本人」: 朝河貫一の生涯` + `[The last “Japanese”:
+Life of Kan’ichi Asakawa]`.
+- Chicago 18 Author-Date CNE now uses the documented Chicago CJK name default:
+  surname-first romanization without Western comma inversion, e.g. `Abe Yoshio
+阿部善雄`, `Kondō Shigekazu 近藤成一`, and `Hao Chunwen 郝春文`, instead of
+  `Abe, Yoshio` / `Kondō, Shigekazu`.
+- Per-creator `force-comma` overrides are preserved for CJK names that need
+  Western-style comma formatting, e.g. `Kim, Minsoo 김민수`.
+- Plain English items in Chicago 18 Author-Date continue to use normal Chicago
+  Western name formatting, e.g. `Petrides, Georgios, Chitra Malur, and Max
+Fink`.
+
+### Tested
+
+- Verified on Zotero 9.
+- `npm run lint:check`
+- `npm run build`
+- `ZOTERO_PLUGIN_ZOTERO_BIN_PATH=/Applications/Zotero.app/Contents/MacOS/zotero npm test`
+  passes with 124 tests.
+
 ## [0.1.5] - 2026-04-28
 
 ### Fixed
