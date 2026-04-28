@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.1.5] - 2026-04-28
+
+### Fixed
+
+- Legislation/statute items, including Zotero's German UI type `Gesetz`, now
+  render CNE title fields in bundled Chicago 18 Notes & Bibliography, Chicago
+  18 Author-Date, and APA 7th CNE styles.
+- Legislation/statute items now render a CNE issuing body/creator prefix only
+  when `cne-creator-*` metadata is present, preserving native legal rendering
+  for statute items without CNE creator metadata.
+
+### Tested
+
+- Verified on Zotero 9.
+- `npm run lint:check`
+- `npm run build`
+- `ZOTERO_PLUGIN_ZOTERO_BIN_PATH=/Applications/Zotero.app/Contents/MacOS/zotero npm test`
+  passes with 120 tests.
+
 ## [0.1.4] - 2026-04-27
 
 ### Fixed
