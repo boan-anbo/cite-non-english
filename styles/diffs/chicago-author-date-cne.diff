@@ -34,7 +34,7 @@
 -    <summary>Chicago-style source citations (with Bluebook for legal citations), author-date system</summary>
 -    <updated>2025-09-07T21:04:41+00:00</updated>
 +    <summary>Chicago 18th edition (author-date) with CNE (Cite Non-English) field support for displaying romanized, original script, and English translations of non-English sources.
-+CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"comma"}}}</summary>
++CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"order":"last-name-first","separator":"space"}}}</summary>
 +    <updated>2025-10-21T00:00:00+00:00</updated>
      <rights license="http://creativecommons.org/licenses/by-sa/3.0/">This work is licensed under a Creative Commons Attribution-ShareAlike 3.0 License</rights>
    </info>
@@ -116,7 +116,165 @@
    <!-- Author elements -->
    <macro name="author-inline-and-recipient">
      <!-- identical to `author-short-and-recipient` but with initialization -->
-@@ -3461,6 +3538,41 @@
+@@ -1131,7 +1208,10 @@
+   </macro>
+   <macro name="title-and-part-title-bib">
+     <group delimiter=". ">
+-      <text macro="title-primary"/>
++      <group delimiter=" ">
++        <text macro="title-primary"/>
++        <text macro="cne-title-supplements"/>
++      </group>
+       <group delimiter=", ">
+         <text macro="label-part-number-capitalized"/>
+         <text macro="title-part"/>
+@@ -1143,7 +1223,10 @@
+     <!-- There is no `title-monographic-note` as notes always open with the primary title. -->
+     <choose>
+       <if variable="container-title">
+-        <text macro="title-primary"/>
++        <group delimiter=" ">
++          <text macro="title-primary"/>
++          <text macro="cne-title-supplements"/>
++        </group>
+       </if>
+       <!-- For monographic items without `container-title`, bibliography entries list `part-title` or `volume-title` first if available -->
+       <else-if variable="part-title">
+@@ -1153,7 +1236,10 @@
+         <text font-style="italic" text-case="title" variable="volume-title"/>
+       </else-if>
+       <else>
+-        <text macro="title-primary"/>
++        <group delimiter=" ">
++          <text macro="title-primary"/>
++          <text macro="cne-title-supplements"/>
++        </group>
+       </else>
+     </choose>
+   </macro>
+@@ -1211,49 +1297,49 @@
+     <choose>
+       <if type="patent">
+         <!-- No italics or quotes, sentence case -->
+-        <text form="short" text-case="capitalize-first" variable="title"/>
++        <text form="short" text-case="capitalize-first" macro="cne-title-select"/>
+       </if>
+       <else-if match="any" type="bill collection legislation regulation treaty">
+         <!-- No italics or quotes, title case -->
+-        <text text-case="title" variable="title"/>
++        <text text-case="title" macro="cne-title-select"/>
+       </else-if>
+       <else-if type="legal_case">
+         <!-- Italicized, sentence case -->
+-        <text font-style="italic" variable="title"/>
++        <text font-style="italic" macro="cne-title-select"/>
+       </else-if>
+       <else-if match="any" type="book classic graphic hearing map">
+         <!-- Italicized, title case (regardless of `container-title`) -->
+-        <text font-style="italic" text-case="title" variable="title"/>
++        <text font-style="italic" text-case="title" macro="cne-title-select"/>
+       </else-if>
+       <else-if type="entry-encyclopedia" variable="author container-title">
+         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
+-        <text quotes="true" text-case="title" variable="title"/>
++        <text quotes="true" text-case="title" macro="cne-title-select"/>
+       </else-if>
+       <else-if type="entry-dictionary" variable="container-title">
+         <!-- Quotes, sentence case -->
+-        <text quotes="true" variable="title"/>
++        <text quotes="true" macro="cne-title-select"/>
+       </else-if>
+       <else-if type="entry-encyclopedia" variable="container-title">
+         <!-- Quotes, sentence case -->
+-        <text quotes="true" variable="title"/>
++        <text quotes="true" macro="cne-title-select"/>
+       </else-if>
+       <else-if type="post">
+         <!-- Quotes, sentence case -->
+-        <text quotes="true" variable="title"/>
++        <text quotes="true" macro="cne-title-select"/>
+       </else-if>
+       <!-- Other types are formatted based on presence of `container-title` -->
+       <else-if variable="container-title">
+         <!-- Quotes, title case -->
+-        <text quotes="true" text-case="title" variable="title"/>
++        <text quotes="true" text-case="title" macro="cne-title-select"/>
+       </else-if>
+       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
+         <!-- Container-like but not necessarily with `container-title` -->
+         <!-- Quotes, title case -->
+-        <text quotes="true" text-case="title" variable="title"/>
++        <text quotes="true" text-case="title" macro="cne-title-select"/>
+       </else-if>
+       <else>
+         <!-- Italicized, title case (default) -->
+-        <text font-style="italic" text-case="title" variable="title"/>
++        <text font-style="italic" text-case="title" macro="cne-title-select"/>
+       </else>
+     </choose>
+   </macro>
+@@ -1261,49 +1347,49 @@
+     <choose>
+       <if type="patent">
+         <!-- No italics or quotes, sentence case -->
+-        <text form="short" text-case="capitalize-first" variable="title"/>
++        <text form="short" text-case="capitalize-first" macro="cne-title-select-short"/>
+       </if>
+       <else-if match="any" type="bill collection legislation regulation treaty">
+         <!-- No italics or quotes, title case -->
+-        <text form="short" text-case="title" variable="title"/>
++        <text form="short" text-case="title" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if type="legal_case">
+         <!-- Italicized, sentence case -->
+-        <text font-style="italic" form="short" variable="title"/>
++        <text font-style="italic" form="short" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if match="any" type="book classic graphic hearing map">
+         <!-- Italicized, title case (regardless of `container-title`) -->
+-        <text font-style="italic" form="short" text-case="title" variable="title"/>
++        <text font-style="italic" form="short" text-case="title" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if type="entry-encyclopedia" variable="author container-title">
+         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
+-        <text form="short" quotes="true" text-case="title" variable="title"/>
++        <text form="short" quotes="true" text-case="title" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if type="entry-dictionary" variable="container-title">
+         <!-- Quotes, sentence case -->
+-        <text form="short" quotes="true" variable="title"/>
++        <text form="short" quotes="true" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if type="entry-encyclopedia" variable="container-title">
+         <!-- Quotes, sentence case -->
+-        <text form="short" quotes="true" variable="title"/>
++        <text form="short" quotes="true" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if type="post">
+         <!-- Quotes, sentence case -->
+-        <text form="short" quotes="true" variable="title"/>
++        <text form="short" quotes="true" macro="cne-title-select-short"/>
+       </else-if>
+       <!-- Other types are formatted based on presence of `container-title` -->
+       <else-if variable="container-title">
+         <!-- Quotes, title case -->
+-        <text form="short" quotes="true" text-case="title" variable="title"/>
++        <text form="short" quotes="true" text-case="title" macro="cne-title-select-short"/>
+       </else-if>
+       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
+         <!-- Container-like but not necessarily with `container-title` -->
+         <!-- Quotes, title case -->
+-        <text form="short" quotes="true" text-case="title" variable="title"/>
++        <text form="short" quotes="true" text-case="title" macro="cne-title-select-short"/>
+       </else-if>
+       <else>
+         <!-- Italicized, title case (default) -->
+-        <text font-style="italic" form="short" text-case="title" variable="title"/>
++        <text font-style="italic" form="short" text-case="title" macro="cne-title-select-short"/>
+       </else>
+     </choose>
+   </macro>
+@@ -3461,6 +3547,58 @@
    <!-- TODO: add variables for distributor and exhibitions if available in CSL -->
    <!-- 6. Legal references: Bluebook style (shared with APA) -->
    <!-- Where APA or Chicago diverge from Bluebook, the official manual is followed -->
@@ -127,6 +285,23 @@
 +      </if>
 +      <else>
 +        <text variable="title"/>
++      </else>
++    </choose>
++  </macro>
++  <macro name="cne-title-select-short">
++    <choose>
++      <if variable="cne-title-romanized">
++        <choose>
++          <if variable="cne-title-romanized-short">
++            <text variable="cne-title-romanized-short"/>
++          </if>
++          <else>
++            <text variable="cne-title-romanized"/>
++          </else>
++        </choose>
++      </if>
++      <else>
++        <text form="short" variable="title"/>
 +      </else>
 +    </choose>
 +  </macro>
@@ -158,7 +333,7 @@
    <macro name="legal-reference">
      <!-- Type usage:
 
-@@ -3495,14 +3607,31 @@
+@@ -3495,14 +3633,31 @@
            <text macro="legal-source"/>
          </if>
          <else>
@@ -198,7 +373,7 @@
          </else>
        </choose>
        <group delimiter=" ">
-@@ -3562,9 +3691,12 @@
+@@ -3562,9 +3717,12 @@
    <!-- 6.2.1. Legal title -->
    <macro name="legal-title">
      <choose>
@@ -213,7 +388,7 @@
        <else-if type="hearing">
          <!-- use standard format (Bluebook 13.3) -->
          <group delimiter=": " font-style="italic">
-@@ -3874,11 +4006,11 @@
+@@ -3874,11 +4032,11 @@
    </macro>
    <bibliography et-al-min="7" et-al-use-first="3" hanging-indent="true">
      <sort>
