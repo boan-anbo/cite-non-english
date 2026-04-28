@@ -41,6 +41,7 @@ import { englishExpectations } from "./expectations/chicago-18th/en-US/english";
 import {
   generateBibliography,
   generateCitations,
+  extractCslEntryTexts,
   extractCslEntry,
 } from "./test-helpers";
 
@@ -225,6 +226,62 @@ describe("Chicago 18th Edition - CNE (en-US)", function () {
         citations,
         "Shanghai renmin meishu chubanshe",
         "Book-section notes should render cne-publisher-romanized",
+      );
+    });
+
+    it("should render CNE title and CNE creator for statute items", function () {
+      const bibliographyEntries = extractCslEntryTexts(bibliography);
+      const statuteEntry = bibliographyEntries.find((entry) =>
+        entry.includes("Zhonghua Renmin Gongheguo chukou guanzhi fa"),
+      );
+
+      assert.exists(
+        statuteEntry,
+        "CNE statute bibliography entry should exist",
+      );
+      assert.include(
+        statuteEntry!,
+        "Quanguo Renmin Daibiao Dahui Changwu Weiyuanhui 全国人民代表大会常务委员会",
+        "CNE statute bibliography should render romanized and original issuing body",
+      );
+      assert.include(
+        statuteEntry!,
+        "Zhonghua Renmin Gongheguo chukou guanzhi fa 中华人民共和国出口管制法 [Export Control Law of the People’s Republic of China]",
+        "CNE statute bibliography should render romanized, original, and translated title",
+      );
+      assert.include(
+        statuteEntry!,
+        "Pub. L. No. 第五十八号",
+        "CNE statute bibliography should preserve legal public-law metadata",
+      );
+      assert.include(
+        citations,
+        "Quanguo Renmin Daibiao Dahui Changwu Weiyuanhui 全国人民代表大会常务委员会",
+        "CNE statute notes should render romanized and original issuing body",
+      );
+      assert.include(
+        citations,
+        "Zhonghua Renmin Gongheguo chukou guanzhi fa 中华人民共和国出口管制法 [Export Control Law of the People’s Republic of China]",
+        "CNE statute notes should render romanized, original, and translated title",
+      );
+    });
+
+    it("should not add legal author prefix without CNE creator metadata", function () {
+      const bibliographyEntries = extractCslEntryTexts(bibliography);
+      const statuteEntry = bibliographyEntries.find((entry) =>
+        entry.includes("Shouyao guanli tiaoli"),
+      );
+
+      assert.exists(statuteEntry, "CNE-title-only statute entry should exist");
+      assert.include(
+        statuteEntry!,
+        "Shouyao guanli tiaoli 兽药管理条例 [Regulations on Administration of Veterinary Medicine]",
+        "Statute without CNE creator metadata should still render CNE title fields",
+      );
+      assert.notInclude(
+        statuteEntry!,
+        "中华人民共和国国务院",
+        "Statute without CNE creator metadata should not render the native legal author",
       );
     });
   });

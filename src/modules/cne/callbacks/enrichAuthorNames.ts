@@ -346,6 +346,10 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
           cneCreator.lastOriginal ||
           cneCreator.firstOriginal);
 
+      if (i === 0 && hasCneData) {
+        cslItem[`cne-has-${key}`] = "true";
+      }
+
       if (hasCneData) {
         // This creator has CNE data → use original language for Asian ordering
         // Example: Du Weisheng 杜伟生 → "Du Weisheng" (family-first)

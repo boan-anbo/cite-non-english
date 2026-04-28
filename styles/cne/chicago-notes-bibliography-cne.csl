@@ -5711,6 +5711,21 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <!-- TODO: add variables for distributor and exhibitions if available in CSL -->
   <!-- 6. Legal references: Bluebook style (shared with APA) -->
   <!-- Where APA or Chicago diverge from Bluebook, the official manual is followed -->
+  <macro name="cne-legal-author">
+    <choose>
+      <if type="legislation" variable="cne-has-author">
+        <names variable="author">
+          <name and="text" delimiter-precedes-last="always"/>
+        </names>
+      </if>
+    </choose>
+  </macro>
+  <macro name="cne-legal-title-primary">
+    <group delimiter=" ">
+      <text text-case="title" macro="cne-title-select"/>
+      <text macro="cne-title-supplements"/>
+    </group>
+  </macro>
   <macro name="legal-reference">
     <!-- Type usage:
 
@@ -5745,14 +5760,31 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
           <text macro="legal-source"/>
         </if>
         <else>
-          <group delimiter=" ">
-            <group delimiter=", ">
-              <text macro="legal-title"/>
-              <text macro="legal-source"/>
-            </group>
-            <text macro="legal-date"/>
-            <text macro="legal-identifier"/>
-          </group>
+          <choose>
+            <if type="legislation" variable="cne-has-author">
+              <group delimiter=". ">
+                <text macro="cne-legal-author"/>
+                <group delimiter=" ">
+                  <group delimiter=", ">
+                    <text macro="legal-title"/>
+                    <text macro="legal-source"/>
+                  </group>
+                  <text macro="legal-date"/>
+                  <text macro="legal-identifier"/>
+                </group>
+              </group>
+            </if>
+            <else>
+              <group delimiter=" ">
+                <group delimiter=", ">
+                  <text macro="legal-title"/>
+                  <text macro="legal-source"/>
+                </group>
+                <text macro="legal-date"/>
+                <text macro="legal-identifier"/>
+              </group>
+            </else>
+          </choose>
         </else>
       </choose>
       <group delimiter=" ">
@@ -5812,9 +5844,12 @@ CNE-CONFIG: {"persons":["translit","orig"],"nameFormatting":{"romanizedCJK":{"or
   <!-- 6.2.1. Legal title -->
   <macro name="legal-title">
     <choose>
-      <if match="any" type="bill legal_case legislation regulation treaty">
-        <text text-case="title" variable="title"/>
+      <if type="legislation" variable="cne-title-romanized">
+        <text macro="cne-legal-title-primary"/>
       </if>
+      <else-if match="any" type="bill legal_case legislation regulation treaty">
+        <text text-case="title" variable="title"/>
+      </else-if>
       <else-if type="hearing">
         <!-- use standard format (Bluebook 13.3) -->
         <group delimiter=": " font-style="italic">
