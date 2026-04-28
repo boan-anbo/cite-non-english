@@ -236,6 +236,44 @@ cne-publisher-original: 上海人民美术出版社
 cne-publisher-romanized: Shanghai renmin meishu chubanshe`,
   },
 
+  [FIXTURE_IDS.ZHCN_STATE_COUNCIL_2020_EXPORT_CONTROL]: {
+    itemType: "statute",
+    title: "中华人民共和国出口管制法",
+    nameOfAct: "中华人民共和国出口管制法",
+    publicLawNumber: "第五十八号",
+    dateEnacted: "2020",
+    language: "zh-CN",
+    creators: [
+      {
+        lastName: "全国人民代表大会常务委员会",
+        creatorType: "author",
+      },
+    ],
+    extra: `cne-creator-0-last-original: 全国人民代表大会常务委员会
+cne-creator-0-last-romanized: Quanguo Renmin Daibiao Dahui Changwu Weiyuanhui
+cne-title-original: 中华人民共和国出口管制法
+cne-title-romanized: Zhonghua Renmin Gongheguo chukou guanzhi fa
+cne-title-english: Export Control Law of the People's Republic of China`,
+  },
+
+  [FIXTURE_IDS.ZHCN_STATE_COUNCIL_2004_VETERINARY_REGULATION]: {
+    itemType: "statute",
+    title: "兽药管理条例",
+    nameOfAct: "兽药管理条例",
+    publicLawNumber: "第404号",
+    dateEnacted: "2004-11-01",
+    language: "zh-CN",
+    creators: [
+      {
+        lastName: "中华人民共和国国务院",
+        creatorType: "author",
+      },
+    ],
+    extra: `cne-title-original: 兽药管理条例
+cne-title-romanized: Shouyao guanli tiaoli
+cne-title-english: Regulations on Administration of Veterinary Medicine`,
+  },
+
   // ============================================================================
   // Japanese Fixtures
   // ============================================================================

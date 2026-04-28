@@ -326,7 +326,84 @@
          </else-if>
        </choose>
        <group delimiter=", ">
-@@ -2101,11 +2291,11 @@
+@@ -1788,6 +1978,21 @@
+     </choose>
+   </macro>
+   <!-- Legal citations have their own rules -->
++  <macro name="cne-legal-author">
++    <choose>
++      <if type="legislation" variable="cne-has-author">
++        <names variable="author">
++          <name name-as-sort-order="all" and="symbol" sort-separator=", " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
++        </names>
++      </if>
++    </choose>
++  </macro>
++  <macro name="cne-legal-title-primary">
++    <group delimiter=" ">
++      <text variable="cne-title-romanized" text-case="title"/>
++      <text macro="cne-title-supplements"/>
++    </group>
++  </macro>
+   <macro name="legal-cites">
+     <!-- `treaty`: for treaties -->
+     <!-- `legal_case`: for all legal and court cases -->
+@@ -1815,14 +2020,31 @@
+           </group>
+         </if>
+         <else>
+-          <group delimiter=" " suffix=".">
+-            <group delimiter=", ">
+-              <text macro="title-legal"/>
+-              <text macro="container-legal"/>
+-            </group>
+-            <text macro="date-legal"/>
+-            <text macro="parenthetical-legal"/>
+-          </group>
++          <choose>
++            <if type="legislation" variable="cne-has-author">
++              <group delimiter=". " suffix=".">
++                <text macro="cne-legal-author"/>
++                <group delimiter=" ">
++                  <group delimiter=", ">
++                    <text macro="title-legal"/>
++                    <text macro="container-legal"/>
++                  </group>
++                  <text macro="date-legal"/>
++                  <text macro="parenthetical-legal"/>
++                </group>
++              </group>
++            </if>
++            <else>
++              <group delimiter=" " suffix=".">
++                <group delimiter=", ">
++                  <text macro="title-legal"/>
++                  <text macro="container-legal"/>
++                </group>
++                <text macro="date-legal"/>
++                <text macro="parenthetical-legal"/>
++              </group>
++            </else>
++          </choose>
+         </else>
+       </choose>
+       <text variable="references"/>
+@@ -1831,9 +2053,12 @@
+   </macro>
+   <macro name="title-legal">
+     <choose>
+-      <if type="bill legal_case legislation regulation treaty" match="any">
++      <if type="legislation" variable="cne-title-romanized">
++        <text macro="cne-legal-title-primary"/>
++      </if>
++      <else-if type="bill legal_case legislation regulation treaty" match="any">
+         <text variable="title" text-case="title"/>
+-      </if>
++      </else-if>
+       <else-if type="hearing">
+         <!-- APA uses a comma delimiter and omits "hearing before the" for hearings with testimony,
+              but follows Bluebook rules (colon delimiter, prefix before the committee name) for
+@@ -2101,11 +2326,11 @@
    </citation>
    <bibliography hanging-indent="true" et-al-min="21" et-al-use-first="19" et-al-use-last="true" entry-spacing="0" line-spacing="2">
      <sort>

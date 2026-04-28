@@ -1935,6 +1935,21 @@ CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"l
     </choose>
   </macro>
   <!-- Legal citations have their own rules -->
+  <macro name="cne-legal-author">
+    <choose>
+      <if type="legislation" variable="cne-has-author">
+        <names variable="author">
+          <name name-as-sort-order="all" and="symbol" sort-separator=", " initialize-with=". " delimiter=", " delimiter-precedes-last="always"/>
+        </names>
+      </if>
+    </choose>
+  </macro>
+  <macro name="cne-legal-title-primary">
+    <group delimiter=" ">
+      <text variable="cne-title-romanized" text-case="title"/>
+      <text macro="cne-title-supplements"/>
+    </group>
+  </macro>
   <macro name="legal-cites">
     <!-- `treaty`: for treaties -->
     <!-- `legal_case`: for all legal and court cases -->
@@ -1962,14 +1977,31 @@ CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"l
           </group>
         </if>
         <else>
-          <group delimiter=" " suffix=".">
-            <group delimiter=", ">
-              <text macro="title-legal"/>
-              <text macro="container-legal"/>
-            </group>
-            <text macro="date-legal"/>
-            <text macro="parenthetical-legal"/>
-          </group>
+          <choose>
+            <if type="legislation" variable="cne-has-author">
+              <group delimiter=". " suffix=".">
+                <text macro="cne-legal-author"/>
+                <group delimiter=" ">
+                  <group delimiter=", ">
+                    <text macro="title-legal"/>
+                    <text macro="container-legal"/>
+                  </group>
+                  <text macro="date-legal"/>
+                  <text macro="parenthetical-legal"/>
+                </group>
+              </group>
+            </if>
+            <else>
+              <group delimiter=" " suffix=".">
+                <group delimiter=", ">
+                  <text macro="title-legal"/>
+                  <text macro="container-legal"/>
+                </group>
+                <text macro="date-legal"/>
+                <text macro="parenthetical-legal"/>
+              </group>
+            </else>
+          </choose>
         </else>
       </choose>
       <text variable="references"/>
@@ -1978,9 +2010,12 @@ CNE-CONFIG: {"persons":["translit"],"nameFormatting":{"romanizedCJK":{"order":"l
   </macro>
   <macro name="title-legal">
     <choose>
-      <if type="bill legal_case legislation regulation treaty" match="any">
-        <text variable="title" text-case="title"/>
+      <if type="legislation" variable="cne-title-romanized">
+        <text macro="cne-legal-title-primary"/>
       </if>
+      <else-if type="bill legal_case legislation regulation treaty" match="any">
+        <text variable="title" text-case="title"/>
+      </else-if>
       <else-if type="hearing">
         <!-- APA uses a comma delimiter and omits "hearing before the" for hearings with testimony, 
              but follows Bluebook rules (colon delimiter, prefix before the committee name) for

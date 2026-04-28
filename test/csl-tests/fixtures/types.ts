@@ -98,6 +98,17 @@ export interface DatasetFixture extends ItemFields {
 }
 
 /**
+ * Complete test fixture for a statute / legislation item
+ */
+export interface StatuteFixture extends ItemFields {
+  itemType: "statute";
+  title: string;
+  nameOfAct: string;
+  creators: Array<_ZoteroTypes.Item.CreatorJSON>;
+  extra?: string;
+}
+
+/**
  * Union type of all test fixtures
  */
 export type CNETestFixture =
@@ -107,4 +118,5 @@ export type CNETestFixture =
   | NewspaperArticleFixture
   | WebpageFixture
   | FilmFixture
-  | DatasetFixture;
+  | DatasetFixture
+  | StatuteFixture;
