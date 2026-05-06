@@ -16,4 +16,6 @@ export const chineseExpectations: Record<string, string> = {
   [FIXTURE_IDS.ZHCN_SUN_1968_XUNXIAN]: `Sun Haibo 孫海波, ed. <i>Henan sheng Xunxian yi qi</i> 河南省浚縣彝器 [Bronzes of Xunxian County, Henan]. Chengwen chubanshe, 1968.`,
 
   [FIXTURE_IDS.ZHCN_LI_2002_JINHOU]: `Li Boqian 李伯谦. “Jin hou mudi fajue yu yanjiu” 晋侯墓地发掘与研究 [Excavations and Research on the Cemetery of Marquis of Jin]. In <i>Jin guo qi zhen: Shanxi Jin hou muqun chutu wenwu jingpin</i> 晋国奇珍: 山西晋侯墓群出土文物精品 [Treasures of the Jin State: Gems from Excavations of Cemetery of Marquis of Jin in Shanxi Province]. Shanghai renmin meishu chubanshe, 2002.`,
+
+  [FIXTURE_IDS.ZHCN_DONG_2007_JINDAI]: `Dong Jianxia 董建霞. “Jindai Shandong kaibu yu quwei fenxi” 近代山东开埠与区位分析 [The Opening of Commercial Settlements in Modern Shandong and Locational Analysis]. <i>Jinan daxue xuebao (shehui kexue ban)</i> 济南大学学报 (社会科学版), no. 6 (2007): 25–28.`,
 };

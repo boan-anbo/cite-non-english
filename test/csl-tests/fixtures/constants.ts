@@ -25,6 +25,7 @@ export const FIXTURE_IDS = {
   ZHCN_SHA_2014_SHIKU: "sha-2014-shiku",
   ZHCN_SUN_1968_XUNXIAN: "sun-1968-xunxian",
   ZHCN_LI_2002_JINHOU: "li-2002-jinhou",
+  ZHCN_DONG_2007_JINDAI: "dong-2007-jindai",
   ZHCN_STATE_COUNCIL_2020_EXPORT_CONTROL: "state-council-2020-export-control",
   ZHCN_STATE_COUNCIL_2004_VETERINARY_REGULATION:
     "state-council-2004-veterinary-regulation",

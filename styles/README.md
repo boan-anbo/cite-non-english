@@ -221,6 +221,30 @@ Subsequent note:
 王小波, Huangjin.
 ```
 
+### Chicago Manual of Style 18th edition (shortened notes and bibliography) - CNE
+
+**File**: `cne/chicago-shortened-notes-bibliography-cne.csl`
+
+**Based on**: Chicago Manual of Style 18th edition (shortened notes and bibliography)
+
+**Enhancements**:
+
+- Uses shortened author-title notes for every note citation
+- Renders note names with romanization only
+- Keeps bibliography names as romanization + original script
+- Keeps the same CNE title, journal, publisher, legal, and sorting behavior as the main Chicago notes style
+- Generated directly from Zotero's official `chicago-shortened-notes-bibliography` template, so upstream shortened-note layout behavior is preserved and CNE changes remain isolated in the variant diff
+
+**Example output**:
+
+```
+Shortened note:
+Dong, “Jindai Shandong kaibu,” 27.
+
+Bibliography:
+Dong Jianxia 董建霞. “Jindai Shandong kaibu yu quwei fenxi” 近代山东开埠与区位分析 [The Opening of Commercial Settlements in Modern Shandong and Locational Analysis]. Jinan daxue xuebao (shehui kexue ban) 济南大学学报 (社会科学版), no. 6 (2007): 25–28.
+```
+
 ## Maintaining and Extending Styles
 
 ### Adding a New CNE Style Variant

@@ -323,6 +323,91 @@ export async function generateCitations(
 }
 
 /**
+ * Generate an ordered sequence of note citations for a single item.
+ *
+ * Unlike `generateCitations`, this exercises citeproc's citation state so tests
+ * can distinguish first-note and subsequent-note rendering.
+ */
+export async function generateSequentialCitationNotes(
+  item: Zotero.Item,
+  styleId: string,
+  styleLocale: string = "en-US",
+  locators: Array<string | undefined> = [undefined, undefined],
+): Promise<string[]> {
+  const style = Zotero.Styles.get(styleId);
+  if (!style) {
+    throw new Error(`Style not found: ${styleId}`);
+  }
+
+  if (typeof style.clearEngineCache === "function") {
+    style.clearEngineCache();
+  }
+
+  const engine = style.getCiteProc(styleLocale, "html");
+  engine.updateItems([item.id]);
+
+  const citationIds: string[] = [];
+  const outputs: string[] = [];
+
+  for (let index = 0; index < locators.length; index++) {
+    const citationID = `cne-seq-${item.id}-${index}`;
+    const citationItem: any = { id: item.id };
+    if (locators[index]) {
+      citationItem.locator = locators[index];
+    }
+
+    const citation = {
+      citationID,
+      citationItems: [citationItem],
+      properties: {
+        noteIndex: index + 1,
+      },
+    };
+    const citationsPre = citationIds.map((id, noteIndex) => [
+      id,
+      noteIndex + 1,
+    ]);
+    const result = engine.processCitationCluster(citation, citationsPre, []);
+    let rendered = extractCitationClusterString(result, citationID);
+
+    if (!rendered && typeof engine.previewCitationCluster === "function") {
+      rendered = engine.previewCitationCluster(
+        citation,
+        citationsPre,
+        [],
+        "html",
+      );
+    }
+
+    if (!rendered) {
+      throw new Error(
+        `Citation generation returned no output for citation ${citationID}`,
+      );
+    }
+
+    outputs.push(rendered);
+    citationIds.push(citationID);
+  }
+
+  return outputs;
+}
+
+function extractCitationClusterString(
+  result: any,
+  citationID: string,
+): string | null {
+  const changedCitations = Array.isArray(result?.[1]) ? result[1] : [];
+  const renderedChanges = changedCitations.filter(
+    (change: any) => Array.isArray(change) && typeof change[1] === "string",
+  );
+  const matchingChange =
+    renderedChanges.find((change: any[]) => change.includes(citationID)) ||
+    renderedChanges[renderedChanges.length - 1];
+
+  return matchingChange?.[1] || null;
+}
+
+/**
  * Save snapshot to file
  *
  * @param relativePath - Path relative to project root directory

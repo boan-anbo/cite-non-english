@@ -236,6 +236,33 @@ cne-publisher-original: 上海人民美术出版社
 cne-publisher-romanized: Shanghai renmin meishu chubanshe`,
   },
 
+  [FIXTURE_IDS.ZHCN_DONG_2007_JINDAI]: {
+    itemType: "journalArticle",
+    title: "近代山东开埠与区位分析",
+    publicationTitle: "济南大学学报 (社会科学版)",
+    issue: "6",
+    pages: "25-28",
+    date: "2007",
+    language: "zh-CN",
+    creators: [
+      {
+        firstName: "建霞",
+        lastName: "董",
+        creatorType: "author",
+      },
+    ],
+    extra: `cne-creator-0-last-original: 董
+cne-creator-0-first-original: 建霞
+cne-creator-0-last-romanized: Dong
+cne-creator-0-first-romanized: Jianxia
+cne-title-original: 近代山东开埠与区位分析
+cne-title-romanized: Jindai Shandong kaibu yu quwei fenxi
+cne-title-romanized-short: Jindai Shandong kaibu
+cne-title-english: The Opening of Commercial Settlements in Modern Shandong and Locational Analysis
+cne-journal-original: 济南大学学报 (社会科学版)
+cne-journal-romanized: Jinan daxue xuebao (shehui kexue ban)`,
+  },
+
   [FIXTURE_IDS.ZHCN_STATE_COUNCIL_2020_EXPORT_CONTROL]: {
     itemType: "statute",
     title: "中华人民共和国出口管制法",
