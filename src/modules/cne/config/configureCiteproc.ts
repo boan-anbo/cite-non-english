@@ -17,6 +17,13 @@ declare const CSL: any | undefined;
 let originalJsSetLangPrefs: ((obj: any, conv?: any) => void) | null = null;
 let originalRsSetLangPrefs: ((obj: any, conv?: any) => void) | null = null;
 
+const CITATION_PERSON_METHODS = [
+  "previewCitationCluster",
+  "appendCitationCluster",
+  "processCitationCluster",
+  "makeCitationCluster",
+] as const;
+
 export function installCneLangPrefPatch(): void {
   // NOTE: This patches citeproc at the prototype level. Any future citations
   // engine updates (citeproc-js or citeproc-rs) should rerun these tests to
@@ -80,37 +87,14 @@ export function configureCiteprocForCNE(
       return;
     }
 
-    const citeLangPrefs: Record<string, string[]> = {};
-    if (config.persons) {
-      citeLangPrefs.persons = config.persons;
-    }
+    const basePersons = config.persons ? [...config.persons] : undefined;
+    const citationPersons = config.citationPersons
+      ? [...config.citationPersons]
+      : undefined;
 
-    if (citeLangPrefs.persons) {
-      const personsSnapshot = [...citeLangPrefs.persons];
-      (engine as any)._cneLangOverride = () => {
-        enforcePersonsArray(engine.opt?.["cite-lang-prefs"], personsSnapshot);
-        enforcePersonsArray(
-          engine.state?.opt?.["cite-lang-prefs"],
-          personsSnapshot,
-        );
-      };
-    } else {
-      (engine as any)._cneLangOverride = undefined;
-    }
-
-    engine.setLangPrefsForCites(citeLangPrefs);
-    (engine as any)._cneLangOverride?.();
-
-    if (citeLangPrefs.persons) {
-      enforcePersonsArray(
-        engine.opt?.["cite-lang-prefs"],
-        citeLangPrefs.persons,
-      );
-      enforcePersonsArray(
-        engine.state?.opt?.["cite-lang-prefs"],
-        citeLangPrefs.persons,
-      );
-    }
+    setCneLangOverride(engine, basePersons);
+    setPersonPrefsForCNE(engine, basePersons);
+    installCitationPersonsOverride(engine, basePersons, citationPersons);
 
     const romanizedCJK = config.nameFormatting?.romanizedCJK;
     const separator = romanizedCJK?.separator || "space";
@@ -128,6 +112,124 @@ export function configureCiteprocForCNE(
   } catch (error) {
     Zotero.debug("[CNE Config] Error configuring citeproc engine: " + error);
   }
+}
+
+function setCneLangOverride(engine: CiteprocEngine, persons?: string[]): void {
+  if (!persons) {
+    (engine as any)._cneLangOverride = undefined;
+    return;
+  }
+
+  const personsSnapshot = [...persons];
+  (engine as any)._cneLangOverride = () => {
+    enforcePersonPrefs(engine, personsSnapshot);
+  };
+}
+
+function setPersonPrefsForCNE(
+  engine: CiteprocEngine,
+  persons?: string[],
+): void {
+  const citeLangPrefs: Record<string, string[]> = {};
+  if (persons) {
+    citeLangPrefs.persons = persons;
+  }
+
+  engine.setLangPrefsForCites(citeLangPrefs);
+  enforcePersonPrefs(engine, persons);
+}
+
+function enforcePersonPrefs(engine: CiteprocEngine, persons?: string[]): void {
+  if (!persons) {
+    return;
+  }
+
+  enforcePersonsArray(engine.opt?.["cite-lang-prefs"], persons);
+  enforcePersonsArray(engine.state?.opt?.["cite-lang-prefs"], persons);
+}
+
+function installCitationPersonsOverride(
+  engine: CiteprocEngine,
+  basePersons?: string[],
+  citationPersons?: string[],
+): void {
+  const cneEngine = engine as any;
+  cneEngine._cneBasePersons = basePersons ? [...basePersons] : undefined;
+  cneEngine._cneCitationPersons =
+    citationPersons && !sameSlots(citationPersons, basePersons)
+      ? [...citationPersons]
+      : undefined;
+
+  if (!cneEngine._cneCitationPersons) {
+    return;
+  }
+
+  if (cneEngine._cneCitationPersonsWrapped) {
+    return;
+  }
+
+  let wrappedCount = 0;
+  for (const methodName of CITATION_PERSON_METHODS) {
+    const original = engine?.[methodName];
+    if (typeof original !== "function") {
+      continue;
+    }
+
+    cneEngine[`_cneOriginal_${methodName}`] = original;
+    engine[methodName] = function (...args: any[]) {
+      return withCitationPersonPrefs(this, () => original.apply(this, args));
+    };
+    wrappedCount++;
+  }
+
+  if (wrappedCount > 0) {
+    cneEngine._cneCitationPersonsWrapped = true;
+  }
+}
+
+function withCitationPersonPrefs<T>(
+  engine: CiteprocEngine,
+  render: () => T,
+): T {
+  const cneEngine = engine as any;
+  const citationPersons = cneEngine._cneCitationPersons as string[] | undefined;
+  const basePersons = cneEngine._cneBasePersons as string[] | undefined;
+
+  if (!citationPersons || sameSlots(citationPersons, basePersons)) {
+    return render();
+  }
+
+  const depth = cneEngine._cneCitationDepth || 0;
+  if (depth > 0) {
+    return render();
+  }
+
+  const previousOverride = cneEngine._cneLangOverride;
+  cneEngine._cneCitationDepth = depth + 1;
+
+  try {
+    setCneLangOverride(engine, citationPersons);
+    setPersonPrefsForCNE(engine, citationPersons);
+    return render();
+  } finally {
+    cneEngine._cneCitationDepth = depth;
+    cneEngine._cneLangOverride = previousOverride;
+    setPersonPrefsForCNE(engine, basePersons);
+    cneEngine._cneLangOverride?.();
+  }
+}
+
+function sameSlots(
+  left: string[] | undefined,
+  right: string[] | undefined,
+): boolean {
+  if (left === right) {
+    return true;
+  }
+  if (!left || !right || left.length !== right.length) {
+    return false;
+  }
+  return left.every((slot, index) => slot === right[index]);
 }
 
 function enforcePersonsArray(target: any, values: string[]) {

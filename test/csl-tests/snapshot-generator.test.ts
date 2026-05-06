@@ -77,6 +77,17 @@ const STYLE_REGISTRY = [
       "snapshots/chicago-notes-bibliography-cne/en-US/all-languages-notes.html",
   },
   {
+    name: "Chicago 18th Edition (Shortened Notes and Bibliography) - CNE",
+    styleId:
+      "http://www.zotero.org/styles/chicago-shortened-notes-bibliography-cne",
+    styleFilename: "chicago-shortened-notes-bibliography-cne.csl",
+    locale: "en-US",
+    snapshotPathBibliography:
+      "snapshots/chicago-shortened-notes-bibliography-cne/en-US/all-languages-bibliography.html",
+    snapshotPathNotes:
+      "snapshots/chicago-shortened-notes-bibliography-cne/en-US/all-languages-notes.html",
+  },
+  {
     name: "APA 7th Edition - CNE",
     styleId: "http://www.zotero.org/styles/apa-7th-cne",
     styleFilename: "apa-7th-cne.csl",

@@ -23,13 +23,21 @@ import type {
 } from "./types";
 import { NAMESPACE, FIELD_VARIANTS, ORIGINAL_LANGUAGE_KEY } from "./constants";
 
+const FIELD_VARIANT_EXTRA_KEYS = [
+  "original",
+  "romanized",
+  "romanized-short",
+  "romanizedShort",
+  "english",
+] as const;
+
 /**
  * Regular expression to match CNE metadata lines in Extra field
  * Format: cne-fieldname-variant: value
  * Supports hyphenated field names (e.g., container-title)
  */
 const CNE_FIELD_REGEX = new RegExp(
-  `^${NAMESPACE}-([a-z-]+)-(${FIELD_VARIANTS.join("|")}): (.+)$`,
+  `^${NAMESPACE}-([a-z-]+)-(${FIELD_VARIANT_EXTRA_KEYS.join("|")}):\\s*(.+)$`,
   "i",
 );
 
@@ -240,7 +248,7 @@ export function parseCNEMetadata(extraContent: string): CneMetadataData {
     const fieldMatch = trimmedLine.match(CNE_FIELD_REGEX);
     if (fieldMatch) {
       const fieldName = fieldMatch[1];
-      const variant = fieldMatch[2] as FieldVariant;
+      const variant = normalizeFieldVariant(fieldMatch[2]);
       const value = fieldMatch[3].trim();
 
       // Initialize field data if it doesn't exist
@@ -321,7 +329,9 @@ export function serializeToExtra(
     for (const variant of FIELD_VARIANTS) {
       const value = fieldData[variant];
       if (value && value.trim() !== "") {
-        cneLines.push(`${NAMESPACE}-${fieldName}-${variant}: ${value}`);
+        cneLines.push(
+          `${NAMESPACE}-${fieldName}-${variantToExtraKey(variant)}: ${value}`,
+        );
       }
     }
   }
@@ -335,6 +345,20 @@ export function serializeToExtra(
 
   // Filter out empty lines and join
   return allLines.filter((line) => line.trim() !== "").join("\n");
+}
+
+function normalizeFieldVariant(extraKey: string): FieldVariant {
+  if (extraKey === "romanized-short") {
+    return "romanizedShort";
+  }
+  return extraKey as FieldVariant;
+}
+
+function variantToExtraKey(variant: FieldVariant): string {
+  if (variant === "romanizedShort") {
+    return "romanized-short";
+  }
+  return variant;
 }
 
 /**

@@ -49,7 +49,7 @@ CNE addresses these issues by **bringing robust non-English citation support bac
 ### CNE Features
 
 - Manage multilingual fields in the Cite Non-English (CNE) panel for creators, titles, publisher, journal, series, and other metadata, with original-script and romanized variants stored together.
-- Curated CSL styles (Chicago 18th, APA 7th, MLA 8th & 9th and more to come) tailored based on official style handbooks. In Zotero, these styles will be installed automatically when you install CNE and has `CNE` added to the style name.
+- Curated CSL styles (Chicago 18th notes, Chicago 18th shortened notes, APA 7th, MLA 8th & 9th and more to come) tailored based on official style handbooks. In Zotero, these styles will be installed automatically when you install CNE and has `CNE` added to the style name.
 - Per-item overrides for punctuation, spacing, and name ordering so specialized style requirements are met without manual editing.
 - All CNE metadata is stored inside the Zotero item (Extra + CNE panel), so your library stays portable and sync-friendly (no external files required).
 - Internal APIs are patched so that any Zotero features and integrations _should_ just work to support CNE. Any compatibility issues should be reported as bugs in the [issue tracker](https://github.com/boan-anbo/cite-non-english/issues).
@@ -206,7 +206,7 @@ CNE separates concerns between data storage and output formatting to provide sta
 
 **Output via Custom CSL Styles**
 
-- CNE provides curated CSL styles (Chicago 18th CNE, APA 7th CNE, MLA 9th CNE) to make special handling for non-English sources with CNE item data possible. These styles are installed automatically when you install CNE and has `CNE` added to the style name.
+- CNE provides curated CSL styles (Chicago 18th CNE, Chicago 18th shortened notes CNE, APA 7th CNE, MLA 9th CNE) to make special handling for non-English sources with CNE item data possible. These styles are installed automatically when you install CNE and has `CNE` added to the style name.
 - See [`styles/cne/`](styles/cne/) for the curated CSL styles.
 
 **Name Processing with Interceptors**
@@ -280,7 +280,7 @@ The diagram above shows CNE's intervention points (orange nodes) in Zotero's cit
 
 4. **Configuring citeproc for multi-slot rendering** (Style + Configure)
 
-   When Zotero initializes a citeproc engine, CNE reads the `CNE-CONFIG` metadata embedded in the CSL style file to determine display preferences—for example, whether to show both romanized and original author names (`["translit", "orig"]`) or just romanized (`["translit"]`), and how to format romanized CJK names (with or without commas, with or without spacing in the original script). CNE then applies these preferences to the engine's `cite-lang-prefs` setting and installs a persistent override hook that reapplies the configuration whenever citeproc internally resets it during processing. This ensures the Style Editor, bibliography previews, and Word integration all consistently render the parallel scripts you expect.
+   When Zotero initializes a citeproc engine, CNE reads the `CNE-CONFIG` metadata embedded in the CSL style file to determine display preferences—for example, whether to show both romanized and original author names (`["translit", "orig"]`) or just romanized (`["translit"]`), and how to format romanized CJK names (with or without commas, with or without spacing in the original script). Styles may also set a citation-only override, such as rendering notes with romanized names while keeping bibliography entries romanized + original script. CNE then applies these preferences to the engine's `cite-lang-prefs` setting and installs a persistent override hook that reapplies the configuration whenever citeproc internally resets it during processing. This ensures the Style Editor, bibliography previews, and Word integration all consistently render the parallel scripts you expect.
 
 5. **Preparing BibLaTeX exports** (Bib)
 

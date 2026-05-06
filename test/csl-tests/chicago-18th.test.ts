@@ -41,6 +41,7 @@ import { englishExpectations } from "./expectations/chicago-18th/en-US/english";
 import {
   generateBibliography,
   generateCitations,
+  generateSequentialCitationNotes,
   extractCslEntryTexts,
   extractCslEntry,
 } from "./test-helpers";
@@ -169,6 +170,7 @@ const STYLE_LOCALE = "en-US";
 describe("Chicago 18th Edition - CNE (en-US)", function () {
   let bibliography: string;
   let citations: string;
+  let dongItem: Zotero.Item;
 
   // Initialize styles before running tests
   before(async function () {
@@ -177,6 +179,14 @@ describe("Chicago 18th Edition - CNE (en-US)", function () {
     // Retrieve all items created in global setup
     const libraryID = Zotero.Libraries.userLibraryID;
     const allItems = await Zotero.Items.getAll(libraryID);
+    dongItem = allItems.find(
+      (item) =>
+        item.getField("title") ===
+        ALL_FIXTURES[FIXTURE_IDS.ZHCN_DONG_2007_JINDAI].title,
+    )!;
+    if (!dongItem) {
+      throw new Error("dong-2007-jindai fixture item was not created");
+    }
 
     // Render bibliography ONCE for all items
     bibliography = await generateBibliography(allItems, STYLE_ID, STYLE_LOCALE);
@@ -283,6 +293,27 @@ describe("Chicago 18th Edition - CNE (en-US)", function () {
         "中华人民共和国国务院",
         "Statute without CNE creator metadata should not render the native legal author",
       );
+    });
+
+    it("should keep original script in full notes and omit it from shortened notes", async function () {
+      assert.include(citations, "Dong Jianxia 董建霞");
+      assert.include(citations, "Jindai Shandong kaibu yu quwei fenxi");
+      assert.include(citations, "近代山东开埠与区位分析");
+
+      const [firstNote, shortenedNote] = await generateSequentialCitationNotes(
+        dongItem,
+        STYLE_ID,
+        STYLE_LOCALE,
+        ["27", "27"],
+      );
+
+      assert.include(firstNote, "Dong Jianxia 董建霞");
+      assert.include(firstNote, "近代山东开埠与区位分析");
+      assert.include(shortenedNote, "Dong,");
+      assert.include(shortenedNote, "Jindai Shandong kaibu");
+      assert.include(shortenedNote, "27");
+      assert.notInclude(shortenedNote, "董建霞");
+      assert.notInclude(shortenedNote, "近代山东开埠与区位分析");
     });
   });
 

@@ -11,6 +11,7 @@ This file tracks the version/date of the original Zotero CSL styles used as temp
 | MLA 8th                    | 2025-06-30   | 2025-10-21          | ✅ Current |
 | Chicago 18th (author-date) | 2025-09-07   | 2025-10-21          | ✅ Current |
 | Chicago 18th (notes-bib)   | 2025-09-07   | 2025-10-16          | ✅ Current |
+| Chicago 18th (short notes) | 2026-04-14   | 2026-05-06          | ✅ Current |
 | APA 7th                    | 2025-01-22   | 2025-10-21          | ✅ Current |
 
 ---
@@ -94,6 +95,24 @@ This file tracks the version/date of the original Zotero CSL styles used as temp
 - Chicago 18th edition notes and bibliography variant
 - Uses numbered footnotes/endnotes
 - Used to generate: `chicago-notes-bibliography-cne.csl`
+
+---
+
+## Chicago Manual of Style 18th edition (shortened notes and bibliography)
+
+**Template File:** `chicago-shortened-notes-bibliography-template.csl`
+**Base Style ID:** `http://www.zotero.org/styles/chicago-shortened-notes-bibliography`
+**Base Style Updated:** 2026-04-14T07:08:20+00:00
+**Checked On:** 2026-05-06
+**Source:** https://www.zotero.org/styles/chicago-shortened-notes-bibliography?source=1
+**Pristine Copy:** `styles/upstream/chicago-18th-shortened-notes-bibliography-2026-04-14.csl`
+
+**Notes:**
+
+- Chicago 18th edition shortened-notes variant
+- The local template is a direct copy of Zotero's official shortened-notes style, not the main Chicago notes template
+- The variant diff adds CNE metadata, citation-only name-slot configuration, CNE title/publisher/series/legal support, and CNE sorting while preserving the upstream shortened-note citation layout
+- Used to generate: `chicago-shortened-notes-bibliography-cne.csl`
 
 ---
 

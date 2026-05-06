@@ -93,7 +93,15 @@ export interface NameFormatting {
  */
 export interface CNEConfigOptions {
   /** Language variants for personal/corporate names */
-  persons?: string[];
+  persons?: SlotValue[];
+
+  /**
+   * Optional citation-only override for personal/corporate names.
+   *
+   * Bibliographies continue to use `persons`, while note/citation rendering
+   * can use a narrower slot set such as `["translit"]`.
+   */
+  citationPersons?: SlotValue[];
 
   /** Name formatting options */
   nameFormatting?: NameFormatting;
@@ -115,14 +123,16 @@ export type SlotValue = "orig" | "translit" | "translat";
  * Title formatting is controlled by CSL macros, as titles require
  * complex style-specific formatting that multi-slot cannot provide.
  */
-export type FieldType = "persons";
+export type FieldType = "persons" | "citationPersons";
 
 /**
  * Parse CNE-CONFIG string from style metadata
  *
  * Supports two formats:
- * 1. **JSON format (preferred)**: `{"persons":["translit","orig"]}`
- * 2. **Legacy space-delimited format**: `persons=translit,orig`
+ * 1. **JSON format (preferred)**:
+ *    `{"persons":["translit","orig"],"citationPersons":["translit"]}`
+ * 2. **Legacy space-delimited format**:
+ *    `persons=translit,orig citationPersons=translit`
  *
  * @param configString - Configuration string
  * @returns Parsed configuration object
@@ -142,10 +152,10 @@ export type FieldType = "persons";
  * ## JSON Format Syntax
  *
  * ```json
- * {"persons": ["translit", "orig"]}
+ * {"persons": ["translit", "orig"], "citationPersons": ["translit"]}
  * ```
  *
- * **Field Types**: persons, institutions
+ * **Field Types**: persons, citationPersons
  *
  * **Slot Values**: orig, translit, translat
  *
@@ -153,7 +163,7 @@ export type FieldType = "persons";
  * - `{"persons":["translit","orig"]}` → Show romanized + original for names
  * - `{"persons":["translit"]}` → Show romanized only
  * - `{"persons":["orig"]}` → Show original only
- * - `{"institutions":["translit"]}` → Institutional names romanized only
+ * - `{"citationPersons":["translit"]}` → Notes/citations use romanized names only
  *
  * **Note**: Titles, journals, publishers use CSL macros, not CNE-CONFIG.
  */
@@ -174,7 +184,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
       }
 
       const config: CNEConfigOptions = {};
-      const validFields: FieldType[] = ["persons"];
+      const validFields: FieldType[] = ["persons", "citationPersons"];
       const validSlots: SlotValue[] = ["orig", "translit", "translat"];
       const validOrders = ["last-name-first", "first-name-first"];
       const validSeparators = ["comma", "space"];
@@ -280,7 +290,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
         }
 
         // Store in config
-        config[key as FieldType] = value;
+        config[key as FieldType] = value as SlotValue[];
       }
 
       return config;
@@ -311,7 +321,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
     const [fieldType, slotsStr] = parts;
 
     // Validate field type
-    const validFields: FieldType[] = ["persons"];
+    const validFields: FieldType[] = ["persons", "citationPersons"];
 
     if (!validFields.includes(fieldType as FieldType)) {
       throw new Error(
@@ -342,7 +352,7 @@ export function parseCNEConfigString(configString: string): CNEConfigOptions {
     }
 
     // Store in config
-    config[fieldType as FieldType] = slots;
+    config[fieldType as FieldType] = slots as SlotValue[];
   }
 
   return config;
@@ -641,7 +651,7 @@ export function isValidCNEConfig(config: any): config is CNEConfigOptions {
     return false;
   }
 
-  const validFields: FieldType[] = ["persons"];
+  const validFields: FieldType[] = ["persons", "citationPersons"];
   const validSlots: SlotValue[] = ["orig", "translit", "translat"];
 
   for (const field of validFields) {

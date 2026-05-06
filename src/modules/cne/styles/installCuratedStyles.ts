@@ -17,6 +17,12 @@ const CURATED_STYLES: CuratedStyle[] = [
     filename: "chicago-notes-bibliography-cne.csl",
   },
   {
+    id: "http://www.zotero.org/styles/chicago-shortened-notes-bibliography-cne",
+    title:
+      "Chicago Manual of Style 18th edition (shortened notes and bibliography) - CNE",
+    filename: "chicago-shortened-notes-bibliography-cne.csl",
+  },
+  {
     id: "http://www.zotero.org/styles/chicago-author-date-cne",
     title: "Chicago Manual of Style 18th edition (author-date) - CNE",
     filename: "chicago-author-date-cne.csl",

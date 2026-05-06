@@ -17,6 +17,10 @@ const CNE_STYLES = [
     filename: "chicago-notes-bibliography-cne.csl",
   },
   {
+    id: "http://www.zotero.org/styles/chicago-shortened-notes-bibliography-cne",
+    filename: "chicago-shortened-notes-bibliography-cne.csl",
+  },
+  {
     id: "http://www.zotero.org/styles/chicago-author-date-cne",
     filename: "chicago-author-date-cne.csl",
   },
