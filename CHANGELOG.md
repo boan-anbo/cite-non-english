@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.1.7] - 2026-05-06
+
+### Added
+
+- Added a bundled Chicago 18 CNE style for **shortened notes and
+  bibliography**:
+  `Chicago Manual of Style 18th edition (shortened notes and bibliography) -
+CNE`.
+- Added CNE style configuration support for citation-only name slots. The new
+  shortened-notes style keeps bibliography names as romanized + original script
+  while rendering notes with romanized names only.
+
+### Fixed
+
+- Chicago shortened-note citations can now avoid original-script author names in
+  notes while keeping full CNE bibliography entries. For example, the Dong
+  Jianxia report case renders shortened notes like `Dong, “Jindai Shandong
+kaibu,” 27` while the bibliography still renders `Dong Jianxia 董建霞` and the
+  full romanized/original/translated title.
+- The bundled Chicago shortened-notes CNE style is now generated from the
+  current official Zotero `chicago-shortened-notes-bibliography` style instead
+  of mirroring CNE's main Chicago notes template. This preserves upstream
+  shortened-note behavior while layering CNE metadata, sorting, title,
+  publisher, series, and legal-field support on top.
+- `cne-title-romanized-short` is now parsed as the canonical Extra-field key
+  for short romanized titles, with existing `cne-title-romanizedShort` data
+  still accepted for compatibility.
+- Added regression coverage for the existing Chicago notes style so first notes
+  still include original script and subsequent notes still shorten to
+  romanized-only author/title form.
+
 ## [0.1.6] - 2026-04-28
 
 ### Fixed
