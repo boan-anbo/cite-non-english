@@ -427,3 +427,11 @@ Special thanks to 龔麗坤 and WM for their help and advice on Japanese and Kor
 Bo An
 
 2025
+
+### Local agent access
+
+Enable **Agent access** in CNE's Zotero settings and copy the connection to your
+local agent. The versioned JSON interface supports discovery, selection/search,
+batch metadata edits, conflict detection, and citation previews of proposed
+changes. It runs inside Zotero and is disabled by default. See the
+[agent API guide](docs/agent-api.md) for schemas, examples, and recovery behavior.
