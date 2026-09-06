@@ -201,7 +201,7 @@ CNE separates concerns between data storage and output formatting to provide sta
 - Dedicated UI panel for entering original script, romanization, and translations
 - **Key design principle for CNE item data**: Complete independence from Zotero's native fields
   - Users can freely choose to fill the native Title/Author fields with romanized, English, or original script, whichever makes sense for the user.
-  - CNE output remains the actual values used in creating and exporting the citation regardless of native field content
+  - Explicit CNE variants take precedence where the selected style supports them; otherwise its selectors fall back to native Zotero fields
   - No conflicts between CNE and standard Zotero workflows
 
 **Output via Custom CSL Styles**
@@ -272,7 +272,7 @@ The diagram above shows CNE's intervention points (orange nodes) in Zotero's cit
 
 2. **Parsing CNE metadata from the Extra field** (Parser)
 
-   Before Zotero converts an item to citation format, CNE's parser reads the Extra field and extracts all `cne-*` lines into a structured internal representation. For each field (title, container-title, publisher), the parser separates romanized, original, and English variants. For authors, it indexes each creator with their position (e.g., `cne-author-0-last-romanized`, `cne-author-0-last-original`) so they can be matched to Zotero's creator array later.
+   Before Zotero converts an item to citation format, CNE's parser reads the Extra field and extracts all `cne-*` lines into a structured internal representation. For each field (title, container-title, publisher), the parser separates romanized, original, and English variants. For authors, it indexes each creator with their position (e.g., `cne-creator-0-last-romanized`, `cne-creator-0-last-original`) so they can be matched to Zotero's creator array later.
 
 3. **Enriching CSL-JSON with CNE variables** (Callbacks → CSL)
 
@@ -289,6 +289,63 @@ The diagram above shows CNE's intervention points (orange nodes) in Zotero's cit
 **The result:** Whether you're previewing a citation in Zotero, inserting it into a Word document, viewing it in the Style Editor, or exporting your entire library to BibTeX, your non-English sources consistently appear with all the parallel information (romanization, original script, and English translation) properly formatted according to your chosen style guide.
 
 > **For developers:** Detailed technical implementation information, including interceptor architecture, callback chains, and source code locations, is available in [`docs/developer_guide.md`](docs/developer_guide.md#technical-implementation-details).
+
+### Extra-field reference
+
+The sidebar stores nonempty values as `key: value` lines in Extra. You can also enter these lines directly. The table lists the text fields exposed by the sidebar; a stored variant is displayed only when the selected style calls for it.
+
+| Field           | Extra keys                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Title           | `cne-title-original`, `cne-title-romanized`, `cne-title-romanized-short`, `cne-title-english`                                         |
+| Container title | `cne-container-title-original`, `cne-container-title-romanized`, `cne-container-title-romanized-short`, `cne-container-title-english` |
+| Publisher       | `cne-publisher-original`, `cne-publisher-romanized`                                                                                   |
+| Journal         | `cne-journal-original`, `cne-journal-romanized`                                                                                       |
+| Series          | `cne-series-original`, `cne-series-romanized`                                                                                         |
+
+Creator keys use **`cne-creator-`**, including authors, editors, and other creator roles. Replace `0` with the creator's zero-based position in the item's creator list (`0` for the first creator, `1` for the second, and so on):
+
+```text
+cne-creator-0-last-original: 郝
+cne-creator-0-first-original: 春文
+cne-creator-0-last-romanized: Hao
+cne-creator-0-first-romanized: Chunwen
+```
+
+For an organization or another single-field creator, put the complete name in the `last` field and leave `first` empty. Optional per-creator formatting keys are:
+
+```text
+cne-creator-0-options-original-spacing: true
+cne-creator-0-options-force-comma: true
+```
+
+These options control spacing in the original-script name and comma separation in the romanized name. They accept `true` or `false` and are subject to the selected style's rendering rules.
+
+Set the source language using the sidebar selector or Zotero's native Language field, preferably with a code such as `zh-CN`, `ja`, `ko`, `he`, or `en-US`. The parser also recognizes `cne-original-language: he` as an override used by creator enrichment; the sidebar language selector writes the native Language field.
+
+Use the canonical `romanized-short` spelling for short titles. Existing `romanizedShort` keys remain readable for compatibility; saving writes the canonical form.
+
+### Title selection and APA non-English sources
+
+CNE separates **the original language**, **its romanization**, and **an English translation**. Romanization changes the script, not the language. Enter romanized titles with the desired capitalization, including proper nouns: CNE preserves that casing. Native English titles can stay in sentence case; Chicago applies its own title-casing rules when using the native title.
+
+The curated styles deliberately differ:
+
+- **Chicago:** romanized title, original-script title, and bracketed English translation in full references. Shortened notes omit the original and translation.
+- **APA:** romanized title followed by the bracketed English translation. It does not append the original-script title to that combination. This is also the convention in the [University of Queensland's non-Latin-script example](https://guides.library.uq.edu.au/referencing/apa7/non-english-scripts).
+
+For example, these illustrative Hebrew fields:
+
+```text
+cne-title-original: ספר לדוגמה
+cne-title-romanized: Sefer ledugma
+cne-title-english: An example book
+```
+
+produce the APA book-title portion _Sefer ledugma_ [An example book]. Set the item's Language to `he` and choose the CNE APA style. CNE does not automatically transliterate or translate the text.
+
+**Filling only Original is insufficient for APA's CNE title path.** Currently the title selector uses `cne-title-romanized` when present and otherwise uses Zotero's native Title; the bracketed CNE translation is emitted only with the romanized variant. Original script plus translation without romanization is not an implemented fallback. The same distinction applies to the container-title and journal selectors.
+
+The [UQ page for non-English languages](https://guides.library.uq.edu.au/referencing/apa7/non-English) uses French and German examples, already written in Latin letters. Its separate non-Latin-script page explains the transliteration step. “Original-language title” does not necessarily mean “original-script title.”
 
 ### Known Issues
 
@@ -336,7 +393,7 @@ A: Your data remains safe in the Extra field. CNE metadata lines (starting with 
 
 **Q: Does CNE modify my stored items permanently?**
 
-A: CNE only modifies the Extra field when you enter data through the Cite Non-English (CNE) panel. It does not alter your original Title, Author, or other native Zotero fields. In fact, it does not even **use** the native fields for citation output.
+A: CNE stores parallel text and creator variants in Extra without changing your native Title or creator names. The language selector updates Zotero’s native Language field. Curated styles use the CNE variants they support and fall back to native fields when those variants are absent.
 
 **Q: Which Zotero versions are supported?**
 
