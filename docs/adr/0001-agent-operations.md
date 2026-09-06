@@ -63,7 +63,7 @@ Browser requests are rejected by Zotero and CNE. CNE has its own bearer token,
 including for reads, since custom endpoints do not inherit Local API auth.
 Revocation prevents new requests; it does not undo a transaction already accepted.
 No token is returned in discovery or API results. Native HTTP debug logging is
-outside the adapter and is documented in the connection guide.
+outside the adapter; the [CNE skill](../../skills/cne/SKILL.md) covers token handling.
 
 ## Extension points
 
