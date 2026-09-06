@@ -100,8 +100,10 @@ keep its token private. No MCP setup is required.
    records are saved readback. On a 409 conflict, read again and review the changes.
 
 CNE supplies the library access, validation, rendering, and persistence; your
-agent supplies the language judgment. See the [agent API guide](docs/agent-api.md)
-for the full contract and a small Python client. The [integration tests](test/agent)
+agent supplies the language judgment. Install the [`skills/cne`](skills/cne) folder
+with your agent's skill loader, or read the [CNE skill](skills/cne/SKILL.md) for
+operating guidance and connection troubleshooting. Live discovery provides the
+API schemas. The [integration tests](test/agent)
 exercise real Zotero HTTP, storage, sidebar updates, and citation output with
 supplied text; they do not evaluate a language model's translation quality.
 
