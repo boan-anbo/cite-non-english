@@ -1,3 +1,10 @@
+import { syncAgentAccess, stopAgentAccess } from "./modules/cne/agent/access";
+import {
+  describeOperations,
+  executeOperation,
+} from "./modules/cne/operations/catalog";
+import { stopPendingSaves } from "./modules/cne/section/handlers/saveHandler";
+import { disposeCneSections } from "./modules/cne/section/renderer/mainRenderer";
 import { initLocale } from "./utils/locale";
 import { getPref } from "./utils/prefs";
 import { registerPrefsScripts } from "./modules/preferenceScript";
@@ -38,6 +45,8 @@ async function onStartup() {
   setCneProcessingEnabled(processingPrefEnabled);
   watchCneProcessingPreference();
 
+  addon.api = { describe: describeOperations, execute: executeOperation };
+  await syncAgentAccess();
   registerCnePrefs();
 
   // Register Creator (CNE) column for locale-aware name display
@@ -78,6 +87,9 @@ async function onMainWindowUnload(win: Window): Promise<void> {
 }
 
 function onShutdown(): void {
+  stopAgentAccess();
+  disposeCneSections();
+  stopPendingSaves();
   ztoolkit.unregisterAll();
   addon.data.dialog?.window?.close();
 

@@ -1,3 +1,4 @@
+import { bindAgentPreferences } from "./cne/agent/preferences";
 import { config } from "../../package.json";
 import { getPref, setPref } from "../utils/prefs";
 import { setCneProcessingEnabled } from "./cne";
@@ -13,6 +14,7 @@ export async function registerPrefsScripts(_window: Window) {
     addon.data.prefs.window = _window;
   }
   bindPrefEvents();
+  bindAgentPreferences(_window);
 }
 
 function bindPrefEvents() {

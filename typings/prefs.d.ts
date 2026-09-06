@@ -13,6 +13,8 @@ declare namespace _ZoteroTypes {
       "enableHardcodedTitles": boolean;
       "hardcodedTitleStyle": string;
       "hardcodedTitlePresets": string;
+      "agentEnabled": boolean;
+      "agentToken": string;
     };
   }
 }

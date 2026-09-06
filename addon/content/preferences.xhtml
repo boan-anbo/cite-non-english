@@ -41,6 +41,26 @@
       data-l10n-id="pref-japanese-spacing-help"
     ></description>
   </groupbox>
+  <groupbox style="margin-top: 10px">
+    <label value="Agent access" style="font-weight: bold" />
+    <checkbox
+      id="cne-agent-enable"
+      label="Allow local agents to read and edit CNE metadata"
+    />
+    <description id="cne-agent-status" style="margin-top: 6px" />
+    <hbox>
+      <button
+        id="cne-agent-copy"
+        label="Copy connection"
+        tooltiptext="Includes a secret token for your local agent"
+      />
+      <button
+        id="cne-agent-revoke"
+        label="Revoke token"
+        tooltiptext="Disconnect existing clients and generate a new token"
+      />
+    </hbox>
+  </groupbox>
 </groupbox>
 <spacer style="height: 24px" />
 <vbox>

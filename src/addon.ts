@@ -22,7 +22,10 @@ class Addon {
   // Lifecycle hooks
   public hooks: typeof hooks;
   // APIs
-  public api: object;
+  public api: {
+    describe?: typeof import("./modules/cne/operations/catalog").describeOperations;
+    execute?: typeof import("./modules/cne/operations/catalog").executeOperation;
+  };
 
   constructor() {
     this.data = {
