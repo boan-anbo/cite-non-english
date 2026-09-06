@@ -32,14 +32,14 @@ function authorize(request: Request, token: string): void {
   ) {
     throw new CneError(
       "FORBIDDEN_ORIGIN",
-      "Browser-origin requests are not allowed.",
+      "Browser-origin requests are not allowed. Use a local HTTP client on the Zotero host.",
       403,
     );
   }
   if (!/^(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/i.test(headers.host ?? "")) {
     throw new CneError(
       "FORBIDDEN_HOST",
-      "A loopback Host header is required.",
+      "Use the loopback baseURL from Copy connection in Zotero Settings → CNE → Agent access.",
       403,
     );
   }
@@ -50,7 +50,7 @@ function authorize(request: Request, token: string): void {
   if (!token || difference)
     throw new CneError(
       "UNAUTHORIZED",
-      "Use the CNE bearer token from Zotero settings.",
+      "Use the Authorization header from Copy connection in Zotero Settings → CNE → Agent access. Recopy after token revocation.",
       403,
     );
 }
@@ -113,7 +113,9 @@ export function registerEndpoints(
         } catch (error) {
           if (!(error instanceof CneError))
             Zotero.logError(
-              new Error(`CNE operation failed: ${String(error)}`),
+              error instanceof Error
+                ? error
+                : new Error(`CNE operation failed: ${String(error)}`),
             );
           return [
             error instanceof CneError ? error.status : 500,

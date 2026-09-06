@@ -113,7 +113,12 @@ const operations: Record<string, Operation> = {
     ),
     run: async ({ libraryID, query, offset = 0, limit = 25 }) => {
       if (!Zotero.Libraries.get(libraryID))
-        throw new CneError("LIBRARY_NOT_FOUND", "Unknown library.", 404);
+        throw new CneError(
+          "LIBRARY_NOT_FOUND",
+          "Unknown library. Choose a libraryID from libraries.list.",
+          404,
+          { libraryID },
+        );
       const search = new Zotero.Search();
       search.addCondition("libraryID", "is", libraryID);
       if (query)
@@ -257,6 +262,8 @@ export function describeOperations() {
         "Supply romanizations and translations yourself. CNE validates, stores and renders them; it does not call a model.",
       revisions:
         "Opaque content revisions. On conflict, read again and review the changes. Do not blindly retry.",
+      errors:
+        "Errors return {error: {code, message, details?}}. details.path identifies an input property or CNE field; details.item identifies the affected record. Fix invalid input before retrying. After a lost save response, read back before retrying.",
     },
   };
 }
@@ -264,7 +271,11 @@ export function describeOperations() {
 export async function executeOperation(name: string, input: unknown) {
   const operation = operations[name];
   if (!Object.hasOwn(operations, name))
-    throw new CneError("OPERATION_NOT_FOUND", "Unknown CNE operation.", 404);
+    throw new CneError(
+      "OPERATION_NOT_FOUND",
+      "Unknown CNE operation. Use the catalog from GET /cne/v1.",
+      404,
+    );
   validate(operation.inputSchema, input);
   return operation.run(input);
 }

@@ -84,16 +84,21 @@ export function validateChanges(
       if (Number(creator[1]) >= creatorCount && value !== null) {
         throw new CneError(
           "INVALID_CREATOR",
-          "Creator index does not exist.",
+          "Creator index does not exist. Use the zero-based native.creators order across all roles.",
           400,
-          { path },
+          { path, creatorCount },
         );
       }
       type = CREATOR_FIELDS[creator[2] as keyof CneCreatorData];
     } else if (
       ![...FIELD_PATHS, "originalLanguage", "language"].includes(path)
     ) {
-      throw new CneError("INVALID_FIELD", "Unknown CNE field.", 400, { path });
+      throw new CneError(
+        "INVALID_FIELD",
+        "Unknown CNE field. Use the fields from GET /cne/v1.",
+        400,
+        { path },
+      );
     }
     if (seen.has(path))
       throw new CneError(
@@ -114,9 +119,11 @@ export function validateChanges(
     ) {
       throw new CneError(
         "INVALID_VALUE",
-        "Use a single-line value of the declared type, or null to clear.",
+        type === "boolean"
+          ? "Use true or false, or null to clear."
+          : "Use non-empty single-line text of at most 10000 characters without NUL characters, or null to clear.",
         400,
-        { path },
+        { path, type },
       );
     }
     return { path, value: typeof value === "string" ? value.trim() : value };

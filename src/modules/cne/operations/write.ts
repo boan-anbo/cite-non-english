@@ -22,7 +22,14 @@ export function planEdit(edit: Edit) {
   const before = snapshot(edit.item);
   if (edit.expectedRevision !== undefined)
     checkRevision(before, edit.expectedRevision);
-  const changes = validateChanges(edit.changes, edit.item.getCreators().length);
+  let changes: Change[];
+  try {
+    changes = validateChanges(edit.changes, edit.item.getCreators().length);
+  } catch (error) {
+    if (error instanceof CneError)
+      error.details = { ...error.details, item: before.item };
+    throw error;
+  }
   if (edit.base) {
     if (
       changes.some(({ path }) => path.startsWith("creators.")) &&
@@ -57,11 +64,16 @@ export function planEdit(edit: Edit) {
 
 /** One transaction: validate the entire batch before touching any live item. */
 export async function saveEdits(edits: Edit[]) {
-  if (new Set(edits.map(({ item }) => item.id)).size !== edits.length) {
-    throw new CneError(
-      "DUPLICATE_ITEM",
-      "An item can appear only once in a batch.",
-    );
+  const seen = new Set<number>();
+  for (const { item } of edits) {
+    if (seen.has(item.id))
+      throw new CneError(
+        "DUPLICATE_ITEM",
+        "An item can appear only once in a batch. Combine its changes into one edit.",
+        400,
+        { item: { libraryID: item.libraryID, key: item.key } },
+      );
+    seen.add(item.id);
   }
   const touched = new Set<Zotero.Item>();
   try {
