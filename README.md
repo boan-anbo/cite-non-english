@@ -5,6 +5,8 @@
 
 Cite Non-English (CNE) is a Zotero extension to provide all-in-one support for non-English citations that just works.
 
+Using an agent? Start with the [Agent quick start](#agent-quick-start).
+
 ---
 
 ## I. Overview
@@ -59,11 +61,49 @@ The **current development focus** is on CJK sources. The infrastructure is inten
 ### Roadmap
 
 - [ ] Consolidate the support for Better BibTeX's export to BibLaTeX and, possibly, BibTeX with extensive testing to make CNE work seamlessly with LaTeX.
-- [ ] Adding an import feature to allow taking in from AI generated structured input for translation, romanization etc.
+- [x] Let agents read, validate, preview, and save romanization and translation through a local JSON interface. See [Agent quick start](#agent-quick-start).
 
 ---
 
 ## II. Quick Guide
+
+### Agent quick start
+
+An agent with local HTTP access can work directly with CNE in Zotero. For example:
+
+- “Add title and creator-name pinyin to my selected Chinese references. Keep existing values.”
+- “Add English title translations and show each reference in Chicago, APA, and MLA before saving.”
+- “Find references missing title romanization in this library and fill them in batches.”
+- “Correct these translations and clear the short titles I no longer need.”
+
+**Connect once:** install a CNE build with Agent access, keep Zotero running, and
+enable **Settings → CNE → Agent access**. Choose **Copy connection** and give it to
+your local agent. The connection contains `baseURL` and authentication `headers`;
+keep its token private. No MCP setup is required.
+
+**For the agent:**
+
+1. Send `GET` to the copied `baseURL`, with the copied `headers`. The response's
+   `result` describes every operation, its HTTP path, input schema, and field names.
+   Use that live catalog to construct requests; operation calls use JSON `POST`.
+2. Start with `POST {baseURL}/selection/read` and body `{}`. Or use
+   `libraries.list` and page through `items.search`, checking each item's `values`
+   for missing fields. Reads return `item`, `revision`, `native` context, and CNE
+   `values`. Generate the romanization or translation yourself.
+3. Build edits using the read's `item`, its `revision` as `expectedRevision`, and
+   `changes` such as `{"path":"title.romanized","value":"Zhongguo lishi yanjiu"}`.
+   Use `mode: "fillMissing"` to retain existing values, or `null` to clear a field.
+   Creator paths such as `creators.0.lastRomanized` follow `native.creators` order.
+4. Use `items.validate` to check edits and `styles.list` → `items.preview` to show
+   actual citation output without saving. When the user's request authorizes
+   saving, call `items.patch` with `{"edits": [...]}` (up to 50 items). Its `current`
+   records are saved readback. On a 409 conflict, read again and review the changes.
+
+CNE supplies the library access, validation, rendering, and persistence; your
+agent supplies the language judgment. See the [agent API guide](docs/agent-api.md)
+for the full contract and a small Python client. The [integration tests](test/agent)
+exercise real Zotero HTTP, storage, sidebar updates, and citation output with
+supplied text; they do not evaluate a language model's translation quality.
 
 ### How to Use CNE
 
@@ -427,11 +467,3 @@ Special thanks to 龔麗坤 and WM for their help and advice on Japanese and Kor
 Bo An
 
 2025
-
-### Local agent access
-
-Enable **Agent access** in CNE's Zotero settings and copy the connection to your
-local agent. The versioned JSON interface supports discovery, selection/search,
-batch metadata edits, conflict detection, and citation previews of proposed
-changes. It runs inside Zotero and is disabled by default. See the
-[agent API guide](docs/agent-api.md) for schemas, examples, and recovery behavior.
