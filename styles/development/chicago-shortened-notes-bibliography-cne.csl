@@ -1308,6 +1308,48 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       </else>
     </choose>
   </macro>
+  <!-- Apply casing directly to native titles. CNE romanization retains the
+       entered casing, including proper nouns, regardless of item language. -->
+  <macro name="cne-title-select-title">
+    <choose>
+      <if variable="cne-title-romanized">
+        <text macro="cne-title-select"/>
+      </if>
+      <else>
+        <text variable="title" text-case="title"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-title-select-capitalize-first">
+    <choose>
+      <if variable="cne-title-romanized">
+        <text macro="cne-title-select"/>
+      </if>
+      <else>
+        <text variable="title" form="short" text-case="capitalize-first"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-title-select-short-title">
+    <choose>
+      <if variable="cne-title-romanized">
+        <text macro="cne-title-select-short"/>
+      </if>
+      <else>
+        <text variable="title" form="short" text-case="title"/>
+      </else>
+    </choose>
+  </macro>
+  <macro name="cne-title-select-short-capitalize-first">
+    <choose>
+      <if variable="cne-title-romanized">
+        <text macro="cne-title-select-short"/>
+      </if>
+      <else>
+        <text variable="title" form="short" text-case="capitalize-first"/>
+      </else>
+    </choose>
+  </macro>
   <!-- CNE Helper: Add original + translation supplements -->
   <macro name="cne-title-supplements">
     <choose>
@@ -1329,7 +1371,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
         <text variable="cne-journal-romanized"/>
       </else-if>
       <else>
-        <text variable="container-title"/>
+        <text variable="container-title" text-case="title"/>
       </else>
     </choose>
   </macro>
@@ -1392,6 +1434,17 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       </else>
     </choose>
   </macro>
+  <!-- Bibliography capitalization applies only to the selected native publisher. -->
+  <macro name="cne-publisher-select-capitalize-first">
+    <choose>
+      <if match="any" variable="cne-publisher-romanized cne-publisher-original">
+        <text macro="cne-publisher-select"/>
+      </if>
+      <else>
+        <text variable="publisher" text-case="capitalize-first"/>
+      </else>
+    </choose>
+  </macro>
   <macro name="cne-series-select">
     <choose>
       <if variable="cne-series-romanized">
@@ -1401,7 +1454,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
         <text variable="cne-series-original"/>
       </else-if>
       <else>
-        <text variable="collection-title"/>
+        <text variable="collection-title" text-case="title"/>
       </else>
     </choose>
   </macro>
@@ -1409,11 +1462,11 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
     <choose>
       <if type="patent">
         <!-- No italics or quotes, sentence case -->
-        <text form="short" text-case="capitalize-first" macro="cne-title-select"/>
+        <text macro="cne-title-select-capitalize-first"/>
       </if>
       <else-if match="any" type="bill collection legislation regulation treaty">
         <!-- No italics or quotes, title case -->
-        <text text-case="title" macro="cne-title-select"/>
+        <text macro="cne-title-select-title"/>
       </else-if>
       <else-if type="legal_case">
         <!-- Italicized, sentence case -->
@@ -1421,11 +1474,11 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       </else-if>
       <else-if match="any" type="book classic graphic hearing map">
         <!-- Italicized, title case (regardless of `container-title`) -->
-        <text font-style="italic" text-case="title" macro="cne-title-select"/>
+        <text font-style="italic" macro="cne-title-select-title"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="author container-title">
         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
-        <text quotes="true" text-case="title" macro="cne-title-select"/>
+        <text quotes="true" macro="cne-title-select-title"/>
       </else-if>
       <else-if type="entry-dictionary" variable="container-title">
         <!-- Quotes, sentence case -->
@@ -1442,16 +1495,16 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       <!-- Other types are formatted based on presence of `container-title` -->
       <else-if variable="container-title">
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="cne-title-select"/>
+        <text quotes="true" macro="cne-title-select-title"/>
       </else-if>
       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
         <!-- Container-like but not necessarily with `container-title` -->
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="cne-title-select"/>
+        <text quotes="true" macro="cne-title-select-title"/>
       </else-if>
       <else>
         <!-- Italicized, title case (default) -->
-        <text font-style="italic" text-case="title" macro="cne-title-select"/>
+        <text font-style="italic" macro="cne-title-select-title"/>
       </else>
     </choose>
   </macro>
@@ -1459,11 +1512,11 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
     <choose>
       <if type="patent">
         <!-- No italics or quotes, sentence case -->
-        <text text-case="capitalize-first" macro="cne-title-select-short"/>
+        <text macro="cne-title-select-short-capitalize-first"/>
       </if>
       <else-if match="any" type="bill collection legislation regulation treaty">
         <!-- No italics or quotes, title case -->
-        <text text-case="title" macro="cne-title-select-short"/>
+        <text macro="cne-title-select-short-title"/>
       </else-if>
       <else-if type="legal_case">
         <!-- Italicized, sentence case -->
@@ -1471,11 +1524,11 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       </else-if>
       <else-if match="any" type="book classic graphic hearing map">
         <!-- Italicized, title case (regardless of `container-title`) -->
-        <text font-style="italic" text-case="title" macro="cne-title-select-short"/>
+        <text font-style="italic" macro="cne-title-select-short-title"/>
       </else-if>
       <else-if type="entry-encyclopedia" variable="author container-title">
         <!-- Signed encyclopedia entry in quotes, title case (CMOS18 14.132) -->
-        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
+        <text quotes="true" macro="cne-title-select-short-title"/>
       </else-if>
       <else-if type="entry-dictionary" variable="container-title">
         <!-- Quotes, sentence case -->
@@ -1492,16 +1545,16 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
       <!-- Other types are formatted based on presence of `container-title` -->
       <else-if variable="container-title">
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
+        <text quotes="true" macro="cne-title-select-short-title"/>
       </else-if>
       <else-if match="any" type="article dataset document interview manuscript paper-conference personal_communication speech thesis webpage">
         <!-- Container-like but not necessarily with `container-title` -->
         <!-- Quotes, title case -->
-        <text quotes="true" text-case="title" macro="cne-title-select-short"/>
+        <text quotes="true" macro="cne-title-select-short-title"/>
       </else-if>
       <else>
         <!-- Italicized, title case (default) -->
-        <text font-style="italic" text-case="title" macro="cne-title-select-short"/>
+        <text font-style="italic" macro="cne-title-select-short-title"/>
       </else>
     </choose>
   </macro>
@@ -2637,7 +2690,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
   <macro name="source-serial-name">
     <group delimiter=" ">
       <group delimiter=" ">
-        <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
+        <text font-style="italic" macro="cne-container-title-select"/>
         <text macro="cne-container-title-supplements"/>
       </group>
       <choose>
@@ -3216,7 +3269,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
               <text macro="source-series-title"/>
             </if>
             <else>
-              <text text-case="title" macro="cne-series-select"/>
+              <text macro="cne-series-select"/>
               <names variable="collection-editor">
                 <label form="verb" suffix=" "/>
                 <name and="text" initialize="false"/>
@@ -3255,36 +3308,36 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
         <if match="any" variable="cne-series-romanized cne-series-original">
           <choose>
             <if variable="issue">
-              <text text-case="title" macro="cne-series-select"/>
+              <text macro="cne-series-select"/>
               <text macro="label-collection-number"/>
               <text macro="label-issue"/>
             </if>
             <else-if is-numeric="collection-number">
               <group delimiter=" ">
-                <text text-case="title" macro="cne-series-select"/>
+                <text macro="cne-series-select"/>
                 <text variable="collection-number"/>
               </group>
             </else-if>
             <else>
-              <text text-case="title" macro="cne-series-select"/>
+              <text macro="cne-series-select"/>
               <text variable="collection-number"/>
             </else>
           </choose>
         </if>
         <else-if match="any" variable="cne-title-romanized cne-title-original cne-title-english cne-container-title-romanized cne-container-title-original cne-container-title-english cne-journal-romanized cne-journal-original cne-journal-english cne-publisher-romanized cne-publisher-original cne-publisher-english"/>
         <else-if variable="issue">
-          <text text-case="title" macro="cne-series-select"/>
+          <text macro="cne-series-select"/>
           <text macro="label-collection-number"/>
           <text macro="label-issue"/>
         </else-if>
         <else-if is-numeric="collection-number" variable="collection-title">
           <group delimiter=" ">
-            <text text-case="title" macro="cne-series-select"/>
+            <text macro="cne-series-select"/>
             <text variable="collection-number"/>
           </group>
         </else-if>
         <else-if variable="collection-title">
-          <text text-case="title" macro="cne-series-select"/>
+          <text macro="cne-series-select"/>
           <text variable="collection-number"/>
         </else-if>
       </choose>
@@ -3664,12 +3717,12 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
     <group delimiter=" ">
       <choose>
         <if match="any" type="thesis" variable="cne-publisher-romanized cne-publisher-original publisher">
-          <text text-case="capitalize-first" macro="cne-publisher-select"/>
+          <text macro="cne-publisher-select-capitalize-first"/>
         </if>
         <else-if match="any" variable="cne-publisher-romanized cne-publisher-original publisher">
           <group delimiter=": ">
             <!-- <text text-case="capitalize-first" variable="publisher-place"/> -->
-            <text text-case="capitalize-first" macro="cne-publisher-select"/>
+            <text macro="cne-publisher-select-capitalize-first"/>
           </group>
         </else-if>
         <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
@@ -4178,7 +4231,7 @@ CNE-CONFIG: {"persons":["translit","orig"],"citationPersons":["translit"],"nameF
   </macro>
   <macro name="cne-legal-title-primary">
     <group delimiter=" ">
-      <text text-case="title" macro="cne-title-select"/>
+      <text macro="cne-title-select-title"/>
       <text macro="cne-title-supplements"/>
     </group>
   </macro>
