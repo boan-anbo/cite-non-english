@@ -201,7 +201,7 @@ CNE separates concerns between data storage and output formatting to provide sta
 - Dedicated UI panel for entering original script, romanization, and translations
 - **Key design principle for CNE item data**: Complete independence from Zotero's native fields
   - Users can freely choose to fill the native Title/Author fields with romanized, English, or original script, whichever makes sense for the user.
-  - Explicit CNE variants take precedence where the selected style supports them; otherwise its selectors fall back to native Zotero fields
+  - For fields explicitly supplied in CNE, the selected style determines which variants to display
   - No conflicts between CNE and standard Zotero workflows
 
 **Output via Custom CSL Styles**
@@ -343,7 +343,7 @@ cne-title-english: An example book
 
 produce the APA book-title portion _Sefer ledugma_ [An example book]. Set the item's Language to `he` and choose the CNE APA style. CNE does not automatically transliterate or translate the text.
 
-**Filling only Original is insufficient for APA's CNE title path.** Currently the title selector uses `cne-title-romanized` when present and otherwise uses Zotero's native Title; the bracketed CNE translation is emitted only with the romanized variant. Original script plus translation without romanization is not an implemented fallback. The same distinction applies to the container-title and journal selectors.
+**Filling only Original does not activate APA’s CNE title rendering.** That path requires `cne-title-romanized`; the optional `cne-title-english` supplies the bracketed translation. Selecting Hebrew as the language does not generate these values. The original script remains stored for styles that display it. This is the existing APA selection rule, not an automatic substitution between missing variants.
 
 The [UQ page for non-English languages](https://guides.library.uq.edu.au/referencing/apa7/non-English) uses French and German examples, already written in Latin letters. Its separate non-Latin-script page explains the transliteration step. “Original-language title” does not necessarily mean “original-script title.”
 
@@ -393,7 +393,7 @@ A: Your data remains safe in the Extra field. CNE metadata lines (starting with 
 
 **Q: Does CNE modify my stored items permanently?**
 
-A: CNE stores parallel text and creator variants in Extra without changing your native Title or creator names. The language selector updates Zotero’s native Language field. Curated styles use the CNE variants they support and fall back to native fields when those variants are absent.
+A: CNE stores parallel text and creator variants in Extra without changing your native Title or creator names. The language selector updates Zotero’s native Language field. The selected style controls which CNE variants are displayed. Ordinary English items continue to use their native titles and creator names.
 
 **Q: Which Zotero versions are supported?**
 
