@@ -76,7 +76,7 @@ An agent with local HTTP access can work directly with CNE in Zotero. For exampl
 - “Find references missing title romanization in this library and fill them in batches.”
 - “Correct these translations and clear the short titles I no longer need.”
 
-**Connect once:** install a CNE build with Agent access, keep Zotero running, and
+**Connect once:** install CNE 0.2.0 or later, keep Zotero running, and
 enable **Settings → CNE → Agent access**. Choose **Copy connection** and give it to
 your local agent. The connection contains `baseURL` and authentication `headers`;
 keep its token private. No MCP setup is required.
