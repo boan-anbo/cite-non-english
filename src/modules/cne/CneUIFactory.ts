@@ -1,3 +1,4 @@
+import { CneMetadata } from "./model/CneMetadata";
 /**
  * CNE UI Factory
  * UI components and menu items for CNE plugin following template conventions
@@ -89,22 +90,10 @@ export class CneUIFactory {
 
     for (const item of items) {
       try {
-        const extra = item.getField("extra") as string;
-        if (!extra) {
-          continue;
-        }
-
-        // Remove all lines starting with "cne-"
-        const lines = extra.split("\n");
-        const filteredLines = lines.filter(
-          (line) => !line.trim().toLowerCase().startsWith("cne-"),
-        );
-
-        // Only update if something was removed
-        if (filteredLines.length < lines.length) {
-          const newExtra = filteredLines.join("\n").trim();
-          item.setField("extra", newExtra);
-          await item.saveTx();
+        const metadata = new CneMetadata(item);
+        if (metadata.hasData()) {
+          metadata.clear();
+          await metadata.save();
           clearedCount++;
         }
       } catch (error) {

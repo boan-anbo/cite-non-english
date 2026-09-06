@@ -21,7 +21,12 @@ import type {
   FieldVariant,
   CneCreatorData,
 } from "./types";
-import { NAMESPACE, FIELD_VARIANTS, ORIGINAL_LANGUAGE_KEY } from "./constants";
+import {
+  NAMESPACE,
+  FIELD_VARIANTS,
+  ORIGINAL_LANGUAGE_KEY,
+  SUPPORTED_FIELDS,
+} from "./constants";
 
 const FIELD_VARIANT_EXTRA_KEYS = [
   "original",
@@ -37,7 +42,7 @@ const FIELD_VARIANT_EXTRA_KEYS = [
  * Supports hyphenated field names (e.g., container-title)
  */
 const CNE_FIELD_REGEX = new RegExp(
-  `^${NAMESPACE}-([a-z-]+)-(${FIELD_VARIANT_EXTRA_KEYS.join("|")}):\\s*(.+)$`,
+  `^${NAMESPACE}-(${SUPPORTED_FIELDS.map(({ name }) => name).join("|")})-(${FIELD_VARIANT_EXTRA_KEYS.join("|")}):\\s*(.+)$`,
   "i",
 );
 

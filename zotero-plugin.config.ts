@@ -40,6 +40,7 @@ export default defineConfig({
   },
 
   test: {
+    entries: process.env.CNE_TEST_ENTRIES?.split(",") ?? ["test"],
     waitForPlugin: `() => Zotero.${pkg.config.addonInstance}.data.initialized`,
   },
 

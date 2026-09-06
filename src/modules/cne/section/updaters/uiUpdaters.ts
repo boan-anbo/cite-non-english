@@ -17,7 +17,7 @@ export function updateLivePreview(
 ): void {
   const previewElement = container.querySelector("#cjk-data-preview");
   if (previewElement) {
-    previewElement.innerHTML = JSON.stringify(metadata.toJSON(), null, 2);
+    previewElement.textContent = JSON.stringify(metadata.toJSON(), null, 2);
   }
 }
 

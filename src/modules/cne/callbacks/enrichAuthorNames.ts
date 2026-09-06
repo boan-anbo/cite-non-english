@@ -193,6 +193,7 @@
  * Zotero's core itemToCSLJSON conversion but before CSL processing.
  */
 
+import { creatorPositions } from "./creatorPositions";
 import type { CneCreatorData } from "../types";
 import { parseCNEMetadata } from "../metadata-parser";
 import {
@@ -270,8 +271,7 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
   const originalLang = metadata.originalLanguage || cslItem.language || "zh";
   Zotero.debug(`[CNE] Processing item with originalLang: ${originalLang}`);
 
-  // Track position in metadata.authors array as we process creators sequentially
-  let metadataIndex = 0;
+  const positions = creatorPositions(zoteroItem);
   let enrichedCount = 0;
 
   // Process creators sequentially by iterating through CSL item properties
@@ -308,8 +308,11 @@ export function enrichAuthorNames(zoteroItem: any, cslItem: any) {
       const cslCreator = value[i];
 
       // Get CNE metadata for this creator
-      const cneCreator = metadata.authors[metadataIndex];
-      metadataIndex++;
+      const metadataIndex = positions[key]?.[i];
+      const cneCreator =
+        metadataIndex === undefined
+          ? undefined
+          : metadata.authors[metadataIndex];
       sortNames.push(buildCreatorSortName(cneCreator, cslCreator));
       if (i === 0 && hasRomanizedCreatorName(cneCreator)) {
         shouldSetRoleSortKey = true;

@@ -1,35 +1,29 @@
-/**
- * Save handler for CNE metadata
- * Implements debounced auto-save to prevent excessive saves
- */
-
 import type { CneMetadata } from "../../model/CneMetadata";
 
-/**
- * Debounce timer for auto-save
- */
-let saveDebounceTimer: number | undefined;
+const timers = new Map<CneMetadata, ReturnType<typeof setTimeout>>();
 
-/**
- * Debounced save function
- * Delays saving until user stops typing for 500ms
- * This prevents excessive saves while maintaining real-time feel
- *
- * @param metadata - CneMetadata instance to save
- */
 export function debouncedSave(metadata: CneMetadata): void {
-  // Clear existing timer
-  if (saveDebounceTimer !== undefined) {
-    clearTimeout(saveDebounceTimer);
-  }
+  clearTimeout(timers.get(metadata));
+  timers.set(
+    metadata,
+    setTimeout(async () => {
+      timers.delete(metadata);
+      try {
+        await metadata.save();
+        if (metadata.hasPendingChanges()) debouncedSave(metadata);
+      } catch {
+        // The draft keeps its text and displays the error; never blindly retry a conflict.
+      }
+    }, 500),
+  );
+}
 
-  // Set new timer
-  saveDebounceTimer = setTimeout(async () => {
-    try {
-      await metadata.save();
-      ztoolkit.log("non-English metadata auto-saved successfully");
-    } catch (error) {
-      ztoolkit.log("Error auto-saving non-English metadata:", error);
-    }
-  }, 500) as unknown as number; // 500ms debounce delay
+export function cancelSave(metadata: CneMetadata): void {
+  clearTimeout(timers.get(metadata));
+  timers.delete(metadata);
+}
+
+export function stopPendingSaves(): void {
+  for (const timer of timers.values()) clearTimeout(timer);
+  timers.clear();
 }
