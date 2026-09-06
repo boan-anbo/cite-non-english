@@ -210,7 +210,7 @@
        </else>
      </choose>
    </macro>
-@@ -1457,53 +1555,223 @@
+@@ -1457,53 +1555,234 @@
        </else>
      </choose>
    </macro>
@@ -308,7 +308,7 @@
 +        <text variable="cne-journal-romanized"/>
 +      </else-if>
 +      <else>
-+        <text variable="container-title"/>
++        <text variable="container-title" text-case="title"/>
 +      </else>
 +    </choose>
 +  </macro>
@@ -371,6 +371,17 @@
 +      </else>
 +    </choose>
 +  </macro>
++  <!-- Bibliography capitalization applies only to the selected native publisher. -->
++  <macro name="cne-publisher-select-capitalize-first">
++    <choose>
++      <if match="any" variable="cne-publisher-romanized cne-publisher-original">
++        <text macro="cne-publisher-select"/>
++      </if>
++      <else>
++        <text variable="publisher" text-case="capitalize-first"/>
++      </else>
++    </choose>
++  </macro>
 +  <macro name="cne-series-select">
 +    <choose>
 +      <if variable="cne-series-romanized">
@@ -380,7 +391,7 @@
 +        <text variable="cne-series-original"/>
 +      </else-if>
 +      <else>
-+        <text variable="collection-title"/>
++        <text variable="collection-title" text-case="title"/>
 +      </else>
 +    </choose>
 +  </macro>
@@ -445,7 +456,7 @@
        </else>
      </choose>
    </macro>
-@@ -1511,49 +1779,49 @@
+@@ -1511,49 +1790,49 @@
      <choose>
        <if type="patent">
          <!-- No italics or quotes, sentence case -->
@@ -506,7 +517,7 @@
        </else>
      </choose>
    </macro>
-@@ -2985,7 +3253,10 @@
+@@ -2985,7 +3264,10 @@
              <text macro="label-volume"/>
              <text value="of"/>
              <group delimiter=", ">
@@ -518,7 +529,7 @@
                <names variable="collection-editor">
                  <label form="verb" suffix=" "/>
                  <name and="text"/>
-@@ -3013,7 +3284,10 @@
+@@ -3013,7 +3295,10 @@
                </else-if>
              </choose>
              <group delimiter=", ">
@@ -530,19 +541,19 @@
                <names variable="collection-editor">
                  <label form="verb" suffix=" "/>
                  <name and="text"/>
-@@ -3225,7 +3499,10 @@
+@@ -3225,7 +3510,10 @@
    <!-- Serial source title -->
    <macro name="source-serial-name">
      <group delimiter=" ">
 -      <text font-style="italic" text-case="title" variable="container-title"/>
 +      <group delimiter=" ">
-+        <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
++        <text font-style="italic" macro="cne-container-title-select"/>
 +        <text macro="cne-container-title-supplements"/>
 +      </group>
        <choose>
          <!-- TODO: remove conditional when Zotero stops double-mapping `event-place` and `publisher-place` -->
          <if match="none" variable="event-date event-title">
-@@ -3447,7 +3724,7 @@
+@@ -3447,7 +3735,7 @@
          <else>
            <text variable="collection-title"/>
            <!-- publisher possible with `interview` (CMOS18 14.110) -->
@@ -551,7 +562,7 @@
            <text macro="source-serial-volume-status-bib"/>
          </else>
        </choose>
-@@ -3546,7 +3823,7 @@
+@@ -3546,7 +3834,7 @@
          <else>
            <text variable="collection-title"/>
            <!-- publisher possible with `interview` (CMOS18 14.110) -->
@@ -560,13 +571,13 @@
            <text macro="source-serial-volume-status-note"/>
          </else>
        </choose>
-@@ -3739,12 +4016,18 @@
+@@ -3739,12 +4027,18 @@
          <text font-style="italic" text-case="title" variable="volume-title"/>
        </else-if>
        <else>
 -        <text font-style="italic" text-case="title" variable="container-title"/>
 +        <group delimiter=" ">
-+          <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
++          <text font-style="italic" macro="cne-container-title-select"/>
 +          <text macro="cne-container-title-supplements"/>
 +        </group>
        </else>
@@ -575,13 +586,13 @@
    <macro name="source-monographic-title-note">
 -    <text font-style="italic" text-case="title" variable="container-title"/>
 +    <group delimiter=" ">
-+      <text font-style="italic" text-case="title" macro="cne-container-title-select"/>
++      <text font-style="italic" macro="cne-container-title-select"/>
 +      <text macro="cne-container-title-supplements"/>
 +    </group>
    </macro>
    <!-- Monographic source description -->
    <macro name="source-monographic-description-bib">
-@@ -4167,7 +4450,24 @@
+@@ -4167,7 +4461,24 @@
    <macro name="source-series-bib">
      <group delimiter=", ">
        <choose>
@@ -592,7 +603,7 @@
 +              <text macro="source-series-title"/>
 +            </if>
 +            <else>
-+              <text text-case="title" macro="cne-series-select"/>
++              <text macro="cne-series-select"/>
 +              <names variable="collection-editor">
 +                <label form="verb" suffix=" "/>
 +                <name and="text"/>
@@ -607,7 +618,7 @@
            <choose>
              <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
                <text macro="source-series-title"/>
-@@ -4182,7 +4482,7 @@
+@@ -4182,7 +4493,7 @@
                <text macro="label-issue"/>
              </else>
            </choose>
@@ -616,7 +627,7 @@
          <else>
            <text macro="source-series-title"/>
          </else>
-@@ -4192,7 +4492,24 @@
+@@ -4192,7 +4503,24 @@
    <macro name="source-series-note">
      <group delimiter=", ">
        <choose>
@@ -627,7 +638,7 @@
 +              <text macro="source-series-title"/>
 +            </if>
 +            <else>
-+              <text text-case="title" macro="cne-series-select"/>
++              <text macro="cne-series-select"/>
 +              <names variable="collection-editor">
 +                <label form="verb-short" suffix=" "/>
 +                <name and="text"/>
@@ -642,7 +653,7 @@
            <choose>
              <if match="any" variable="number-of-volumes part-number part-title volume volume-title">
                <text macro="source-series-title"/>
-@@ -4207,7 +4524,7 @@
+@@ -4207,7 +4535,7 @@
                <text macro="label-issue"/>
              </else>
            </choose>
@@ -651,7 +662,7 @@
          <else>
            <text macro="source-series-title"/>
          </else>
-@@ -4217,19 +4534,39 @@
+@@ -4217,19 +4545,39 @@
    <macro name="source-series-title">
      <group delimiter=", ">
        <choose>
@@ -660,25 +671,25 @@
 +        <if match="any" variable="cne-series-romanized cne-series-original">
 +          <choose>
 +            <if variable="issue">
-+              <text text-case="title" macro="cne-series-select"/>
++              <text macro="cne-series-select"/>
 +              <text macro="label-collection-number"/>
 +              <text macro="label-issue"/>
 +            </if>
 +            <else-if is-numeric="collection-number">
 +              <group delimiter=" ">
-+                <text text-case="title" macro="cne-series-select"/>
++                <text macro="cne-series-select"/>
 +                <text variable="collection-number"/>
 +              </group>
 +            </else-if>
 +            <else>
-+              <text text-case="title" macro="cne-series-select"/>
++              <text macro="cne-series-select"/>
 +              <text variable="collection-number"/>
 +            </else>
 +          </choose>
 +        </if>
 +        <else-if match="any" variable="cne-title-romanized cne-title-original cne-title-english cne-container-title-romanized cne-container-title-original cne-container-title-english cne-journal-romanized cne-journal-original cne-journal-english cne-publisher-romanized cne-publisher-original cne-publisher-english"/>
 +        <else-if variable="issue">
-+          <text text-case="title" macro="cne-series-select"/>
++          <text macro="cne-series-select"/>
            <text macro="label-collection-number"/>
            <text macro="label-issue"/>
 -        </if>
@@ -686,17 +697,17 @@
          <else-if is-numeric="collection-number" variable="collection-title">
            <group delimiter=" ">
 -            <text text-case="title" variable="collection-title"/>
-+            <text text-case="title" macro="cne-series-select"/>
++            <text macro="cne-series-select"/>
              <text variable="collection-number"/>
            </group>
          </else-if>
          <else-if variable="collection-title">
 -          <text text-case="title" variable="collection-title"/>
-+          <text text-case="title" macro="cne-series-select"/>
++          <text macro="cne-series-select"/>
            <text variable="collection-number"/>
          </else-if>
        </choose>
-@@ -4905,13 +5242,13 @@
+@@ -4905,13 +5253,13 @@
    <macro name="source-publication-publisher-bib">
      <group delimiter=" ">
        <choose>
@@ -705,17 +716,17 @@
 -        </if>
 -        <else-if variable="publisher">
 +        <if match="any" type="thesis" variable="cne-publisher-romanized cne-publisher-original publisher">
-+          <text text-case="capitalize-first" macro="cne-publisher-select"/>
++          <text macro="cne-publisher-select-capitalize-first"/>
 +        </if>
 +        <else-if match="any" variable="cne-publisher-romanized cne-publisher-original publisher">
            <group delimiter=": ">
              <!-- <text text-case="capitalize-first" variable="publisher-place"/> -->
 -            <text text-case="capitalize-first" variable="publisher"/>
-+            <text text-case="capitalize-first" macro="cne-publisher-select"/>
++            <text macro="cne-publisher-select-capitalize-first"/>
            </group>
          </else-if>
          <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
-@@ -4931,13 +5268,13 @@
+@@ -4931,13 +5279,13 @@
    <macro name="source-publication-publisher-note">
      <group delimiter=" ">
        <choose>
@@ -734,7 +745,7 @@
            </group>
          </else-if>
          <!-- TODO: remove conditional when Zotero fixes double-mapping of `event-place` -->
-@@ -5445,6 +5782,21 @@
+@@ -5445,6 +5793,21 @@
    <!-- TODO: add variables for distributor and exhibitions if available in CSL -->
    <!-- 6. Legal references: Bluebook style (shared with APA) -->
    <!-- Where APA or Chicago diverge from Bluebook, the official manual is followed -->
@@ -756,7 +767,7 @@
    <macro name="legal-reference">
      <!-- Type usage:
 
-@@ -5479,14 +5831,31 @@
+@@ -5479,14 +5842,31 @@
            <text macro="legal-source"/>
          </if>
          <else>
@@ -796,7 +807,7 @@
          </else>
        </choose>
        <group delimiter=" ">
-@@ -5546,9 +5915,12 @@
+@@ -5546,9 +5926,12 @@
    <!-- 6.2.1. Legal title -->
    <macro name="legal-title">
      <choose>
@@ -811,7 +822,7 @@
        <else-if type="hearing">
          <!-- use standard format (Bluebook 13.3) -->
          <group delimiter=": " font-style="italic">
-@@ -5887,8 +6259,8 @@
+@@ -5887,8 +6270,8 @@
    </macro>
    <bibliography et-al-min="7" et-al-use-first="3" hanging-indent="true">
      <sort>
