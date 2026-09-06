@@ -1,6 +1,10 @@
 import { assert } from "chai";
 import { getPref, setPref } from "../../src/utils/prefs";
 import {
+  registerEndpoints,
+  type Server,
+} from "../../src/modules/cne/agent/http";
+import {
   agentAccessStatus,
   agentConnection,
   revokeAgentToken,
@@ -9,6 +13,28 @@ import {
 } from "../../src/modules/cne/agent/access";
 
 describe("CNE opt-in access lifecycle", function () {
+  it("reports an endpoint collision as its actual cause instead of a generic port failure", async function () {
+    const enabled = getPref("agentEnabled");
+    const token = getPref("agentToken");
+    const server = Zotero.Server as unknown as Server;
+    let cleanup: (() => void) | undefined;
+    try {
+      assert.equal(Zotero.Prefs.get("httpServer.port"), 23124);
+      await server.init();
+      cleanup = registerEndpoints(server, () => "cne-collision-test-token");
+      setPref("agentEnabled", true);
+      await syncAgentAccess();
+      assert.include(agentAccessStatus(), "ROUTE_CONFLICT");
+      assert.include(agentAccessStatus(), "/cne/v1");
+      assert.throws(agentConnection, /Enable/);
+    } finally {
+      stopAgentAccess();
+      cleanup?.();
+      setPref("agentEnabled", enabled);
+      setPref("agentToken", token);
+    }
+  });
+
   it("starts disabled, creates a secret connection, rotates it and removes its routes", async function () {
     const enabled = getPref("agentEnabled"),
       token = getPref("agentToken");

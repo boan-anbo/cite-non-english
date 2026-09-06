@@ -1,5 +1,6 @@
 import { getPref, setPref } from "../../../utils/prefs";
 import { registerEndpoints, type Server } from "./http";
+import { CneError } from "../operations/errors";
 
 let unregister: (() => void) | undefined;
 let generation = 0;
@@ -40,9 +41,12 @@ export async function syncAgentAccess(): Promise<void> {
     const port = server.port;
     unregister = registerEndpoints(server, token);
     status = `http://127.0.0.1:${port}/cne/v1`;
-  } catch {
+  } catch (error) {
+    Zotero.logError(error instanceof Error ? error : new Error(String(error)));
     status =
-      "Could not start agent access. Check the Zotero local server and port.";
+      error instanceof CneError
+        ? `Could not start agent access: ${error.code}. ${error.message}`
+        : "Could not start agent access. Check the Zotero local server, port, and error log.";
   }
 }
 

@@ -40,6 +40,7 @@ export function previewEdit(edit: Edit, options: PreviewOptions) {
       "STYLE_NOT_FOUND",
       "Choose an installed style from styles.list.",
       404,
+      { styleID: options.styleID },
     );
   const format = options.format ?? "html";
   const engine = style.getCiteProc(options.locale ?? "en-US", format);

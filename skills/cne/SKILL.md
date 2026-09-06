@@ -54,6 +54,13 @@ already include `/cne/v1`; resolve them against the origin, not the full `baseUR
 
 ## Recover
 
+CNE errors return `{error: {code, message, details?}}`.
+Use `code` to distinguish failures; `details.path` locates the input or CNE field,
+`details.item` identifies the record, and constraint details give accepted types,
+choices or limits. Fix invalid input before retrying; never treat an error as an
+empty result. Unexpected internal failures point to Zotero's error log.
+Zotero may reject malformed HTTP before CNE; inspect status/body if it is not JSON.
+
 - **Port unreachable:** check Zotero is running and the installed CNE build has
   Agent access enabled; recopy the actual port. Remote/container loopback is a
   different host: execute on the Zotero host. If access cannot start, inspect the

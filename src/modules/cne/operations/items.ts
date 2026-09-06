@@ -16,12 +16,14 @@ export interface ItemSnapshot {
 
 export function requireItem(
   item: Zotero.Item | false,
+  ref?: ItemRef,
 ): asserts item is Zotero.Item {
   if (!item || !item.id || item.deleted || !item.isRegularItem()) {
     throw new CneError(
       "ITEM_NOT_FOUND",
       "A saved, non-deleted bibliographic item is required.",
       404,
+      ref ? { item: ref } : undefined,
     );
   }
 }
@@ -31,7 +33,7 @@ export async function resolveItem(ref: ItemRef): Promise<Zotero.Item> {
     ref.libraryID,
     ref.key,
   );
-  requireItem(item);
+  requireItem(item, ref);
   await item.loadAllData();
   return item;
 }
@@ -68,7 +70,7 @@ export function checkRevision(current: ItemSnapshot, expected: string): void {
   if (current.revision !== expected) {
     throw new CneError(
       "REVISION_CONFLICT",
-      "The item changed. Read it again before retrying.",
+      "The item changed. Read it again and review changed fields and creator order before retrying.",
       409,
       { current },
     );

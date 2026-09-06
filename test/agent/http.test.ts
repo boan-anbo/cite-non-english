@@ -8,51 +8,22 @@ import {
   type ItemSnapshot,
 } from "../../src/modules/cne/operations/items";
 import { createItem, edit } from "./helpers";
-
-// Test credentials only, scoped to the disposable scaffold profile.
-const TOKEN = "cne-fixture-token";
+import { httpClient, TOKEN } from "./http-client";
 
 describe("CNE local HTTP adapter in Zotero", function () {
   this.timeout(15000);
   let cleanup: () => void;
   let item: Zotero.Item;
-  let base: string;
+  let request: ReturnType<typeof httpClient>;
   let token = TOKEN;
   const server = Zotero.Server as unknown as Server;
-
-  async function request(
-    path: string,
-    data?: unknown,
-    authorization = `Bearer ${TOKEN}`,
-    extraHeaders = {},
-  ) {
-    const response = await Zotero.HTTP.request(
-      data === undefined ? "GET" : "POST",
-      `${base}${path}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": "CNE-Integration-Test/1",
-          Authorization: authorization,
-          ...extraHeaders,
-        },
-        body: data === undefined ? undefined : JSON.stringify(data),
-        successCodes: false,
-      },
-    );
-    return {
-      status: response.status,
-      text: response.responseText,
-      json: () => JSON.parse(response.responseText),
-    };
-  }
 
   before(async function () {
     // Never run against or shut down the user's normal Zotero listener.
     assert.equal(Zotero.Prefs.get("httpServer.port"), 23124);
     await server.init();
     assert.equal(server.port, 23124);
-    base = `http://127.0.0.1:${server.port}`;
+    request = httpClient(`http://127.0.0.1:${server.port}`);
     cleanup = registerEndpoints(server, () => token);
     item = await createItem();
   });
@@ -63,7 +34,10 @@ describe("CNE local HTTP adapter in Zotero", function () {
   });
 
   it("requires its own token even for discovery and library reads", async function () {
-    assert.equal((await request("/cne/v1", undefined, "")).status, 403);
+    const unauthorized = await request("/cne/v1", undefined, "");
+    assert.equal(unauthorized.status, 403);
+    assert.equal(unauthorized.json().error.code, "UNAUTHORIZED");
+    assert.include(unauthorized.json().error.message, "Copy connection");
     assert.equal(
       (
         await request(
@@ -102,6 +76,7 @@ describe("CNE local HTTP adapter in Zotero", function () {
     const stale = await request("/cne/v1/items/patch", { edits: [change] });
     assert.equal(stale.status, 409, stale.text);
     assert.equal(stale.json().error.code, "REVISION_CONFLICT");
+    assert.deepEqual(stale.json().error.details.current, read.json().result[0]);
   });
 
   it("rejects web origins and undeclared JSON properties", async function () {
