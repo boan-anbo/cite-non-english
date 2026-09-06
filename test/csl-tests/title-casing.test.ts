@@ -6,11 +6,10 @@ import {
   generateSequentialCitationNotes,
 } from "./test-helpers";
 
-const CHICAGO_STYLES = [
-  "chicago-notes-bibliography",
-  "chicago-shortened-notes-bibliography",
-  "chicago-author-date",
-] as const;
+import {
+  CHICAGO_STYLES,
+  installRetainedChicagoStyles,
+} from "./chicago-test-helpers";
 
 // Existing English fixtures exercise creator formatting with already-cased
 // titles. These sentence-case inputs exercise native-title formatting.
@@ -45,19 +44,7 @@ describe("Chicago native title casing", function () {
   before(async function () {
     article = await createZoteroItemFromTestCase(ARTICLE);
     created.push(article);
-    let root = Zotero.DataDirectory.dir;
-    for (let level = 0; level < 3; level++) {
-      const parent = PathUtils.parent(root);
-      if (!parent) throw new Error("Missing CSL test project root");
-      root = parent;
-    }
-    for (const name of CHICAGO_STYLES) {
-      await IOUtils.copy(
-        PathUtils.join(root, "styles", "templates", `${name}-template.csl`),
-        PathUtils.join(Zotero.DataDirectory.dir, "styles", `${name}.csl`),
-      );
-    }
-    await Zotero.Styles.reinit();
+    await installRetainedChicagoStyles();
   });
 
   after(async function () {
@@ -117,7 +104,7 @@ describe("Chicago native title casing", function () {
         });
       }
 
-      for (const language of ["en", "English", "fr"]) {
+      for (const language of ["en", "English", "fr", ""]) {
         const testName = `preserves upstream behavior for language ${language}`;
 
         it(testName, async function () {
