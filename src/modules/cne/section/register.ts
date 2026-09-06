@@ -4,7 +4,7 @@
  */
 
 import { getLocaleID } from "../../../utils/locale";
-import { renderCneSection } from "./renderer";
+import { renderCneSection, disposeCneSection } from "./renderer/mainRenderer";
 
 /**
  * Register the non-English citation section with ItemPaneManager
@@ -24,7 +24,7 @@ export function registerCneSection(): void {
         icon: `chrome://${addon.data.config.addonRef}/content/icons/cne-20.svg`,
       },
       onRender: renderCneSection,
-      // TODO: Add onItemChange handler after testing
+      onDestroy: ({ body }) => disposeCneSection(body),
     });
 
     ztoolkit.log("non-English section registered successfully");

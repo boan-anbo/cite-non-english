@@ -4,7 +4,7 @@
  */
 
 import type { CneMetadata } from "../../model/CneMetadata";
-import type { CneFieldName, FieldVariant } from "../../types";
+import type { CneFieldName, FieldVariant, CneCreatorData } from "../../types";
 import { updateLivePreview, updateFieldCounter } from "../updaters/uiUpdaters";
 import { debouncedSave } from "./saveHandler";
 
@@ -49,7 +49,11 @@ export function setupClearButtons(
           return;
 
         const fieldKey = keys[1];
-        (metadata.data.authors[authorIndex] as any)[fieldKey] = "";
+        metadata.setCreatorField(
+          authorIndex,
+          fieldKey as keyof CneCreatorData,
+          "",
+        );
       } else {
         // Handle static field: "fieldName.variant"
         const keys = bindKey.split(".");

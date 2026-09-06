@@ -1,210 +1,143 @@
-/**
- * Main data model for non-English citation metadata
- * Acts as the single source of truth for all non-English field data
- */
+import type {
+  CneMetadataData,
+  CneFieldName,
+  FieldVariant,
+  CneCreatorData,
+} from "../types";
+import { SUPPORTED_FIELDS } from "../constants";
+import { snapshot, type ItemSnapshot } from "../operations/items";
+import {
+  applyChanges,
+  diffValues,
+  fromValues,
+  toValues,
+} from "../operations/values";
+import { planEdit, saveEdits } from "../operations/write";
 
-import type { CneMetadataData, CneFieldName, FieldVariant } from "../types";
-import { parseCNEMetadata, serializeToExtra } from "../metadata-parser";
-
-/**
- * CneMetadata class
- * Manages non-English citation metadata for a Zotero item
- * Provides loading, saving, and data binding support
- */
+/** A sidebar draft over the same field operations used by agent adapters. */
 export class CneMetadata {
-  /**
-   * The Zotero item this metadata belongs to
-   */
-  private item: Zotero.Item;
-
-  /**
-   * The metadata data object
-   * This is the single source of truth that UI elements bind to
-   */
   public data: CneMetadataData;
+  public language: string;
+  public error: string | null = null;
+  private base: ItemSnapshot;
+  private saving = false;
+  private listeners = new Set<() => void>();
 
-  /**
-   * Create a new CneMetadata instance
-   * @param item - The Zotero item to manage metadata for
-   */
-  constructor(item: Zotero.Item) {
-    this.item = item;
-    this.data = this.load();
+  constructor(private item: Zotero.Item) {
+    this.base = snapshot(item);
+    this.data = fromValues(this.base.values);
+    this.language = String(this.base.values.language ?? "");
   }
 
-  /**
-   * Load non-English metadata from the item's Extra field
-   * @returns Parsed metadata data
-   */
-  private load(): CneMetadataData {
-    try {
-      const extraContent = this.item.getField("extra") as string;
-      return parseCNEMetadata(extraContent || "");
-    } catch (error) {
-      ztoolkit.log("Error loading non-English metadata:", error);
-      return {};
-    }
+  public subscribe(listener: () => void): () => void {
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
-  /**
-   * Save current non-English metadata back to the item's Extra field
-   * Preserves non-non-English content in the Extra field
-   * @returns Promise that resolves when save is complete
-   */
+  private notify(): void {
+    for (const listener of this.listeners) listener();
+  }
+  private values() {
+    return toValues(this.data, this.language);
+  }
+  private adopt(base: ItemSnapshot, values = base.values): void {
+    this.base = base;
+    this.data = fromValues(values);
+    this.language = String(values.language ?? "");
+    this.error = null;
+    this.notify();
+  }
+
   public async save(): Promise<void> {
+    if (this.saving) return;
+    const submitted = this.values();
+    this.saving = true;
     try {
-      const currentExtra = (this.item.getField("extra") as string) || "";
-      const updatedExtra = serializeToExtra(currentExtra, this.data);
-
-      this.item.setField("extra", updatedExtra);
-      await this.item.saveTx();
-
-      ztoolkit.log("non-English metadata saved successfully");
+      const [result] = await saveEdits([
+        {
+          item: this.item,
+          base: this.base,
+          changes: diffValues(this.base.values, submitted),
+        },
+      ]);
+      // Keep keystrokes entered while the database transaction was pending.
+      const later = diffValues(submitted, this.values());
+      this.adopt(
+        result.current,
+        applyChanges(result.current.values, later, "replace"),
+      );
     } catch (error) {
-      ztoolkit.log("Error saving non-English metadata:", error);
+      this.error =
+        error instanceof Error ? error.message : "Could not save CNE metadata.";
+      this.notify();
       throw error;
+    } finally {
+      this.saving = false;
     }
   }
 
-  /**
-   * Reload metadata from the item's Extra field
-   * Useful when the Extra field has been modified externally
-   */
+  /** Merge external changes while keeping local edits and their conflict baseline. */
+  public refresh(): void {
+    if (this.saving) return;
+    try {
+      const plan = planEdit({
+        item: this.item,
+        base: this.base,
+        changes: diffValues(this.base.values, this.values()),
+      });
+      this.adopt(plan.before, plan.values);
+    } catch (error) {
+      this.error =
+        error instanceof Error ? error.message : "The item changed elsewhere.";
+      this.notify();
+    }
+  }
+
+  /** Explicitly discard the draft and read saved values. */
   public reload(): void {
-    this.data = this.load();
+    this.adopt(snapshot(this.item));
   }
-
-  /**
-   * Check if this item has any non-English metadata
-   * @returns true if any non-English fields have values
-   */
+  public hasPendingChanges(): boolean {
+    return diffValues(this.base.values, this.values()).length > 0;
+  }
   public hasData(): boolean {
-    // Check if original language is set
-    if (this.data.originalLanguage) {
-      return true;
-    }
-
-    // Check if any field has data
-    const fields: CneFieldName[] = [
-      "title",
-      "container-title",
-      "publisher",
-      "journal",
-    ];
-    for (const fieldName of fields) {
-      const fieldData = this.data[fieldName];
-      if (fieldData) {
-        // Check if any variant has a value
-        if (
-          fieldData.original ||
-          fieldData.romanized ||
-          fieldData.romanizedShort ||
-          fieldData.english
-        ) {
-          return true;
-        }
-      }
-    }
-
-    // Check if any author has data
-    if (this.data.authors && this.data.authors.length > 0) {
-      for (const author of this.data.authors) {
-        if (author && (author.lastOriginal || author.firstOriginal)) {
-          return true;
-        }
-      }
-    }
-
-    return false;
+    return Object.keys(toValues(this.data)).length > 0;
   }
-
-  /**
-   * Clear all non-English metadata
-   * Sets all fields to empty/undefined
-   */
   public clear(): void {
-    this.data = {
-      title: undefined,
-      "container-title": undefined,
-      publisher: undefined,
-      journal: undefined,
-      originalLanguage: undefined,
-    };
+    this.data = {};
   }
-
-  /**
-   * Get the item this metadata belongs to
-   */
   public getItem(): Zotero.Item {
     return this.item;
   }
-
-  /**
-   * Export metadata as a plain object (for debugging/logging)
-   */
   public toJSON(): CneMetadataData {
-    return { ...this.data };
+    return fromValues(toValues(this.data));
   }
-
-  /**
-   * Get a specific field variant value
-   * @param field - Field name (e.g., 'title')
-   * @param variant - Variant type ('original', 'romanized', 'romanized-short', 'english')
-   * @returns The field value or undefined
-   */
   public getFieldVariant(
     field: CneFieldName,
     variant: FieldVariant,
   ): string | undefined {
-    const fieldData = this.data[field];
-    return fieldData?.[variant];
+    return this.data[field]?.[variant];
   }
-
-  /**
-   * Set a specific field variant value
-   * @param field - Field name
-   * @param variant - Variant type
-   * @param value - Value to set (empty string clears it)
-   */
   public setFieldVariant(
     field: CneFieldName,
     variant: FieldVariant,
     value: string,
   ): void {
-    if (!this.data[field]) {
-      this.data[field] = {};
-    }
-    this.data[field]![variant] = value || undefined;
+    (this.data[field] ??= {})[variant] = value || undefined;
   }
-
-  /**
-   * Check if a specific field has any data
-   * @param field - Field name to check
-   * @returns true if the field has any variant with data
-   */
+  public setCreatorField(
+    index: number,
+    key: keyof CneCreatorData,
+    value: string | boolean,
+  ): void {
+    const creator = ((this.data.authors ??= [])[index] ??= {});
+    Object.assign(creator, { [key]: value === "" ? undefined : value });
+  }
   public hasFieldData(field: CneFieldName): boolean {
-    const fieldData = this.data[field];
-    if (!fieldData) return false;
-
-    return !!(
-      fieldData.original ||
-      fieldData.romanized ||
-      fieldData.romanizedShort ||
-      fieldData.english
-    );
+    return Object.values(this.data[field] ?? {}).some(Boolean);
   }
-
-  /**
-   * Get count of fields with data
-   * @returns Number of fields that have at least one variant filled
-   */
   public getFilledFieldCount(): number {
-    const fields: CneFieldName[] = [
-      "title",
-      "container-title",
-      "publisher",
-      "journal",
-    ];
-    return fields.filter((field) => this.hasFieldData(field)).length;
+    return SUPPORTED_FIELDS.filter(({ name }) => this.hasFieldData(name))
+      .length;
   }
 }
