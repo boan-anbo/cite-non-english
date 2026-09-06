@@ -334,7 +334,7 @@ npm test
 ## Common Issues
 
 **Issue:** Title capitalization differs between variants
-**Solution:** Keep casing off CNE romanized variables and apply it directly to the native fallback `<text variable="title">`. In citeproc-js, putting `text-case` on a call to the selector macro does not preserve the upstream native-title behavior. Chicago uses separate full/short selectors for title case and capitalize-first, while its uncased branches keep the plain selector. Do not apply title case globally: patents, legal cases, and other special types have different rules.
+**Solution:** Keep casing off CNE romanized variables and apply it directly to the native-title `<text variable="title">`. In citeproc-js, putting `text-case` on a call to the selector macro does not preserve the upstream native-title behavior. Chicago uses separate full/short selectors for title case and capitalize-first, while its uncased branches keep the plain selector. Do not apply title case globally: patents, legal cases, and other special types have different rules.
 
 `title-casing.test.ts` compares native output against the retained upstream Chicago templates and checks CNE romanization independently. Existing APA CJK expectations deliberately omit original script; `apa-hebrew.test.ts` verifies that the same romanization-plus-translation contract works for Hebrew. See the [Extra-field reference and title-selection guide](../README.md#extra-field-reference) before treating an omitted variant as a rendering bug.
 

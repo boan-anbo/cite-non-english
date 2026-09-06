@@ -13,7 +13,7 @@ const CHICAGO_STYLES = [
 ] as const;
 
 // Existing English fixtures exercise creator formatting with already-cased
-// titles. These sentence-case inputs exercise the native-title fallback.
+// titles. These sentence-case inputs exercise native-title formatting.
 const ARTICLE = {
   itemType: "journalArticle" as const,
   title:
