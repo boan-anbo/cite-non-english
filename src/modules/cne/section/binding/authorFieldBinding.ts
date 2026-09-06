@@ -3,6 +3,7 @@
  * Handles data binding for author fields with special logic
  */
 
+import type { CneCreatorData } from "../../types";
 import type { CneMetadata } from "../../model/CneMetadata";
 import { updateLivePreview, updateFieldCounter } from "../updaters/uiUpdaters";
 import { debouncedSave } from "../handlers/saveHandler";
@@ -41,19 +42,8 @@ export function setupAuthorFieldBinding(
 
   const authorIndex = parseInt(indexMatch[1], 10);
 
-  // Initialize authors array if needed
-  if (!metadata.data.authors) {
-    metadata.data.authors = [];
-  }
-  if (!metadata.data.authors[authorIndex]) {
-    metadata.data.authors[authorIndex] = {};
-  }
-
-  const author = metadata.data.authors[authorIndex];
-  const fieldKey = keys[1]; // e.g., "lastOriginal", "optionsSpacing"
-
-  // Get initial value
-  const initialValue = (author as any)[fieldKey] || "";
+  const fieldKey = keys[1] as keyof CneCreatorData;
+  const initialValue = metadata.data.authors?.[authorIndex]?.[fieldKey] ?? "";
 
   // Set initial value
   // Use duck typing instead of instanceof (HTMLInputElement not available in Zotero context)
@@ -78,7 +68,7 @@ export function setupAuthorFieldBinding(
     }
 
     // Update the author data
-    (author as any)[fieldKey] = newValue;
+    metadata.setCreatorField(authorIndex, fieldKey, newValue);
 
     // Update UI
     updateLivePreview(container, metadata);

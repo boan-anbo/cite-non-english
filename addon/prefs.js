@@ -9,3 +9,6 @@ pref(
   "hardcodedTitlePresets",
   '{"chicago":{"order":["romanized","original","english"],"italicize":{"romanized":false,"original":true,"english":true}},"mla":{"order":["romanized","original","english"],"italicize":{"romanized":false,"original":true,"english":true}},"apa":{"order":["romanized"],"italicize":{"romanized":false,"original":false,"english":false}}}',
 );
+
+pref("agentEnabled", false);
+pref("agentToken", "");

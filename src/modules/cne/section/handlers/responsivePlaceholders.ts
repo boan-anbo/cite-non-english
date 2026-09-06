@@ -9,7 +9,7 @@ type ResponsivePlaceholderTextarea = HTMLTextAreaElement & {
   __cneResponsivePlaceholderBound?: boolean;
 };
 
-function clearResponsivePlaceholderObservers(
+export function clearResponsivePlaceholderObservers(
   container: ResponsivePlaceholderContainer,
 ): void {
   container.__cnePlaceholderResizeObserver?.disconnect();

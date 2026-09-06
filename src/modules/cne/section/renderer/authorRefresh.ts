@@ -78,19 +78,12 @@ export async function refreshAuthorFields(
       insertIndex,
     );
 
-    // Re-setup data binding for all elements
-    // Use setTimeout to ensure DOM is fully updated
-    setTimeout(() => {
-      setupDataBinding(body, metadata);
-      setupClearButtons(body, metadata);
-      setupResponsivePlaceholders(body);
-
-      // Update the creator signature to match current state
-      // This ensures the next comparison will be accurate
-      updateCreatorSignature(body, item);
-
-      ztoolkit.log("[CNE] Author fields refreshed and bindings re-established");
-    }, 0);
+    for (const element of newAuthorElements) {
+      setupDataBinding(element as HTMLElement, metadata);
+      setupClearButtons(element as HTMLElement, metadata);
+    }
+    setupResponsivePlaceholders(body);
+    updateCreatorSignature(body, item);
   } catch (error) {
     ztoolkit.log("[CNE] Error refreshing author fields:", error);
     throw error;
