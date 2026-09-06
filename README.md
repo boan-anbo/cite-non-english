@@ -147,7 +147,7 @@ The challenges for supporting non-English citations come from two directions: Zo
 
 #### From style requirements
 
-- **Parallel scripts, romanization, and English translation** – Humanities and social science style guides (e.g., Chicago, MLA, APA) demand romanized text, original script, and English translations all within the same citation.
+- **Parallel scripts, romanization, and English translation** – Style guides select different combinations of these variants. CNE's Chicago styles can show all three in full references; its APA style uses romanization and English translation.
 
   _Example:_ A Chinese journal article title must appear per some guides as:
 
@@ -286,7 +286,7 @@ The diagram above shows CNE's intervention points (orange nodes) in Zotero's cit
 
    When you export items to BibTeX or Better BibTeX, CNE intercepts the export conversion process and transforms CNE metadata into BibLaTeX-compatible fields. Romanized titles become `title`, original scripts become `userf`, English translations become `usere`, and similar mappings apply to journals, publishers, and authors. CNE writes these transformed fields into a temporary copy of the item's Extra field that only the export translator sees, ensuring your stored data remains unchanged while Better BibTeX receives properly-formatted metadata it can parse and render in your LaTeX documents.
 
-**The result:** Whether you're previewing a citation in Zotero, inserting it into a Word document, viewing it in the Style Editor, or exporting your entire library to BibTeX, your non-English sources consistently appear with all the parallel information (romanization, original script, and English translation) properly formatted according to your chosen style guide.
+**The result:** Your parallel metadata is available when previewing citations, citing in a word processor, or exporting. The selected style determines which variants appear and how they are formatted.
 
 > **For developers:** Detailed technical implementation information, including interceptor architecture, callback chains, and source code locations, is available in [`docs/developer_guide.md`](docs/developer_guide.md#technical-implementation-details).
 
