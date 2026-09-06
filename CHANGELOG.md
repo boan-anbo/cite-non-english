@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.1.9] - 2026-09-06
+
+### Fixed
+
+- Restored native English title casing in all three bundled Chicago CNE styles,
+  including shortened notes. Titles can remain stored in sentence case; explicit
+  CNE romanization keeps the capitalization entered by the user.
+- Restored native journal/container and series title casing, plus bibliography
+  publisher capitalization, in the Chicago notes variants. Existing CNE field
+  selection and series-suppression rules are preserved.
+- Restored upstream native patent short-title selection, with regression checks
+  for citation output and bibliography ordering.
+
+### Documentation
+
+- Corrected the creator Extra-field prefix to `cne-creator-` and documented the
+  full set of sidebar text fields and creator options.
+- Clarified APA title selection: romanized title followed by bracketed English
+  translation. Original script alone does not activate this CNE title path.
+  Added Hebrew regression coverage; the specific missing-title report remains
+  open pending a reproducible item and output.
+
+### Upgrade
+
+- Updating CNE refreshes its bundled styles. Refresh citations in your word
+  processor to apply them; native English titles may change capitalization.
+  Stored metadata is not rewritten.
+
+## [0.1.8] - 2026-08-21
+
+- Updated the manifest compatibility cap to Zotero `10.*`.
+
 ## [0.1.7] - 2026-05-06
 
 ### Added
