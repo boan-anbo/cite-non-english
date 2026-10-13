@@ -59,4 +59,9 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm install
+      - name: Install Zotero 10.0.3
+        run: |
+          curl --fail --location --retry 3 https://download.zotero.org/client/release/10.0.3/Zotero-10.0.3_linux-x86_64.tar.xz --output "$RUNNER_TEMP/zotero.tar.xz"
+          tar -xJf "$RUNNER_TEMP/zotero.tar.xz" -C "$RUNNER_TEMP"
+          echo "ZOTERO_PLUGIN_ZOTERO_BIN_PATH=$RUNNER_TEMP/Zotero_linux-x86_64/zotero" >> "$GITHUB_ENV"
       - run: npm run test

@@ -32,7 +32,7 @@ async function onStartup() {
   initLocale();
 
   try {
-    await installCuratedStylesSilently();
+    await installCuratedStylesSilently(rootURI);
   } catch (error) {
     const err = error instanceof Error ? error : new Error(String(error));
     Zotero.logError(err);
