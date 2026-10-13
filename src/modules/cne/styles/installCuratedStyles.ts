@@ -1,8 +1,3 @@
-declare const rootURI: string;
-declare const Services: any;
-declare const PathUtils: any;
-declare const IOUtils: any;
-
 type CuratedStyle = {
   id: string;
   title: string;
@@ -54,7 +49,9 @@ const CURATED_STYLES: CuratedStyle[] = [
  * This mirrors the strategy used in tests (IOUtils.copy) and avoids user prompts by
  * writing directly to the styles directory before reinitialising Zotero.Styles.
  */
-export async function installCuratedStylesSilently(): Promise<void> {
+export async function installCuratedStylesSilently(
+  resourceRoot: string,
+): Promise<void> {
   await Zotero.Styles.init();
 
   const stylesDir = PathUtils.join(Zotero.DataDirectory.dir, "styles");
@@ -65,12 +62,12 @@ export async function installCuratedStylesSilently(): Promise<void> {
   for (const style of CURATED_STYLES) {
     const targetPath = PathUtils.join(stylesDir, style.filename);
     const bundledURL = Services.io
-      .newURI(rootURI)
+      .newURI(resourceRoot)
       .resolve(`styles/cne/${style.filename}`);
 
     try {
-      const bundledContents =
-        await Zotero.File.getContentsFromURLAsync(bundledURL);
+      // Packaged add-ons use jar: URLs, which Zotero's HTTP URI parser rejects.
+      const bundledContents = await Zotero.File.getResourceAsync(bundledURL);
 
       let needsWrite = true;
       if (await IOUtils.exists(targetPath)) {
